@@ -1,0 +1,247 @@
+@{
+    var grid = Html.DevExpress().GridView(settings => {
+        settings.Name = "gvCommunityTax";
+        settings.CallbackRouteValues = new { Controller = "Transaction", Action = "gvCommunityTaxPartial" };
+
+        settings.SettingsEditing.AddNewRowRouteValues = new { Controller = "Transaction", Action = "gvCommunityTaxPartialAddNew" };
+        settings.SettingsEditing.UpdateRowRouteValues = new { Controller = "Transaction", Action = "gvCommunityTaxPartialUpdate" };
+        settings.SettingsEditing.DeleteRowRouteValues = new { Controller = "Transaction", Action = "gvCommunityTaxPartialDelete" };
+        settings.SettingsEditing.Mode = GridViewEditingMode.EditFormAndDisplayRow;
+        settings.SettingsBehavior.ConfirmDelete = true;
+        settings.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+
+        settings.CommandColumn.ShowClearFilterButton = true;
+        settings.CommandColumn.Visible = true;
+        settings.CommandColumn.ShowDeleteButton = User.IsInRole("SA") || User.IsInRole("Administrator");
+        settings.CommandColumn.ShowEditButton = true;
+        settings.CommandColumn.ShowNewButtonInHeader = true;
+        settings.CommandColumn.Width = 100;
+
+        settings.SettingsPager.PageSize = 10;
+        settings.SettingsBehavior.ConfirmDelete = true;
+
+        settings.KeyFieldName = "TaxCertificateId";
+
+        settings.SettingsPager.Visible = true;
+        settings.Settings.ShowGroupPanel = false;
+        settings.Settings.ShowFilterRow = true;
+        settings.SettingsBehavior.AllowSelectByRowClick = true;
+
+        settings.SettingsAdaptivity.AdaptivityMode = GridViewAdaptivityMode.HideDataCells;
+        settings.SettingsAdaptivity.AdaptiveColumnPosition = GridViewAdaptiveColumnPosition.Right;
+        settings.SettingsAdaptivity.AdaptiveDetailColumnCount = 1;
+        settings.SettingsAdaptivity.AllowOnlyOneAdaptiveDetailExpanded = true;
+        settings.SettingsAdaptivity.HideDataCellsAtWindowInnerWidth = 300;
+
+        settings.Columns.Add(col => {
+            col.Width = 100;
+            col.SetDataItemTemplateContent(c => {
+                Html.DevExpress().Button(btn => {
+                    btn.Name = "btn" + c.KeyValue;
+                    btn.Text = "Print";
+                    btn.ClientSideEvents.Click = "function(s, e) { showTaxCertificateReportViewer('" + c.KeyValue + "')}";
+                }).GetHtml();
+            });
+        });
+        settings.Columns.Add(col => { col.FieldName = "TaxCertificateId"; col.Caption = "CTC#"; col.Width = 60; });
+        settings.Columns.Add(col => { col.FieldName = "CCI"; col.Caption = "CCI"; col.Width = 60; });
+        settings.Columns.Add(col => { col.FieldName = "Resident.FullName"; col.Caption = "Resident"; col.Width = 250; });
+        //settings.Columns.Add("TaxCertificateId");
+        //settings.Columns.Add("CCI");
+        settings.Columns.Add("Year").Width = 60;
+        settings.Columns.Add("PlaceIssued");
+
+        settings.Columns.Add(col => { col.FieldName = "DateIssued"; col.Caption = "Date Issued"; col.Width = 80; col.ColumnType = MVCxGridViewColumnType.DateEdit; col.PropertiesEdit.DisplayFormatString = "MM/dd/yyyy"; });
+
+
+
+
+        //settings.Columns.Add("DateIssued");
+        //settings.Columns.Add("Resident.FullName");
+        //settings.Columns.Add("Height");
+        //settings.Columns.Add("Weight");
+        settings.Columns.Add("BasicCommunityTax").Caption = "BasicCommunity";
+        settings.Columns.Add("BusinessEarningsTax").Caption = "Business Earnings";
+        settings.Columns.Add("ProfessionalEarningsTax").Caption = "Professional Earnings";
+        settings.Columns.Add("PropertyEarningsTax").Caption = "Professional Earnings";
+        //settings.Columns.Add("Interest");
+        settings.Columns.Add("AmountPaid");
+        //settings.Columns.Add("Resident");
+
+        settings.SetEditFormTemplateContent(c => {
+            var item = ViewData["item"] != null ? ViewData["item"] : c.DataItem;
+
+            ViewContext.Writer.Write("<div class=\"editform col-md-6\" style='float:left;'>");
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Search | Change"; lbl.AssociatedControlName = "SearchResident"; }).GetHtml();
+            ViewBag.ResidentNameId = DataBinder.Eval(item, "ResidentId");
+            Html.RenderPartial("_cmbResidentSearchPartial");
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Resident"; lbl.AssociatedControlName = "ResidentId"; }).GetHtml();
+            //Html.DevExpress().ComboBox(cmb => {
+            //    cmb.Name = "ResidentName";
+            //    cmb.Properties.IncrementalFilteringMode = IncrementalFilteringMode.None;
+            //    //cmb.Width = System.Web.UI.WebControls.Unit.Pixel(200);
+            //    cmb.ClientEnabled = false;
+            //    cmb.Properties.DropDownButton.Visible = false;
+            //    cmb.Properties.ValueField = "Id";
+            //    cmb.Properties.TextField = "Name";
+            //    cmb.Properties.ValueType = typeof(int);
+            //}).BindList(ViewBag.Residents).Bind(DataBinder.Eval(item, "ResidentId")).GetHtml();
+
+            Html.DevExpress().TextBox(cfg => {
+                cfg.Name = "ResidentName";
+                cfg.ClientEnabled = false;
+            }).Bind(DataBinder.Eval(item, "Resident.FullName")).Render();
+            Html.DevExpress().TextBox(cfg => {
+                cfg.Name = "ResidentId";
+                cfg.ClientVisible = false;
+            }).Bind(DataBinder.Eval(item, "ResidentId")).Render();
+
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "CTC Number:"; lbl.AssociatedControlName = "OfficialReceiptNum"; }).GetHtml();
+            Html.DevExpress().SpinEdit(cfg => {
+                cfg.Properties.SpinButtons.ClientVisible = false;
+                cfg.Name = "TaxCertificateId";
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+                //cfg.Width = System.Web.UI.WebControls.Unit.Pixel(200);
+            }).Bind(DataBinder.Eval(item, "TaxCertificateId")).GetHtml();
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "CCI:"; lbl.AssociatedControlName = "CCI"; }).GetHtml();
+            Html.DevExpress().SpinEdit(cfg => {
+                cfg.Properties.SpinButtons.ClientVisible = false;
+                cfg.Name = "CCI";
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+                //cfg.Width = System.Web.UI.WebControls.Unit.Pixel(200);
+                cfg.Properties.MaxValue = 3000;
+                cfg.Properties.MinValue = 2010;
+            }).Bind(DataBinder.Eval(item, "CCI")).GetHtml();
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Year:"; lbl.AssociatedControlName = "Year"; }).GetHtml();
+            Html.DevExpress().SpinEdit(cfg => {
+                cfg.Properties.SpinButtons.ClientVisible = false;
+                cfg.Name = "Year";
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+                //cfg.Width = System.Web.UI.WebControls.Unit.Pixel(200);
+                cfg.Properties.MaxValue = 3000;
+                cfg.Properties.MinValue = 2020;
+            }).Bind(DataBinder.Eval(item, "Year")).GetHtml();
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Place Issued:"; lbl.AssociatedControlName = "PlaceIssued"; }).GetHtml();
+            Html.DevExpress().TextBox(cfg => {
+                cfg.Name = "PlaceIssued"; //cfg.Width = System.Web.UI.WebControls.Unit.Pixel(200);
+            }).Bind(DataBinder.Eval(item, "PlaceIssued") ?? "Quezon, Nueva Vizcaya").Render();
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Date Issued:"; lbl.AssociatedControlName = "DateIssued"; }).GetHtml();
+            Html.DevExpress().DateEdit(cfg => {
+                cfg.Name = "DateIssued";
+                cfg.Properties.EditFormat = EditFormat.DateTime;
+                cfg.Properties.DisplayFormatString = "MM/dd/yyyy";
+                cfg.ShowModelErrors = true;
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+                //cfg.Width = System.Web.UI.WebControls.Unit.Pixel(200);
+            }).Bind(DataBinder.Eval(item, "DateIssued")).GetHtml();
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Height (cm):"; lbl.AssociatedControlName = "Height"; }).GetHtml();
+            Html.DevExpress().SpinEdit(cfg => {
+                cfg.Properties.SpinButtons.ClientVisible = false;
+                cfg.Name = "Height";
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+                //cfg.Width = System.Web.UI.WebControls.Unit.Pixel(200);
+                cfg.Properties.MaxValue = 400;
+                cfg.Properties.MinValue = 1;
+            }).Bind(DataBinder.Eval(item, "Height")).GetHtml();
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Weight (kg):"; lbl.AssociatedControlName = "Weight"; }).GetHtml();
+            Html.DevExpress().SpinEdit(cfg => {
+                cfg.Properties.SpinButtons.ClientVisible = false;
+                cfg.Name = "Weight";
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+                //cfg.Width = System.Web.UI.WebControls.Unit.Pixel(200);
+                cfg.Properties.MaxValue = 400;
+                cfg.Properties.MinValue = 1;
+            }).Bind(DataBinder.Eval(item, "Weight")).GetHtml();
+
+
+            ViewContext.Writer.Write("</div>");
+            ViewContext.Writer.Write("<div class=\"editform col-md-6\" style='float:left;'>");
+
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Basic Community:"; lbl.AssociatedControlName = "BasicCommunityTax"; }).GetHtml();
+            Html.DevExpress().SpinEdit(cfg => {
+                cfg.Properties.SpinButtons.ClientVisible = false;
+                cfg.Name = "BasicCommunityTax";
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+                //cfg.Width = System.Web.UI.WebControls.Unit.Pixel(200);
+                cfg.Properties.MaxValue = 10000;
+            }).Bind(DataBinder.Eval(item, "BasicCommunityTax")).GetHtml();
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Business Earnings:"; lbl.AssociatedControlName = "BusinessEarningsTax"; }).GetHtml();
+            Html.DevExpress().SpinEdit(cfg => {
+                cfg.Properties.SpinButtons.ClientVisible = false;
+                cfg.Name = "BusinessEarningsTax";
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+                //cfg.Width = System.Web.UI.WebControls.Unit.Pixel(200);
+                cfg.Properties.MaxValue = 100000;
+            }).Bind(DataBinder.Eval(item, "BusinessEarningsTax")).GetHtml();
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Professional Earnings:"; lbl.AssociatedControlName = "ProfessionalEarningsTax"; }).GetHtml();
+            Html.DevExpress().SpinEdit(cfg => {
+                cfg.Properties.SpinButtons.ClientVisible = false;
+                cfg.Name = "ProfessionalEarningsTax";
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+                //cfg.Width = System.Web.UI.WebControls.Unit.Pixel(200);
+                cfg.Properties.MaxValue = 100000;
+            }).Bind(DataBinder.Eval(item, "ProfessionalEarningsTax")).GetHtml();
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Property Earnings:"; lbl.AssociatedControlName = "PropertyEarningsTax"; }).GetHtml();
+            Html.DevExpress().SpinEdit(cfg => {
+                cfg.Properties.SpinButtons.ClientVisible = false;
+                cfg.Name = "PropertyEarningsTax";
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+                //cfg.Width = System.Web.UI.WebControls.Unit.Pixel(200);
+                cfg.Properties.MaxValue = 100000;
+            }).Bind(DataBinder.Eval(item, "PropertyEarningsTax")).GetHtml();
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Interest:"; lbl.AssociatedControlName = "Interest"; }).GetHtml();
+            Html.DevExpress().SpinEdit(cfg => {
+                cfg.Properties.SpinButtons.ClientVisible = false;
+                cfg.Name = "Interest";
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+                //cfg.Width = System.Web.UI.WebControls.Unit.Pixel(200);
+                cfg.Properties.MaxValue = 10000;
+            }).Bind(DataBinder.Eval(item, "Interest")).GetHtml();
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "AmountPaid:"; lbl.AssociatedControlName = "AmountPaid"; }).GetHtml();
+            Html.DevExpress().SpinEdit(cfg => {
+                cfg.Properties.SpinButtons.ClientVisible = false;
+                cfg.Name = "AmountPaid";
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+                //cfg.Width = System.Web.UI.WebControls.Unit.Pixel(200);
+            }).Bind(DataBinder.Eval(item, "AmountPaid")).GetHtml();
+
+            ViewContext.Writer.Write("</div>");
+            ViewContext.Writer.Write("<div class=\"editform col-md-12\" style='float:left; padding-top:20px;'>");
+            Html.DevExpress().Button(btn => {
+                btn.ControlStyle.CssClass = "fl";
+                btn.Name = "btnSaveTab";
+                btn.Text = "Save";
+                btn.Style[HtmlTextWriterStyle.MarginLeft] = "5px";
+                btn.UseSubmitBehavior = false;
+                btn.ClientSideEvents.Click = "function(s, e){ gvCommunityTax.UpdateEdit(); }";
+            }).Render();
+            Html.DevExpress().Button(btn => {
+                btn.ControlStyle.CssClass = "fl";
+                btn.Name = "btnCancelTab"; btn.Text = "Cancel";
+                btn.UseSubmitBehavior = false;
+                btn.ClientSideEvents.Click = "function(s, e){ gvCommunityTax.CancelEdit(); }";
+            }).Render();
+
+            ViewContext.Writer.Write("</div>");
+        });
+
+    });
+    if (ViewData["EditError"] != null){
+        grid.SetEditErrorText((string)ViewData["EditError"]);
+    }
+}
+@grid.Bind(Model).GetHtml()

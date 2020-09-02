@@ -1,0 +1,160 @@
+@{
+    var grid = Html.DevExpress().GridView(settings => {
+        settings.Name = "gvLetterTemplates";
+        settings.CallbackRouteValues = new { Controller = "Maintenance", Action = "gvLetterTemplatesPartial" };
+
+        settings.SettingsEditing.AddNewRowRouteValues = new { Controller = "Maintenance", Action = "gvLetterTemplatesPartialAddNew" };
+        settings.SettingsEditing.UpdateRowRouteValues = new { Controller = "Maintenance", Action = "gvLetterTemplatesPartialUpdate" };
+        settings.SettingsEditing.DeleteRowRouteValues = new { Controller = "Maintenance", Action = "gvLetterTemplatesPartialDelete" };
+        settings.SettingsEditing.Mode = GridViewEditingMode.EditFormAndDisplayRow;
+        settings.SettingsBehavior.ConfirmDelete = true;
+
+        settings.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+
+        settings.CommandColumn.ShowClearFilterButton = true;
+        settings.CommandColumn.Visible = true;
+        settings.CommandColumn.ShowDeleteButton = User.IsInRole("Administrator") || User.IsInRole("SA");
+        settings.CommandColumn.ShowEditButton = true;
+        settings.CommandColumn.ShowNewButtonInHeader = true;
+        settings.SettingsPager.PageSize = 10;
+
+        settings.KeyFieldName = "TemplateId";
+
+        settings.SettingsPager.Visible = true;
+        settings.Settings.ShowGroupPanel = false;
+        settings.Settings.ShowFilterRow = true;
+        settings.SettingsBehavior.AllowSelectByRowClick = true;
+
+        settings.SettingsAdaptivity.AdaptivityMode = GridViewAdaptivityMode.HideDataCells;
+        settings.SettingsAdaptivity.AdaptiveColumnPosition = GridViewAdaptiveColumnPosition.Right;
+        settings.SettingsAdaptivity.AdaptiveDetailColumnCount = 1;
+        settings.SettingsAdaptivity.AllowOnlyOneAdaptiveDetailExpanded = true;
+        settings.SettingsAdaptivity.HideDataCellsAtWindowInnerWidth = 300;
+
+
+        settings.Columns.Add("TemplateId").Visible = false;
+        settings.Columns.Add(col => { col.FieldName = "TemplateName"; col.Caption = "Purpose"; col.Width = 200; });
+        settings.Columns.Add("TemplateBody");
+        settings.Columns.Add(col => {
+            col.FieldName = "TemplateType"; col.Caption = "Type"; col.Width = 120;
+            col.EditorProperties().ComboBox(cb => {
+                //cb.DataSource = BrgyMgmt.Web.Services.EnumHelpers.SpacesToList(typeof(BrgyMgmt.Web.Services.LetterTemplateType));
+                cb.ValueField = "Key";
+                cb.TextField = "Value";
+                cb.ValueType = typeof(int);
+                cb.Items.Add("Certification", 1);
+                cb.Items.Add("Invitation", 2);
+                cb.DropDownStyle = DropDownStyle.DropDownList;
+            });
+        });
+        settings.Columns.Add("SortOrder");
+        settings.Columns.Add("DateCreated");
+        settings.Columns.Add("CreatedBy");
+
+
+        settings.SetEditFormTemplateContent(c => {
+            var item = ViewData["item"] != null ? ViewData["item"] : c.DataItem;
+            //ViewData["CoverageContacts"] = DataBinder.Eval(item, "ContactsInCoverage");
+            //ViewData["ClientId"] = DataBinder.Eval(item, "ClientId");
+
+            ViewContext.Writer.Write("<div class=\"editform col-md-6\" style='float:left;'>");
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Template Name"; lbl.AssociatedControlName = "TemplateName"; }).GetHtml();
+            Html.DevExpress().TextBox(cfg => {
+                cfg.Name = "TemplateName";
+                cfg.ShowModelErrors = true;
+                cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                cfg.Properties.ValidationSettings.RequiredField.IsRequired = true;
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+            }).Bind(DataBinder.Eval(item, "TemplateName")).Render();
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Template Type"; lbl.AssociatedControlName = "TemplateType"; }).GetHtml();
+            Html.DevExpress().ComboBox(    cfg => {
+                cfg.Name = "TemplateType";
+                cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                //cfg.SelectedIndex = 0;
+                //cfg.Properties.DisplayFormatString = "DXp v. {0}";
+                cfg.Properties.ValueType = typeof(int);
+
+                cfg.Properties.Items.Add("Certification", 1);
+                cfg.Properties.Items.Add("Invitation", 2);
+
+            }).Bind(DataBinder.Eval(item, "TemplateType")).GetHtml();
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Sort Order"; lbl.AssociatedControlName = "SortOrder"; }).GetHtml();
+
+            Html.DevExpress().SpinEdit(cfg => {
+                cfg.Name = "SortOrder";
+                cfg.Properties.SpinButtons.ShowIncrementButtons = false;
+                cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                cfg.Properties.ValidationSettings.RequiredField.IsRequired = true;
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+            }).Bind(DataBinder.Eval(item, "SortOrder")).Render();
+
+            ViewContext.Writer.Write("</div>");
+            ViewContext.Writer.Write("<div class=\"editform col-md-6\" style='float:left;'>");
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "ID"; lbl.AssociatedControlName = "TemplateId"; }).GetHtml();
+            Html.DevExpress().TextBox(cfg => {
+                cfg.Name = "TemplateId"; cfg.Enabled = false;
+                cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+            }).Bind(DataBinder.Eval(item, "TemplateId")).Render();
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Date Created"; lbl.AssociatedControlName = "DateCreated"; }).GetHtml();
+            //Html.DevExpress().DateEdit(cfg => {
+            //    cfg.Name = "DateCreated"; cfg.Enabled = false; cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+            //    cfg.Properties.EditFormat = EditFormat.DateTime;
+            //}).Bind(DataBinder.Eval(item, "DateCreated")).GetHtml();
+
+            Html.DevExpress().TextBox(set => {
+                set.Name = "DateCreated";
+                set.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                set.Properties.ValidationSettings.Display = Display.Dynamic;
+                set.Enabled = false;
+            }).Bind(DataBinder.Eval(item, "DateCreated")).Render();
+
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Created By"; lbl.AssociatedControlName = "CreatedBy"; }).GetHtml();
+            Html.DevExpress().TextBox(cfg => {
+                cfg.Name = "CreatedBy"; cfg.Enabled = false;
+                cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+            }).Bind(DataBinder.Eval(item, "CreatedBy")).Render();
+
+            ViewContext.Writer.Write("</div>");
+            ViewContext.Writer.Write("<div class=\"editform col-md-12\" style='float:left;'>");
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Content:"; lbl.AssociatedControlName = "TemplateBody"; }).GetHtml();
+            Html.DevExpress().Memo(cfg => {
+                cfg.Name = "TemplateBody";
+                cfg.Height = System.Web.UI.WebControls.Unit.Pixel(300);
+                cfg.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+                cfg.Properties.ValidationSettings.RequiredField.IsRequired = true;
+            }).Bind(DataBinder.Eval(item, "TemplateBody")).Render();
+
+            ViewContext.Writer.Write("</div>");
+            ViewContext.Writer.Write("<div class=\"editform col-md-12\" style='float:left; padding-top:20px;'>");
+
+            Html.DevExpress().Button(
+                btnSettings => {
+                    btnSettings.Name = "btnUpdate";
+                    btnSettings.Text = "Update";
+                    btnSettings.ClientSideEvents.Click = "function(s, e){ if (ASPxClientEdit.AreEditorsValid()) gvLetterTemplates.UpdateEdit(); }";
+                }).Render();
+            Html.DevExpress().Button(
+                btnSettings => {
+                    btnSettings.Name = "btnCancel";
+                    btnSettings.Text = "Cancel";
+                    btnSettings.Style[HtmlTextWriterStyle.MarginLeft] = "5px";
+                    btnSettings.ClientSideEvents.Click = "function(s, e){ gvLetterTemplates.CancelEdit(); }";
+                }).Render();
+            ViewContext.Writer.Write("</div>");
+
+        });
+
+
+
+    });
+    if (ViewData["EditError"] != null) {
+        grid.SetEditErrorText((string)ViewData["EditError"]);
+    }
+}
+@grid.Bind(Model).GetHtml()

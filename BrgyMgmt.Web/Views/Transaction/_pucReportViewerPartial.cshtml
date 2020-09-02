@@ -1,0 +1,17 @@
+@model XtraReport
+@Html.DevExpress().PopupControl(puc => {
+    puc.Name = "pucReport";
+    puc.AllowResize = true; puc.Width = System.Web.UI.WebControls.Unit.Pixel(800);
+    puc.PopupHorizontalAlign = PopupHorizontalAlign.WindowCenter; puc.PopupVerticalAlign = PopupVerticalAlign.WindowCenter;
+    puc.ShowHeader = true;
+    puc.AllowDragging = true;
+    puc.CloseAction = CloseAction.CloseButton;
+    puc.CloseOnEscape = true;
+    puc.ShowOnPageLoad = true;
+    puc.HeaderText = "Print | Preview";
+    puc.Modal = true;
+    puc.SetContent(() => {
+        Html.DevExpress().WebDocumentViewer(rptool => { rptool.Name = "ReportToolbar"; }).Bind(Model).GetHtml();
+    });
+}).GetHtml()
+

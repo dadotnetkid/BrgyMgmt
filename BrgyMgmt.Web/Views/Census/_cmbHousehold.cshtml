@@ -1,0 +1,28 @@
+﻿@using BrgyMgmt.Web.Services
+
+@Html.DevExpress().ComboBox(cmb => {
+    cmb.Name = "HouseHoldName";
+    cmb.Properties.IncrementalFilteringMode = IncrementalFilteringMode.Contains;
+    cmb.Properties.DropDownStyle = DropDownStyle.DropDown;
+    cmb.CallbackRouteValues = new { Controller = "census", Action = "cmbHousehold" };
+    cmb.Properties.CallbackPageSize = 50;
+    //cmb.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+    cmb.Properties.DropDownRows = 6;
+    //cmb.Properties.DropDownButton.Visible = false;
+
+    cmb.Properties.NullText = "(Start Typing..)";
+    cmb.Properties.TextField = "Name"; cmb.Properties.ValueField = "Id";
+    cmb.Properties.ValueType = typeof(Int32);
+
+    //cmb.ClientVisible = c.Grid.IsNewRowEditing;
+    //cmb.Properties.ClientSideEvents.SelectedIndexChanged = string.Format("function(s, e){{ SearchResidentOnSelectedIndexChanged(s, e, {0}); }}", "btnAddResidentVictim");
+    cmb.Properties.ClientSideEvents.SelectedIndexChanged = "function(s, e){ HouseHoldId.SetValue(s.GetValue()); }";
+
+    cmb.Properties.Buttons.Add(new EditButton());
+    cmb.Properties.Buttons[0].Image.IconID = IconID.ActionsNew16x16;
+    cmb.Properties.Buttons[0].ToolTip = "Create Household";
+    //cmb.Properties.ClientSideEvents.ButtonClick = "NewHousehold";
+    cmb.Properties.ClientSideEvents.ButtonClick = "NewHouseholdPopup";
+    cmb.Properties.ValidationSettings.RequiredField.IsRequired = true;
+    cmb.Properties.ValidationSettings.Display = Display.Dynamic;
+}).BindList(HouseholdServices.GetHouseholdRange, HouseholdServices.GetHouseholdtByID).Bind(ViewBag.FriendlyName).GetHtml()

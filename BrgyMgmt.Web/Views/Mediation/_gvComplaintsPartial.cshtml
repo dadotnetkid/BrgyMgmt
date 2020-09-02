@@ -1,0 +1,549 @@
+@using BrgyMgmt.Web.Services
+@using System.Web.UI.WebControls
+
+@{
+    var grid = Html.DevExpress().GridView(settings => {
+        settings.Name = "gvComplaints";
+        settings.CallbackRouteValues = new {
+            Controller = "Mediation", Action = "gvComplaintsPartial"
+        };
+
+        settings.SettingsEditing.AddNewRowRouteValues = new { Controller = "Mediation", Action = "gvComplaintsPartialAddNew" };
+        settings.SettingsEditing.UpdateRowRouteValues = new { Controller = "Mediation", Action = "gvComplaintsPartialUpdate" };
+        settings.SettingsEditing.DeleteRowRouteValues = new { Controller = "Mediation", Action = "gvComplaintsPartialDelete" };
+        settings.SettingsEditing.Mode = GridViewEditingMode.EditFormAndDisplayRow;
+        settings.SettingsBehavior.ConfirmDelete = true;
+
+        settings.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+
+        settings.CommandColumn.Width = 80;
+        settings.CommandColumn.ShowClearFilterButton = true;
+        settings.CommandColumn.Visible = true;
+        settings.CommandColumn.ShowDeleteButton = User.IsInRole("Administrator") || User.IsInRole("SA");
+        settings.CommandColumn.ShowEditButton = true;
+        settings.CommandColumn.ShowNewButtonInHeader = true;
+
+        settings.SettingsPager.PageSize = 15;
+        settings.SettingsPager.NumericButtonCount = 6;
+        settings.SettingsPager.Visible = true;
+        settings.Settings.ShowGroupPanel = false;
+        settings.Settings.ShowFilterRow = true;
+        settings.SettingsBehavior.AllowSelectByRowClick = true;
+
+        settings.KeyFieldName = "ComplaintId";
+
+
+        settings.SettingsAdaptivity.AdaptivityMode = GridViewAdaptivityMode.HideDataCells;
+        settings.SettingsAdaptivity.AdaptiveColumnPosition = GridViewAdaptiveColumnPosition.Right;
+        settings.SettingsAdaptivity.AdaptiveDetailColumnCount = 1;
+        settings.SettingsAdaptivity.AllowOnlyOneAdaptiveDetailExpanded = true;
+        settings.SettingsAdaptivity.HideDataCellsAtWindowInnerWidth = 260;
+
+        settings.Columns.Add(col => {
+            col.Width = 60; col.Settings.AllowAutoFilter = DefaultBoolean.False; col.EditFormSettings.Visible = DefaultBoolean.False;
+            col.UnboundType = DevExpress.Data.UnboundColumnType.String;
+            col.SetDataItemTemplateContent(c => Html.DevExpress().Button(btn => {
+                btn.Name = "btn" + c.KeyValue;
+                btn.Text = "Print";
+                //settingsBtn.ClientSideEvents.Click = string.Format("function(s, e) {{ CustomButtonClick(s, e, '{0}', s.GetRowKey(e.visibleIndex)); }}", Url.Action("OpenPlan", "Plan"));
+                btn.ClientSideEvents.Click = "function(s, e) { showComplaintReportViewer('" + c.KeyValue + "')}";
+                //settingsBtn.RouteValues = new { Controller = "Home", Action = "ButtonClickAction", rowKeyValue = c.KeyValue };
+            }).Render());
+        });
+
+        settings.Columns.Add(col => { col.FieldName = "ComplaintId"; col.Caption = "Complaint #"; col.Width = 80; });
+        settings.Columns.Add(col => { col.FieldName = "ComplaintTitle"; col.Caption = "Title"; });
+        //settings.Columns.Add("NonResidentRespondents");
+        //settings.Columns.Add("NonResidentVictims");
+        settings.Columns.Add(col => { col.FieldName = "IncidentLocation"; col.Caption = "Location"; });
+        settings.Columns.Add(col => {
+            col.FieldName = "DisputeNature"; col.Width = 100;
+            col.ColumnType = MVCxGridViewColumnType.ComboBox;
+            var cbProp = col.PropertiesEdit as ComboBoxProperties;
+            cbProp.DropDownStyle = DropDownStyle.DropDownList;
+            cbProp.DataSource = ViewBag.DisputeNature;
+            cbProp.TextField = "Name";
+            cbProp.ValueField = "Id";
+            cbProp.ValueType = typeof(Int32);
+        });
+
+        settings.Columns.Add("IncidentDateTime", MVCxGridViewColumnType.DateEdit);
+        settings.Columns.Add("DateTimeRecorded");
+        //settings.Columns.Add("ComplainantNarrative");
+        //settings.Columns.Add("ResidentComplainants");
+        //settings.Columns.Add("ResidentRespondents");
+        //settings.Columns.Add("ResidentVictims");
+        settings.Columns.Add(col => {
+            col.FieldName = "ModeOfSettlement"; //col.Width = 200;
+            col.ColumnType = MVCxGridViewColumnType.ComboBox;
+            var cbProp = col.PropertiesEdit as ComboBoxProperties;
+            cbProp.DropDownStyle = DropDownStyle.DropDownList;
+            cbProp.DataSource = ViewBag.SettlementMode;
+            cbProp.TextField = "Name";
+            cbProp.ValueField = "Id";
+            cbProp.ValueType = typeof(Int32);
+        });
+        settings.Columns.Add(col => {
+            col.FieldName = "ComplaintStatus"; //col.Width = 200;
+            col.ColumnType = MVCxGridViewColumnType.ComboBox;
+            var cbProp = col.PropertiesEdit as ComboBoxProperties;
+            cbProp.DropDownStyle = DropDownStyle.DropDownList;
+            cbProp.DataSource = ViewBag.DisputeAction;
+            cbProp.TextField = "Name";
+            cbProp.ValueField = "Id";
+            cbProp.ValueType = typeof(Int32);
+        });
+
+        settings.InitNewRow = (s, e) => {
+            e.NewValues["ModeOfSettlement"] = 320;
+            e.NewValues["ComplaintStatus"] = 323;
+        };
+
+
+        settings.SetEditFormTemplateContent(c => {
+            var item = ViewData["item"] != null ? ViewData["item"] : c.DataItem;
+            //ViewData["CoverageContacts"] = DataBinder.Eval(item, "ContactsInCoverage");
+            //ViewData["ClientId"] = DataBinder.Eval(item, "ClientId");
+
+
+            //Html.RenderPartial("_flComplaintsEditPartial", c.DataItem as BrgyMgmt.Web.Models.Complaint);
+
+
+            Html.DevExpress().PageControl(cfg => {
+                cfg.Name = "pcComplaint";
+                cfg.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+                cfg.TabPages.Add("IDENTITIES").SetContent(() => {
+                    ViewContext.Writer.Write("<div class=\"editform col-md-12\" style='float:left; padding-top:20px;'>");
+
+                    ViewContext.Writer.Write("<div class=\"editform col-md-4\" style='float:left; padding-bottom:20px;'>");
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Date & Time:"; lbl.AssociatedControlName = "IncidentDateTime"; }).GetHtml();
+                    Html.DevExpress().DateEdit(set => {
+                        set.Name = "IncidentDateTime";
+                        set.Properties.EditFormat = EditFormat.DateTime;
+                        set.ShowModelErrors = true;
+                        set.Properties.ValidationSettings.Display = Display.Dynamic;
+                        set.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                        set.Properties.ValidationSettings.RequiredField.IsRequired = true;
+                    }).Bind(DataBinder.Eval(item, "IncidentDateTime")).GetHtml();
+
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Title:"; lbl.AssociatedControlName = "ComplaintTitle"; }).GetHtml();
+                    Html.DevExpress().TextBox(set => {
+                        set.Name = "ComplaintTitle";
+                        set.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                        set.Properties.ValidationSettings.Display = Display.Dynamic;
+                    }).Bind(DataBinder.Eval(item, "ComplaintTitle")).Render();
+                    ViewContext.Writer.Write("</div>");
+
+                    ViewContext.Writer.Write("<div class=\"editform col-md-4\" style='float:left; padding-bottom:20px;'>");
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Incident Location"; lbl.AssociatedControlName = "IncidentLocation"; }).GetHtml();
+                    Html.DevExpress().TextBox(set => {
+                        set.Name = "IncidentLocation";
+                        set.Properties.ValidationSettings.RequiredField.IsRequired = true;
+                        set.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                    }).Bind(DataBinder.Eval(item, "IncidentLocation")).Render();
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Nature of Dispute:"; lbl.AssociatedControlName = "DisputeNature"; }).GetHtml();
+                    Html.DevExpress().ComboBox(set => {
+                        set.Name = "DisputeNature";
+                        set.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                        set.Properties.ValueField = "Id";
+                        set.Properties.TextField = "Name";
+                        set.Properties.ValueType = typeof(Int32);
+                        set.Properties.DropDownRows = 3;
+                        set.Properties.IncrementalFilteringMode = IncrementalFilteringMode.Contains;
+                        set.Properties.DropDownStyle = DropDownStyle.DropDown;
+                        set.Properties.ValidationSettings.RequiredField.IsRequired = true;
+                    }).BindList(ViewBag.DisputeNature).Bind(DataBinder.Eval(item, "DisputeNature")).GetHtml();
+                    ViewContext.Writer.Write("</div>");
+
+                    ViewContext.Writer.Write("<div class=\"editform col-md-4\" style='float:left; padding-bottom:20px;'>");
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Complaint ID:"; lbl.AssociatedControlName = "ComplaintId"; }).GetHtml();
+                    Html.DevExpress().TextBox(set => {
+                        set.Name = "ComplaintId";
+                        set.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                        set.Properties.ValidationSettings.Display = Display.Dynamic;
+                        set.Enabled = false;
+                    }).Bind(DataBinder.Eval(item, "ComplaintId")).Render();
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Recorded Date"; lbl.AssociatedControlName = "DateTimeRecorded"; }).GetHtml();
+                    Html.DevExpress().TextBox(set => {
+                        set.Name = "DateTimeRecorded";
+                        set.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                        set.Properties.ValidationSettings.Display = Display.Dynamic;
+                        set.Enabled = false;
+                    }).Bind(DataBinder.Eval(item, "DateTimeRecorded")).Render();
+                    ViewContext.Writer.Write("</div>");
+
+
+                    ViewContext.Writer.Write("</div>");
+                    ViewContext.Writer.Write("<div class=\"editform col-md-4\" style='float:left;'>");
+                    Html.DevExpress().RoundPanel(rp => {
+                        rp.Name = "rpComplainants";
+                        rp.HeaderText = "Complainants";
+                        rp.ShowHeader = true;
+                        rp.SetContent(() => {
+
+                            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Search Complainants:"; lbl.AssociatedControlName = "SearchComplainants"; }).GetHtml();
+                            Html.RenderAction("cmbComplainantsPartial");
+
+                            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = ""; lbl.AssociatedControlName = "btnAddResidentComplainants"; }).GetHtml();
+                            Html.DevExpress().Button(btn => {
+                                btn.Name = "btnAddResidentComplainants"; btn.Text = "Add Complainant";
+                                btn.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                                btn.ControlStyle.CssClass = "fl";
+                                btn.ClientEnabled = false;
+                                btn.UseSubmitBehavior = false;
+                                btn.CausesValidation = false;
+                                btn.ClientSideEvents.Click = string.Format("function(s, e){{ AddResidentCompOnButtonClick(s, e, {0}, {1}); }}", "lbResidentComplainants", "SearchComplainants");
+                            }).GetHtml();
+
+                            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Respondents"; lbl.AssociatedControlName = "lbResidentComplainants"; }).GetHtml();
+                            Html.DevExpress().ListBox(lb => {
+                                lb.Name = "lbResidentComplainants";
+                                lb.Properties.SelectionMode = ListEditSelectionMode.Multiple;
+                                lb.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                                lb.Height = System.Web.UI.WebControls.Unit.Pixel(160);
+                                lb.Properties.EnableClientSideAPI = true;
+                                lb.Properties.ClientSideEvents.SelectedIndexChanged = string.Format("function(s, e){{ lbResidentOnSelectedIndexChanged(s, e, {0}); }}", "btnRemoveResidentComplainant");
+                                //lb.Properties.ValidationSettings.RequiredField.IsRequired = true;
+                                lb.Properties.ValueField = "ResidentId";
+                                lb.Properties.TextField = "ResidentComplainants.FullName";
+                                lb.Properties.Columns.Add("FullName").Width = System.Web.UI.WebControls.Unit.Percentage(100);
+
+                                //}).BindList(BarangayManagement.Web.Models.Resident.GetResidentsInComplaints(Convert.ToInt32(DataBinder.Eval(item, "ComplaintId")), 1)).GetHtml();
+                            }).BindList(DataBinder.Eval(item, "ResidentComplainants")).Bind(DataBinder.Eval(item, "ResidentComplainants")).GetHtml();
+
+
+                            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = ""; lbl.AssociatedControlName = "btnRemoveResidentComplainant"; }).GetHtml();
+                            Html.DevExpress().Button(btn => {
+                                btn.Name = "btnRemoveResidentComplainant"; btn.Text = "Remove Complainant";
+                                btn.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                                btn.ControlStyle.CssClass = "fl";
+                                btn.ClientEnabled = false;
+                                btn.UseSubmitBehavior = false;
+                                btn.ClientSideEvents.Click = string.Format("function(s, e){{ btnRemoveResidentOnButtonClick(s, e, {0}); }}", "lbResidentComplainants");
+                                btn.CausesValidation = false;
+                            }).GetHtml();
+
+                            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Non Residents"; lbl.AssociatedControlName = "memNonResidentComplainants"; }).GetHtml();
+                            Html.DevExpress().Memo(mem => {
+                                mem.Name = "NonResidentComplainants";
+                                mem.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                                mem.Height = System.Web.UI.WebControls.Unit.Pixel(100);
+                            }).Bind(DataBinder.Eval(item, "NonResidentComplainants")).GetHtml();
+                        });
+                    }).GetHtml();
+
+                    ViewContext.Writer.Write("</div>");
+
+                    ViewContext.Writer.Write("<div class=\"editform col-md-4\" style='float:left;'>");
+                    Html.DevExpress().RoundPanel(rp => {
+                        rp.Name = "rpRespondents";
+                        rp.HeaderText = "Respondents";
+                        rp.ShowHeader = true;
+                        rp.SetContent(() => {
+                            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Search Respondents:"; lbl.AssociatedControlName = "SearchRespondents"; }).GetHtml();
+                            //Html.DevExpress().ComboBox(cmb => {
+                            //    cmb.Name = "SearchRespondents";
+                            //    cmb.Properties.ClientSideEvents.SelectedIndexChanged = string.Format("function(s, e){{ SearchResidentOnSelectedIndexChanged(s, e, {0}); }}", "btnAddResidentResp");
+                            //    //cmb.Properties.ClientSideEvents.SelectedIndexChanged = "SearchResidentOnSelectedIndexChanged";
+                            //    //cmb.CallbackRouteValues = new { Controller = "Client", Action = "LargeDataComboBoxPartial", partialView = "_gvClientLocationPartial" };
+                            //    //cmb.Properties.ValidationSettings.RequiredField.IsRequired = true;
+                            //    cmb.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                            //    cmb.Properties.DropDownRows = 4;
+                            //    cmb.Properties.DropDownButton.Visible = false;
+                            //    cmb.Properties.IncrementalFilteringMode = IncrementalFilteringMode.Contains;
+                            //    cmb.Properties.NullText = "(Start Typing...)";
+                            //    cmb.Properties.ValueField = "Id";
+                            //    cmb.Properties.TextField = "Name";
+                            //    cmb.Properties.ValueType = typeof(string);
+                            //    cmb.Properties.DropDownRows = 4;
+                            //    cmb.Properties.IncrementalFilteringMode = IncrementalFilteringMode.Contains;
+                            //    cmb.Properties.DropDownStyle = DropDownStyle.DropDown;
+                            //    cmb.Properties.DropDownStyle = DropDownStyle.DropDownList;
+                            //    //}).BindList(ViewBag.Residents).GetHtml();
+                            //}).BindList(ResidentServices.GetResidentRange, ResidentServices.GetResidentByID).GetHtml();
+
+
+                            Html.RenderAction("cmbRespondentsPartial");
+
+
+                            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = ""; lbl.AssociatedControlName = "btnAddResidentComp"; }).GetHtml();
+                            Html.DevExpress().Button(btn => {
+                                btn.Name = "btnAddResidentResp"; btn.Text = "Add Respondent";
+                                btn.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                                btn.ControlStyle.CssClass = "fl";
+                                btn.ClientEnabled = false;
+                                btn.UseSubmitBehavior = false;
+                                btn.ClientSideEvents.Click = string.Format("function(s, e){{ AddResidentCompOnButtonClick(s, e, {0}, {1}); }}", "lbResidentRespondents", "SearchRespondents");
+                                btn.CausesValidation = false;
+                            }).GetHtml();
+
+
+                            //Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Respondents"; lbl.AssociatedControlName = "lbResidentComplainants"; }).GetHtml();
+                            //Html.DevExpress().ListBox(lb => {
+                            //    lb.Name = "lbResidentComplainants";
+                            //    lb.Properties.SelectionMode = ListEditSelectionMode.Multiple;
+                            //    lb.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                            //    lb.Height = System.Web.UI.WebControls.Unit.Pixel(160);
+                            //    lb.Properties.EnableClientSideAPI = true;
+                            //    lb.Properties.ClientSideEvents.SelectedIndexChanged = string.Format("function(s, e){{ lbResidentOnSelectedIndexChanged(s, e, {0}); }}", "btnRemoveResidentComplainant");
+                            //    //lb.Properties.ValidationSettings.RequiredField.IsRequired = true;
+                            //    lb.Properties.ValueField = "ResidentId";
+                            //    lb.Properties.TextField = "ResidentComplainants.FullName";
+                            //    lb.Properties.Columns.Add("FullName").Width = System.Web.UI.WebControls.Unit.Percentage(100);
+
+                            //    //}).BindList(BarangayManagement.Web.Models.Resident.GetResidentsInComplaints(Convert.ToInt32(DataBinder.Eval(item, "ComplaintId")), 1)).GetHtml();
+                            //}).BindList(DataBinder.Eval(item, "ResidentComplainants")).Bind(DataBinder.Eval(item, "ResidentComplainants")).GetHtml();
+
+
+                            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Respondents"; lbl.AssociatedControlName = "lbResidentRespondents"; }).GetHtml();
+                            Html.DevExpress().ListBox(lb => {
+                                lb.Name = "lbResidentRespondents";
+                                lb.Properties.SelectionMode = ListEditSelectionMode.Multiple;
+                                lb.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                                lb.Height = System.Web.UI.WebControls.Unit.Pixel(160);
+                                lb.Properties.EnableClientSideAPI = true;
+                                lb.Properties.ClientSideEvents.SelectedIndexChanged = string.Format("function(s, e){{ lbResidentOnSelectedIndexChanged(s, e, {0}); }}", "btnRemoveResidentResp");
+                                //lb.Properties.ValidationSettings.RequiredField.IsRequired = true;
+                                lb.Properties.ValidationSettings.SetFocusOnError = true;
+                                lb.Properties.ValueField = "ResidentId";
+                                lb.Properties.TextField = "ResidentRespondents.FullName";
+                                lb.Properties.Columns.Add("FullName").Width = System.Web.UI.WebControls.Unit.Percentage(100);
+
+                                //}).BindList(BarangayManagement.Web.Models.Resident.GetResidentsInComplaints(Convert.ToInt32(DataBinder.Eval(item, "ComplaintId")), 2)).GetHtml();
+                            }).BindList(DataBinder.Eval(item, "ResidentRespondents")).Bind(DataBinder.Eval(item, "ResidentRespondents")).GetHtml();
+
+
+                            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = ""; lbl.AssociatedControlName = "btnRemoveResidentComp"; }).GetHtml();
+                            Html.DevExpress().Button(btn => {
+                                btn.Name = "btnRemoveResidentResp"; btn.Text = "Remove Respondent";
+                                btn.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                                btn.ControlStyle.CssClass = "fl";
+                                btn.ClientEnabled = false;
+                                btn.UseSubmitBehavior = false;
+                                btn.ClientSideEvents.Click = string.Format("function(s, e){{ btnRemoveResidentOnButtonClick(s, e, {0}); }}", "lbResidentRespondents");
+                                btn.CausesValidation = false;
+                            }).GetHtml();
+
+                            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Non Residents"; lbl.AssociatedControlName = "memNonResidentRespondents"; }).GetHtml();
+                            Html.DevExpress().Memo(mem => {
+                                mem.Name = "NonResidentRespondents";
+                                mem.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                                mem.Height = System.Web.UI.WebControls.Unit.Pixel(100);
+                            }).Bind(DataBinder.Eval(item, "NonResidentRespondents")).GetHtml();
+
+                            ViewContext.Writer.Write("</div>");
+
+                        });
+                    }).GetHtml();
+                    ViewContext.Writer.Write("</div>");
+
+                    ViewContext.Writer.Write("<div class=\"editform col-md-4\" style='float:left;'>");
+                    Html.DevExpress().RoundPanel(rp => {
+                        rp.Name = "rpVictims";
+                        rp.HeaderText = "Victims";
+                        rp.ShowHeader = true;
+                        rp.SetContent(() => {
+                            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Search Victims:"; lbl.AssociatedControlName = "SearchVictims"; }).GetHtml();
+                            //Html.DevExpress().ComboBox(cmb => {
+                            //    cmb.Name = "SearchVictims";
+                            //    cmb.Properties.ClientSideEvents.SelectedIndexChanged = string.Format("function(s, e){{ SearchResidentOnSelectedIndexChanged(s, e, {0}); }}", "btnAddResidentVictim");
+                            //    //cmb.Properties.ClientSideEvents.SelectedIndexChanged = "SearchResidentOnSelectedIndexChanged";
+                            //    //cmb.CallbackRouteValues = new { Controller = "Client", Action = "LargeDataComboBoxPartial", partialView = "_gvClientLocationPartial" };
+                            //    //cmb.Properties.ValidationSettings.RequiredField.IsRequired = true;
+                            //    cmb.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                            //    cmb.Properties.DropDownRows = 4;
+                            //    cmb.Properties.DropDownButton.Visible = false;
+                            //    cmb.Properties.IncrementalFilteringMode = IncrementalFilteringMode.Contains;
+                            //    cmb.Properties.NullText = "(Start Typing...)";
+                            //    cmb.Properties.ValueField = "Id";
+                            //    cmb.Properties.TextField = "Name";
+                            //    cmb.Properties.ValueType = typeof(string);
+                            //    cmb.Properties.DropDownRows = 4;
+                            //    cmb.Properties.IncrementalFilteringMode = IncrementalFilteringMode.Contains;
+                            //    cmb.Properties.DropDownStyle = DropDownStyle.DropDown;
+                            //    cmb.Properties.DropDownStyle = DropDownStyle.DropDownList;
+                            //    //}).BindList(ViewBag.Residents).GetHtml();
+                            //}).BindList(ResidentServices.GetResidentRange, ResidentServices.GetResidentByID).GetHtml();
+
+                            Html.RenderAction("cmbVictimsPartial");
+
+                            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = ""; lbl.AssociatedControlName = "btnAddResidentComp"; }).GetHtml();
+                            Html.DevExpress().Button(btn => {
+                                btn.Name = "btnAddResidentVictim"; btn.Text = "Add Victim";
+                                btn.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                                btn.ControlStyle.CssClass = "fl";
+                                btn.ClientEnabled = false;
+                                btn.UseSubmitBehavior = false;
+                                btn.ClientSideEvents.Click = string.Format("function(s, e){{ AddResidentCompOnButtonClick(s, e, {0}, {1}); }}", "lbResidentVictims", "SearchVictims");
+                                btn.CausesValidation = false;
+                            }).GetHtml();
+
+                            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Victims"; lbl.AssociatedControlName = "lbResidentVictims"; }).GetHtml();
+                            Html.DevExpress().ListBox(lb => {
+                                lb.Name = "lbResidentVictims";
+                                lb.Properties.SelectionMode = ListEditSelectionMode.Multiple;
+                                lb.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                                lb.Height = System.Web.UI.WebControls.Unit.Pixel(160);
+                                lb.Properties.EnableClientSideAPI = true;
+                                lb.Properties.ClientSideEvents.SelectedIndexChanged = string.Format("function(s, e){{ lbResidentOnSelectedIndexChanged(s, e, {0}); }}", "btnRemoveResidentVictims");
+                                lb.Properties.ValueField = "ResidentId";
+                                lb.Properties.TextField = "ResidentVictims.FullName";
+                                lb.Properties.Columns.Add("FullName").Width = System.Web.UI.WebControls.Unit.Percentage(100);
+                                //}).BindList(BarangayManagement.Web.Models.Resident.GetResidentsInComplaints(Convert.ToInt32(DataBinder.Eval(item, "ComplaintId")), 3)).GetHtml();
+                            }).BindList(DataBinder.Eval(item, "ResidentVictims")).Bind(DataBinder.Eval(item, "ResidentVictims")).GetHtml();
+
+
+                            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = ""; lbl.AssociatedControlName = "btnRemoveResidentVictims"; }).GetHtml();
+                            Html.DevExpress().Button(btn => {
+                                btn.Name = "btnRemoveResidentVictims"; btn.Text = "Remove Victim";
+                                btn.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                                btn.ControlStyle.CssClass = "fl";
+                                btn.ClientEnabled = false;
+                                btn.UseSubmitBehavior = false;
+                                btn.ClientSideEvents.Click = string.Format("function(s, e){{ btnRemoveResidentOnButtonClick(s, e, {0}); }}", "lbResidentVictims");
+                                btn.CausesValidation = false;
+                            }).GetHtml();
+
+                            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Non Residents"; lbl.AssociatedControlName = "memNonResidentRespondents"; }).GetHtml();
+                            Html.DevExpress().Memo(mem => {
+                                mem.Name = "NonResidentVictims";
+                                mem.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                                mem.Height = System.Web.UI.WebControls.Unit.Pixel(100);
+                            }).Bind(DataBinder.Eval(item, "NonResidentVictims")).GetHtml();
+
+
+                            ViewContext.Writer.Write("</div>");
+
+                        });
+                    }).GetHtml();
+                    ViewContext.Writer.Write("</div>");
+
+                    ViewContext.Writer.Write("<div class=\"editform col-md-12\" style='float:left; padding-top:20px;'>");
+                    Html.DevExpress().Button(btnSettings => {
+                        btnSettings.ControlStyle.CssClass = "fr";
+                        btnSettings.Name = "btnCancel";
+                        btnSettings.Text = "Cancel";
+                        btnSettings.Style[HtmlTextWriterStyle.MarginLeft] = "5px";
+                        btnSettings.ClientSideEvents.Click = "function(s, e){ gvComplaints.CancelEdit(); }";
+                    }).Render();
+                    Html.DevExpress().Button(btnSettings => {
+                        btnSettings.ControlStyle.CssClass = "fr";
+                        btnSettings.Name = "btnNext";
+                        btnSettings.Text = "Next";
+                        btnSettings.ClientSideEvents.Click = "onNextButtonClick";
+                    }).Render();
+                    ViewContext.Writer.Write("</div>");
+
+                });
+                cfg.TabPages.Add("INCIDENT NARRATIVE").SetContent(() => {
+                    ViewContext.Writer.Write("<div class=\"editform col-md-12\" style='float:left; padding-top:20px;'>");
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Narrative"; lbl.AssociatedControlName = "ComplainantNarrative"; }).GetHtml();
+                    Html.DevExpress().Memo(set => {
+                        set.Name = "ComplainantNarrative";
+                        set.Height = System.Web.UI.WebControls.Unit.Pixel(400);
+                        set.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+                    }).Bind(DataBinder.Eval(item, "ComplainantNarrative")).Render();
+                    //Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Cleard Respondents:"; lbl.AssociatedControlName = "ClearedRespondents"; }).GetHtml();
+                    //Html.DevExpress().CheckBox(chkb => {
+                    //    chkb.Name = "ClearedRespondents"; //chkb.ControlStyle.CssClass = "fl";
+                    //    chkb.Width = System.Web.UI.WebControls.Unit.Pixel(100);
+                    //    chkb.ControlStyle.CssClass = "chk";
+                    //    chkb.Checked = Convert.ToBoolean(DataBinder.Eval(item, "ClearedRespondents"));
+                    //    //chkb.Properties.ClientSideEvents.CheckedChanged = "OnHouseholdHeadCheckChanged";
+                    //    //chkb.Style.Add("display", "block");
+                    //    //chkb.Style.Add("float", "left");
+                    //}).Bind(DataBinder.Eval(item, "ClearedRespondents")).Render();
+
+                    ViewContext.Writer.Write("</div>");
+                    ViewContext.Writer.Write("<div class=\"editform col-md-6\" style='float:left; padding-top:20px;'>");
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Nature of Dispute:"; lbl.AssociatedControlName = "ModeOfSettlement"; }).GetHtml();
+                    Html.DevExpress().ComboBox(set => {
+                        set.Name = "ModeOfSettlement";
+                        //set.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                        set.Properties.ValueField = "Id";
+                        set.Properties.TextField = "Name";
+                        set.Properties.ValueType = typeof(Int32);
+                        set.Properties.DropDownRows = 3;
+                        set.Properties.IncrementalFilteringMode = IncrementalFilteringMode.Contains;
+                        set.Properties.DropDownStyle = DropDownStyle.DropDown;
+                        set.Properties.ValidationSettings.RequiredField.IsRequired = true;
+                    }).BindList(ViewBag.SettlementMode).Bind(DataBinder.Eval(item, "ModeOfSettlement")).GetHtml();
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Complaint Status:"; lbl.AssociatedControlName = "ComplaintStatus"; }).GetHtml();
+                    Html.DevExpress().ComboBox(set => {
+                        set.Name = "ComplaintStatus";
+                        //set.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                        set.Properties.ValueField = "Id";
+                        set.Properties.TextField = "Name";
+                        set.Properties.ValueType = typeof(Int32);
+                        set.Properties.DropDownRows = 3;
+                        set.Properties.IncrementalFilteringMode = IncrementalFilteringMode.Contains;
+                        set.Properties.DropDownStyle = DropDownStyle.DropDown;
+                        set.Properties.ValidationSettings.RequiredField.IsRequired = true;
+                    }).BindList(ViewBag.DisputeAction).Bind(DataBinder.Eval(item, "ComplaintStatus")).GetHtml();
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Government Savings:"; lbl.AssociatedControlName = "GovernmentSavings"; }).GetHtml();
+                    Html.DevExpress().SpinEdit(set => {
+                        set.Name = "GovernmentSavings";
+                        //set.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                        set.Properties.SpinButtons.ShowIncrementButtons = false;
+                        set.Properties.MinValue = 0;
+                        set.Properties.MaxValue = 1000000000;
+                        set.Properties.ValidationSettings.Display = Display.Dynamic;
+                    }).Bind(DataBinder.Eval(item, "GovernmentSavings")).GetHtml();
+                    ViewContext.Writer.Write("</div>");
+                    ViewContext.Writer.Write("<div class=\"editform col-md-6\" style='float:left; padding-top:20px;'>");
+
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Remarks"; lbl.AssociatedControlName = "Remarks"; }).GetHtml();
+                    Html.DevExpress().Memo(mem => {
+                        mem.Name = "Remarks";
+                        //mem.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                        mem.Height = System.Web.UI.WebControls.Unit.Pixel(120);
+                    }).Bind(DataBinder.Eval(item, "Remarks")).GetHtml();
+                    ViewContext.Writer.Write("</div>");
+                    ViewContext.Writer.Write("<div class=\"editform col-md-12\" style='float:left; padding-top:20px;'>");
+                    Html.DevExpress().Button(btnSettings => {
+                        btnSettings.ControlStyle.CssClass = "fr";
+                        btnSettings.Name = "btnSave";
+                        btnSettings.Text = "Save | Update";
+                        btnSettings.ClientSideEvents.Click = "onSaveButtonClick";
+                    }).Render();
+                    ViewContext.Writer.Write("</div>");
+                });
+                //cfg.TabPages.Add("Quality Control").SetContent(() => {
+                //    ViewContext.Writer.Write("Quality Control");
+                //});
+                //cfg.TabPages.Add("Recording").SetContent(() => {
+                //    ViewContext.Writer.Write("Recording");
+                //});
+            }).GetHtml();
+
+
+
+
+            //ViewContext.Writer.Write("</div>");
+
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+        settings.SettingsDetail.AllowOnlyOneMasterRowExpanded = false;
+        settings.SettingsDetail.ShowDetailRow = true;
+        settings.SetDetailRowTemplateContent(c => {
+            ViewContext.Writer.Write("Settlements" + "<br /><br />");
+            Html.RenderAction("gvComplaintSettlementDetailPartial", new { ComplaintId = DataBinder.Eval(c.DataItem, "ComplaintId") });
+        });
+
+    });
+    if (ViewData["EditError"] != null) {
+        grid.SetEditErrorText((string)ViewData["EditError"]);
+    }
+}
+@grid.Bind(Model).GetHtml()

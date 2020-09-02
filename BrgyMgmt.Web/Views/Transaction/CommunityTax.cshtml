@@ -1,0 +1,24 @@
+﻿@{
+    ViewBag.Title = "COMMUNITY TAX"; ViewBag.Description = "TRANSACTION";
+}
+@Html.DevExpress().LoadingPanel(settings => {
+    settings.Name = "ldpLoading";
+}).GetHtml()
+<script>
+    function showTaxCertificateReportViewer(taxCertificateid) {
+        ldpLoading.Show()
+        $.ajax({
+            url: '@Url.Action("CommunityTaxReportViewerPartial")',
+            data: { taxCertificateid: taxCertificateid },
+            success: function (s) {
+                ldpLoading.Hide();
+                $('#container').html(s);
+            }
+        })
+    }
+    function SearchResidentOnSelectedIndex(s, e) {
+        ResidentId.SetValue(s.GetValue()); ResidentName.SetText(s.GetText());
+    }
+</script>
+@Html.Action("gvCommunityTaxPartial")
+<div id="container"></div>

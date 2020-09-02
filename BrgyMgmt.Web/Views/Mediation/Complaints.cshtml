@@ -1,0 +1,142 @@
+﻿@{
+    ViewBag.Title = "COMPLAINTS"; ViewBag.Description = "MEDIATION";
+}
+<script>
+
+    function SearchResidentOnSelectedIndexChanged(s, e, addButton) {
+        addButton.SetEnabled(s.GetValue() > 0);
+    }
+    function AddResidentCompOnButtonClick(s, e, listBox, searchResident) {
+        //var lbItem = new ASPxClientListEditItem(){ searchResident.GetText(), searchResident.GetValue(), ''}
+        listBox.AddItem(searchResident.GetText(), searchResident.GetValue(), '');
+        searchResident.SetValue(null);
+        s.SetEnabled(searchResident.GetValue() != null);
+    }
+    function lbResidentOnSelectedIndexChanged(s, e, btnRemove) {
+        //alert(s.GetValue(s.GetItem(0)));
+        btnRemove.SetEnabled(s.GetSelectedValues() != null);
+    }
+    function btnRemoveResidentOnButtonClick(s, e, listBox) {
+        var items = listBox.GetSelectedItems();
+        for (var i = items.length - 1; i >= 0; i = i - 1) {
+            listBox.RemoveItem(items[i].index);
+        }
+
+        s.SetEnabled(listBox.GetSelectedValues() > 0);
+
+        //alert(lbResidentComplainants.GetSelectedValues().toString());
+        //alert(SearchResidentComplainants.GetText());
+
+        //lbResidentComplainants.AddItem(SearchResidentComplainants.GetText(), SearchResidentComplainants.GetValue(), '');
+
+        //SearchResidentComplainants.SetValue(null);
+        //btnAddResidentComp.SetEnabled(SearchResidentComplainants.GetValue() != null);
+    }
+    function onNextButtonClick(s, e) {
+        var indexTab = (pcComplaint.GetActiveTab()).index;
+        if (ASPxClientEdit.AreEditorsValid())
+            pcComplaint.SetActiveTab(pcComplaint.GetTab(indexTab + 1));
+    }
+    function onSaveButtonClick(s, e) {
+        if (ASPxClientEdit.AreEditorsValid()) {
+            lbResidentComplainants.SelectAll();
+            lbResidentRespondents.SelectAll();
+            lbResidentVictims.SelectAll();
+
+            //var items = lbResidentVictims.GetSelectedItems();
+
+
+            //for (var i = items.length - 1; i >= 0; i = i - 1) {
+            //    alert(items[i].index);
+            //}
+            //alert(items.Count);
+
+
+
+            gvComplaints.UpdateEdit();
+        }
+        //var items = lbResidentComplainants.GetSelectedItems();
+        //alert(items);
+    }
+
+
+    function showComplaintReportViewer(complaintId) {
+        ldpLoading.Show()
+        $.ajax({
+            url: '@Url.Action("ComplaintReportViewerPartial")',
+            data: { complaintId: complaintId },
+            success: function (s) {
+                ldpLoading.Hide();
+                $('#container').html(s);
+            }
+        })
+        }
+    function showInvitationViewer(summonId) {
+        ldpLoading.Show()
+        $.ajax({
+            url: '@Url.Action("InvitationViewerPartial")',
+            data: { summonId: summonId },
+            success: function (s) {
+                ldpLoading.Hide();
+                $('#invitation').html(s);
+            }
+        })
+    }
+
+
+
+    var inviteId;
+    function InvitationCallback(summonId) {
+        inviteId = summonId;
+        pucViewerReport.PerformCallback();
+        pucViewerReport.Show();
+    }
+    function DipslayPopupOnBeginCallback(s, e) {
+        alert(inviteId);
+        e.customArgs["summonId"] = inviteId;
+    }
+
+        function showInvitationViewerPopup(summonId) {
+        //ldpLoading.Show()
+            pucViewerReport.PerformCallback({ SummonId: summonId });
+        //ldpLoading.Hide();
+        pucViewerReport.Show();
+    }
+    function showSummonReportViewer(summonId) {
+        ldpLoading.Show()
+        $.ajax({
+            url: '@Url.Action("SummonReportViewerPartial")',
+            data: { summonId: summonId },
+            success: function (s) {
+                ldpLoading.Hide();
+                $('#summon').html(s);
+            }
+        })
+        }
+
+    function showReturnLetterViewer(summonId) {
+        @*ldpLoading.Show()
+        $.ajax({
+            url: '@Url.Action("ReturnLetterViewerPartial")',
+            data: { summonId: summonId },
+            success: function (s) {
+                ldpLoading.Hide();
+                $('#returnletter').html(s);
+            }
+        })*@
+            //ldpLoading.Show()
+            pucViewerReport.PerformCallback({ SummonId: summonId });
+            pucViewerReport.Show(summonId);
+            //ldpLoading.Hide();
+        }
+</script>
+@Html.DevExpress().LoadingPanel(settings => {
+    settings.Name = "ldpLoading";
+}).GetHtml()
+@Html.Action("gvComplaintsPartial")
+<div id="container"></div>
+<div id="summon"></div>
+<div id="invitation"></div>
+<div id="returnletter"></div>
+
+@Html.Action("ReturnViewerPartial")

@@ -1,0 +1,205 @@
+@{
+    var grid = Html.DevExpress().GridView(settings => {
+        settings.Name = "GridView";
+        settings.CallbackRouteValues = new {
+            Controller = "Home", Action = "GridViewPartial" };
+
+        settings.SettingsEditing.AddNewRowRouteValues = new { Controller = "Home", Action = "GridViewPartialAddNew" };
+        settings.SettingsEditing.UpdateRowRouteValues = new { Controller = "Home", Action = "GridViewPartialUpdate" };
+        settings.SettingsEditing.DeleteRowRouteValues = new { Controller = "Home", Action = "GridViewPartialDelete" };
+        settings.SettingsEditing.Mode = GridViewEditingMode.EditFormAndDisplayRow;
+        settings.SettingsBehavior.ConfirmDelete = true;
+        settings.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+
+
+        settings.CommandColumn.Visible = true;
+        settings.CommandColumn.ShowNewButton = true;
+        settings.CommandColumn.ShowDeleteButton = true;
+        settings.CommandColumn.ShowEditButton = true;
+
+        settings.KeyFieldName = "ResidentId";
+
+        settings.SettingsPager.Visible = true;
+        settings.Settings.ShowGroupPanel = true;
+        settings.Settings.ShowFilterRow = true;
+        settings.SettingsBehavior.AllowSelectByRowClick = true;
+
+        settings.SettingsAdaptivity.AdaptivityMode = GridViewAdaptivityMode.HideDataCells;
+        settings.SettingsAdaptivity.AdaptiveColumnPosition = GridViewAdaptiveColumnPosition.Right;
+        settings.SettingsAdaptivity.AdaptiveDetailColumnCount = 1;
+        settings.SettingsAdaptivity.AllowOnlyOneAdaptiveDetailExpanded = true;
+        settings.SettingsAdaptivity.HideDataCellsAtWindowInnerWidth = 600;
+
+        settings.Columns.Add("ResidentId");
+        settings.Columns.Add("FirstName");
+        settings.Columns.Add("LastName");
+        //settings.Columns.Add("MiddleName");
+        //settings.Columns.Add("Alias");
+        //settings.Columns.Add("Cellular");
+        //settings.Columns.Add("PhoneNumber");
+        //settings.Columns.Add("Email");
+        //settings.Columns.Add("Photo");
+        //settings.Columns.Add("HouseHoldId");
+        //settings.Columns.Add("BiometricCapture");
+        //settings.Columns.Add("FullName");
+        //settings.Columns.Add("HouseholdHead");
+        //settings.Columns.Add("RelToHouseholdHead");
+        //settings.Columns.Add("Disability");
+        //settings.Columns.Add("DisabilityKind");
+        //settings.Columns.Add("HasDisabilityCard");
+        //settings.Columns.Add("PPPP");
+        //settings.Columns.Add("PPPPYear");
+        //settings.Columns.Add("isVoter");
+        //settings.Columns.Add("VoteRegistrationLoc");
+        //settings.Columns.Add("ResidenceYears");
+        //settings.Columns.Add("BirthDate");
+        //settings.Columns.Add("Gender");
+        //settings.Columns.Add("CivilStatus");
+        //settings.Columns.Add("EthnicityId");
+        //settings.Columns.Add("ReligionId");
+        //settings.Columns.Add("EducationalAttainmentId");
+        //settings.Columns.Add("EducationStatus");
+        //settings.Columns.Add("FamilyMemberSpecialNeeds");
+        //settings.Columns.Add("Occupation");
+        //settings.Columns.Add("CertificateCommunities");
+        //settings.Columns.Add("Certificates");
+        //settings.Columns.Add("Household");
+        //settings.Columns.Add("ComplaintComplainants");
+        //settings.Columns.Add("ComplaintRespondents");
+        //settings.Columns.Add("ComplaintVictims");
+        //settings.Columns.Add("Clearances");
+
+
+
+
+
+
+
+
+
+
+
+
+
+        settings.SetEditFormTemplateContent(c => {
+            //var item = ViewData["item"] != null ? ViewData["item"] : c.DataItem;
+
+
+            //Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "First Name"; lbl.AssociatedControlName = "FirstName"; }).GetHtml();
+
+
+            //Html.DevExpress().FormLayout(fl => {
+            //    fl.Name = "FormLayout";
+            //    fl.ColumnCount = 1;
+
+            //    fl.Items.AddGroupItem(grpset => {
+            //        grpset.Caption = "Group Caption";
+            //        grpset.ShowCaption = DefaultBoolean.True;
+            //        grpset.GroupBoxDecoration = GroupBoxDecoration.Default;
+
+            //        grpset.Items.Add(itm => {
+            //            itm.NestedExtensionType = FormLayoutNestedExtensionItemType.TextBox;
+            //            itm.Name = itm.Caption = "First Name";
+            //            itm.SetNestedContent(() => {
+            //                Html.DevExpress().TextBox(tb => {
+            //                    tb.Name = "FName";
+            //                    tb.ShowModelErrors = true;
+            //                }).Bind(DataBinder.Eval(item, "FirstName")).Render();
+            //            });
+            //        });
+            //        grpset.Items.Add(itm => {
+            //            itm.NestedExtensionType = FormLayoutNestedExtensionItemType.DateEdit;
+            //            itm.Name = itm.Caption = "Birth Date";
+            //            itm.SetNestedContent(() => {
+            //                Html.DevExpress().DateEdit(tb => {
+            //                    tb.Name = "BirthDate";
+            //                    tb.ShowModelErrors = true;
+            //                }).Bind(DataBinder.Eval(item, "BirthDate")).Render();
+            //            });
+            //        });
+            //        //grpset.Items.Add(m => m.LastName);
+            //    });
+            //});
+
+
+
+            var editItem = ViewData["Item"] != null ? ViewData["Item"] : c.DataItem;
+
+
+
+            Html.DevExpress().FormLayout(set => {
+                set.Name = "FormLayout";
+                set.Items.AddGroupItem(groupSettings => {
+                    groupSettings.Caption = "ModelGroup";
+                    groupSettings.Name = "group";
+                    groupSettings.ColumnCount = 2;
+                    groupSettings.Items.Add(item => {
+                        item.NestedExtensionType = FormLayoutNestedExtensionItemType.TextBox;
+                        item.Name = item.Caption = "Name";
+                        item.SetNestedContent(() => {
+                            Html.DevExpress().TextBox(tb => {
+                                tb.Name = "FirstName";
+                                tb.ShowModelErrors = true;
+                            }).Bind(DataBinder.Eval(editItem, "FirstName")).Render();
+                        });
+                    });
+                    groupSettings.Items.Add(item => {
+                        item.NestedExtensionType = FormLayoutNestedExtensionItemType.DateEdit;
+                        item.Name = "BirthDate";  item.Caption = "Relationship To Head";
+                        item.SetNestedContent(() => {
+                            Html.DevExpress().DateEdit(tb => {
+                                tb.Name = "BirthDate";
+                                tb.ShowModelErrors = true;
+                            }).Bind(DataBinder.Eval(editItem, "BirthDate")).Render();
+                        });
+                    });
+                    groupSettings.Items.Add(item => {
+                        item.NestedExtensionType = FormLayoutNestedExtensionItemType.CheckBox;
+                        item.Name = item.Caption = "State";
+                        item.SetNestedContent(() => {
+                            Html.DevExpress().CheckBox(tb => {
+                                tb.Name = "isVoter";
+                                tb.ShowModelErrors = true;
+                            }).Bind(DataBinder.Eval(editItem, "isVoter")).Render();
+                        });
+                    });
+                });
+            }).Render();
+            Html.DevExpress().Button(
+               btnSettings => {
+                   btnSettings.Name = "btnUpdate";
+                   btnSettings.UseSubmitBehavior = false;
+                   btnSettings.Text = "Update";
+                   btnSettings.ClientSideEvents.Click = "function(s, e){ GridView.UpdateEdit(); }";
+               }
+           )
+           .Render();
+            Html.DevExpress().Button(
+                btnSettings => {
+                    btnSettings.Name = "btnCancel";
+                    btnSettings.UseSubmitBehavior = false;
+                    btnSettings.Text = "Cancel";
+                    btnSettings.ClientSideEvents.Click = "function(s, e){ GridView.CancelEdit(); }";
+                }
+            )
+            .Render();
+
+
+
+
+        });
+
+
+
+
+
+
+
+
+
+    });
+    if (ViewData["EditError"] != null){
+        grid.SetEditErrorText((string)ViewData["EditError"]);
+    }
+}
+@grid.Bind(Model).GetHtml()

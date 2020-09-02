@@ -1,0 +1,142 @@
+﻿@{
+    ViewBag.Title = "HOME"; ViewBag.Description = "DASHBOARD";
+}
+<div class="row">
+    <div class="col-12 col-sm-6 col-md-3">
+        <div class="info-box">
+            <span class="info-box-icon bg-info elevation-1"><i class="icon icon-user-add"></i></span>
+
+            <div class="info-box-content">
+                <span class="info-box-text">Residents</span>
+                <span class="info-box-number">
+                    @ViewBag.ResidentCount
+                    @*<small>%</small>*@
+                </span>
+            </div>
+            <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+    </div>
+    <!-- /.col -->
+    <div class="col-12 col-sm-6 col-md-3">
+        <div class="info-box mb-3">
+            <span class="info-box-icon bg-danger elevation-1"><i class="icon icon-users-2"></i></span>
+
+            <div class="info-box-content">
+                <span class="info-box-text">Registered Voters</span>
+                <span class="info-box-number">@ViewBag.RegisteredVoters</span>
+            </div>
+            <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+    </div>
+    <!-- /.col -->
+    <!-- fix for small devices only -->
+    <div class="clearfix hidden-md-up"></div>
+
+    <div class="col-12 col-sm-6 col-md-3">
+        <div class="info-box mb-3">
+            <span class="info-box-icon bg-success elevation-1"><i class="icon icon-balance-scale"></i></span>
+
+            <div class="info-box-content">
+                <span class="info-box-text">Pending Cases</span>
+                <span class="info-box-number">@ViewBag.PendingCases</span>
+            </div>
+            <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+    </div>
+    <!-- /.col -->
+    <div class="col-12 col-sm-6 col-md-3">
+        <div class="info-box mb-3">
+            <span class="info-box-icon bg-warning elevation-1"><i class="icon icon-users-3"></i></span>
+
+            <div class="info-box-content">
+                <span class="info-box-text">Total Households</span>
+                <span class="info-box-number">@ViewBag.Households</span>
+            </div>
+            <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+    </div>
+    <!-- /.col -->
+</div>
+<div class="row">
+    <!-- Left col -->
+    <div class="col-sm-6 col-md-4">
+        <!-- MAP & BOX PANE -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Settlements</h3>
+
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="icon icon-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-tool" data-card-widget="remove">
+                        <i class="icon icon-cancel"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body p-0">
+                @Html.Action("gvSettlementsPartial")
+            </div>
+            <!-- /.card-body -->
+        </div>
+
+    </div>
+    <!-- /.col -->
+    <!-- Mid col -->
+    <div class="col-12 col-sm-6 col-md-4">
+        <!-- MAP & BOX PANE -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Today's CTC Issuances</h3>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="icon icon-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-tool" data-card-widget="remove">
+                        <i class="icon icon-cancel"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body p-0">
+
+                @Html.Action("gvTaxPartial")
+
+            </div>
+            <!-- /.card-body -->
+        </div>
+
+    </div>
+    <!-- /.col -->
+    <!-- Right col -->
+    <div class="col-12 col-sm-6 col-md-4">
+        <!-- MAP & BOX PANE -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Today's Clearances</h3>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="icon icon-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-tool" data-card-widget="remove">
+                        <i class="icon icon-cancel"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body p-0">
+
+                @Html.Action("gvClearancesPartial")
+
+            </div>
+            <!-- /.card-body -->
+        </div>
+
+    </div>
+    <!-- /.col -->
+</div>

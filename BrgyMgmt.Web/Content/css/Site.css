@@ -1,0 +1,81 @@
+﻿.user-image{ height: 24px;}
+.hidden {
+    visibility: hidden;
+}
+
+.dxgvEditFormDisplayRow_Moderno td.dxgv, .dxgvInlineEditRow_Moderno td.dxgv,
+.dxgvDetailCell_Moderno td.dxgv, .dxgvDataRow_Moderno td.dxgv,
+.dxgvDetailRow_Moderno.dxgvADR td.dxgvAIC {
+    overflow: hidden;
+    border-top-width: 0;
+    border-left-width: 0;
+    border-bottom: 1px Solid #d1d1d1;
+    border-right: 1px Solid #d1d1d1;
+    padding: 8px 10px 9px;
+    vertical-align: top !important;
+}
+
+.dxeBinImgPreviewContainerSys, #Photo_DXImageContainer {
+    width: 100% !important;
+    height: 100% !important;
+}
+.lkey {
+    padding: 13px!important;
+}
+
+.fl {
+    float: left;
+}
+
+.fr {
+    float: right;
+}
+
+label.fl {
+    min-width: 140px;
+    min-height: 28px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    float: left;
+    font-weight: normal !important;
+    margin-bottom: .3rem;
+}
+
+checkbox.chkb {
+    clear:left;
+}
+
+.clear {
+    clear: both;
+}
+.block {
+    display: block;
+}
+
+.chk {
+    padding-bottom: 2px !important;
+    padding-top: 8px !important
+}
+
+.lblProduct {
+    font-style: italic !important;
+    font-weight: 600 !important;
+}
+
+.lblDesc {
+    font-size: 12px !important;
+}
+.pad10 {
+    padding: 10px 0px !important;
+    /*display: block;text-align: center*/
+}
+.dxeHD {
+    visibility: hidden;
+    height: 0px !important;
+}
+.margintop10 {
+    margin-top: 15px;
+}
+.dxflCaption_Moderno {
+    font-weight: normal !important;
+}

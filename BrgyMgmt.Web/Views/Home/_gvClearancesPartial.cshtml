@@ -1,0 +1,31 @@
+@{
+    var grid = Html.DevExpress().GridView(settings => {
+        settings.Name = "gvClearances";
+        settings.CallbackRouteValues = new { Controller = "Home", Action = "gvClearancesPartial" };
+        settings.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+
+        settings.KeyFieldName = "ClearanceId";
+
+        settings.SettingsPager.Visible = true;
+        settings.Settings.ShowGroupPanel = false;
+        settings.Settings.ShowFilterRow = false;
+        settings.SettingsBehavior.AllowSelectByRowClick = true;
+
+        settings.SettingsAdaptivity.AdaptivityMode = GridViewAdaptivityMode.Off;
+        settings.SettingsAdaptivity.AdaptiveColumnPosition = GridViewAdaptiveColumnPosition.Right;
+        settings.SettingsAdaptivity.AdaptiveDetailColumnCount = 1;
+        settings.SettingsAdaptivity.AllowOnlyOneAdaptiveDetailExpanded = false;
+        settings.SettingsAdaptivity.HideDataCellsAtWindowInnerWidth = 0;
+
+        settings.Columns.Add("ClearanceId").Caption = "ID";
+        settings.Columns.Add("Resident.FullName");
+        settings.Columns.Add("ORNumber");
+        settings.Columns.Add(col => { col.FieldName = "Amount"; col.Caption = "Amount"; col.Width = 80; col.PropertiesEdit.DisplayFormatString = "c"; });
+
+
+    });
+    if (ViewData["EditError"] != null) {
+        grid.SetEditErrorText((string)ViewData["EditError"]);
+    }
+}
+@grid.Bind(Model).GetHtml()

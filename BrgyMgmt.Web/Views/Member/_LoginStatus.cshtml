@@ -1,0 +1,18 @@
+﻿@using BrgyMgmt.Web.Models
+@model LoginStatusModel
+
+    <li class="nav-item dropdown">
+        <a class="nav-link" data-toggle="dropdown" href="#">
+            @Html.DevExpress().BinaryImageFor(m => m.Photo, set => { set.Name = "Thumb"; set.ControlStyle.CssClass = "user-image img-circle"; }).GetHtml()
+            @*<i class="far fa-bell"></i>
+        <span class="badge badge-warning navbar-badge">15</span>*@
+        </a>
+        <div class="dropdown-menu dropdown-menu-lg-right">
+            @using (Html.BeginForm("logoff", "security", FormMethod.Post, new { id = "logoutForm" })) {
+                @Html.AntiForgeryToken()
+                <a href="javascript:document.getElementById('logoutForm').submit()" class="dropdown-item">Sign out</a>
+            }
+        </div>
+    </li>
+
+

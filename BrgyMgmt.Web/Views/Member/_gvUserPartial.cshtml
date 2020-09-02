@@ -1,0 +1,366 @@
+@using BrgyMgmt.Web.Models;
+@{
+    var grid = Html.DevExpress().GridView(settings => {
+        settings.Name = "gvUser";
+        settings.CallbackRouteValues = new { Controller = "Member", Action = "gvUserPartial" };
+
+        settings.SettingsEditing.AddNewRowRouteValues = new { Controller = "Member", Action = "gvUserPartialAddNew" };
+        settings.SettingsEditing.UpdateRowRouteValues = new { Controller = "Member", Action = "gvUserPartialUpdate" };
+        settings.SettingsEditing.DeleteRowRouteValues = new { Controller = "Member", Action = "gvUserPartialDelete" };
+        settings.SettingsEditing.Mode = GridViewEditingMode.EditFormAndDisplayRow;
+        settings.SettingsBehavior.ConfirmDelete = true;
+
+        settings.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+
+        settings.CommandColumn.ShowClearFilterButton = true;
+        settings.CommandColumn.Visible = true;
+        settings.CommandColumn.ShowDeleteButton = User.IsInRole("Administrator") || User.IsInRole("SA");
+        settings.CommandColumn.ShowEditButton = true;
+        settings.CommandColumn.ShowNewButtonInHeader = true;
+        settings.SettingsPager.PageSize = 15;
+        settings.SettingsPager.NumericButtonCount = 6;
+
+        settings.KeyFieldName = "Id";
+
+        settings.SettingsPager.Visible = true;
+        settings.Settings.ShowGroupPanel = false;
+        settings.Settings.ShowFilterRow = true;
+        settings.SettingsBehavior.AllowSelectByRowClick = true;
+
+        settings.SettingsAdaptivity.AdaptivityMode = GridViewAdaptivityMode.HideDataCells;
+        settings.SettingsAdaptivity.AdaptiveColumnPosition = GridViewAdaptiveColumnPosition.Right;
+        settings.SettingsAdaptivity.AdaptiveDetailColumnCount = 1;
+        settings.SettingsAdaptivity.AllowOnlyOneAdaptiveDetailExpanded = true;
+        settings.SettingsAdaptivity.HideDataCellsAtWindowInnerWidth = 300;
+
+        settings.Columns.Add(set => {
+            set.FieldName = "Email"; set.Caption = "User Name | Email";
+            //set.AdaptivePriority = 1;
+            set.CellStyle.CssClass = "customGridCells";
+            set.Width = System.Web.UI.WebControls.Unit.Pixel(80);
+            set.SortOrder = DevExpress.Data.ColumnSortOrder.Ascending;
+        });
+
+        settings.Columns.Add(column => {
+            column.UnboundType = DevExpress.Data.UnboundColumnType.String;
+            column.FieldName = "Name";
+            column.ReadOnly = true;
+            column.Settings.ShowEditorInBatchEditMode = false;
+
+        });
+        //settings.CustomUnboundColumnData = (sender, e) => {
+        //    if (e.Column.FieldName == "FullName") {
+        //        e.Value = e.GetListSourceFieldValue("FirstName") + " " + e.GetListSourceFieldValue("LastName");
+
+        //        //decimal price = Convert.ToDecimal(e.GetListSourceFieldValue("Price"));
+        //        //int quantity = Convert.ToInt32(e.GetListSourceFieldValue("Quantity"));
+        //        //e.Value = price * quantity;
+        //    }
+        //};
+
+        //settings.Columns.Add(set => {
+        //    set.FieldName = "Client.ClientName"; set.Caption = "Client";
+        //    //set.AdaptivePriority = 1;
+        //    set.Width = System.Web.UI.WebControls.Unit.Pixel(200);
+        //});
+
+        settings.Columns.Add("PhoneNumber");
+        settings.Columns.Add(c => {
+            c.FieldName = "Roles";
+            c.UnboundType = DevExpress.Data.UnboundColumnType.Object;
+        });
+        settings.InitNewRow = (s, e) => {
+            e.NewValues["AccessFailedCount"] = 0;
+        };
+
+        settings.CustomUnboundColumnData = (s, e) => {
+            if (e.Column.FieldName == "Roles") {
+                IList<UserRole> roles = ((HashSet<UserRole>)e.GetListSourceFieldValue("UserRoles")).ToList();
+                if (roles != null && roles.Count > 0) {
+                    var res = "";
+                    foreach (UserRole role in roles) {
+                        res += role.Name + ", ";
+                    }
+                    e.Value = res.Substring(0, res.Length - 2);
+                }
+            }
+            if (e.Column.FieldName == "Name") {
+                e.Value = e.GetListSourceFieldValue("FirstName") + " " + e.GetListSourceFieldValue("LastName");
+
+                //decimal price = Convert.ToDecimal(e.GetListSourceFieldValue("Price"));
+                //int quantity = Convert.ToInt32(e.GetListSourceFieldValue("Quantity"));
+                //e.Value = price * quantity;
+            }
+        };
+
+
+
+        //settings.Columns.Add("BirthDate").PropertiesEdit.DisplayFormatString = "d";
+
+
+        settings.SetEditFormTemplateContent(c => {
+            var item = ViewData["item"] != null ? ViewData["item"] : c.DataItem;
+            //ViewData["CoverageContacts"] = DataBinder.Eval(item, "ContactsInCoverage");
+            //ViewData["ClientId"] = DataBinder.Eval(item, "ClientId");
+
+
+            ViewContext.Writer.Write("<div class=\"editform col-md-4\" style='float:left;'>");
+            Html.DevExpress().TextBox(cfg => {
+                cfg.Name = "FirstName";
+                cfg.ShowModelErrors = true;
+                cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                cfg.Properties.ValidationSettings.RequiredField.IsRequired = true;
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+                cfg.Properties.NullText = "First Name";
+            }).Bind(DataBinder.Eval(item, "FirstName")).Render();
+            Html.DevExpress().TextBox(cfg => {
+                cfg.Name = "LastName";
+                cfg.ShowModelErrors = true;
+                cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                cfg.Properties.ValidationSettings.RequiredField.IsRequired = true;
+                cfg.Properties.NullDisplayText = "Last Name"; cfg.Properties.NullText = "Last Name";
+            }).Bind(DataBinder.Eval(item, "LastName")).Render();
+            //Html.DevExpress().TextBox(cfg => {
+            //    cfg.Name = "MiddleName";
+            //    cfg.ShowModelErrors = true;
+            //    cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+            //    cfg.Properties.NullDisplayText = "Middle Name"; cfg.Properties.NullText = "Middle Name";
+            //}).Bind(DataBinder.Eval(item, "MiddleName")).Render();
+
+            //Html.DevExpress().RadioButtonList(rbSettings => {
+            //    rbSettings.Name = "Gender";
+            //    rbSettings.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+            //    rbSettings.Properties.RepeatColumns = 2;
+            //    rbSettings.Properties.RepeatDirection = System.Web.UI.WebControls.RepeatDirection.Horizontal;
+            //}).BindList(Enum.GetValues(typeof(DARC.Web.Repository.Gender)).Cast<DARC.Web.Repository.Gender>()).Bind(DataBinder.Eval(item, "Gender")).GetHtml();
+            //Html.DevExpress().DateEdit(cfg => {
+            //    cfg.Name = "BirthDate";
+            //    cfg.Properties.EditFormat = EditFormat.DateTime;
+            //    cfg.ShowModelErrors = true;
+            //    cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+            //    cfg.Properties.NullText = "Birth Date";
+            //    cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+            //}).Bind(DataBinder.Eval(item, "BirthDate")).GetHtml();
+
+            //Html.DevExpress().ComboBox(cmbCivilStatus => {
+            //    cmbCivilStatus.Name = "CivilStatus";
+            //    cmbCivilStatus.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+            //    cmbCivilStatus.Properties.DropDownRows = 3;
+            //    cmbCivilStatus.Properties.IncrementalFilteringMode = IncrementalFilteringMode.None;
+            //    cmbCivilStatus.Properties.DropDownStyle = DropDownStyle.DropDownList;
+            //}).BindList(Enum.GetValues(typeof(DARC.Web.Repository.CivilStatus)).Cast<DARC.Web.Repository.CivilStatus>()).Bind(DataBinder.Eval(item, "CivilStatus")).GetHtml();
+
+            //Html.DevExpress().TextBox(cfg => {
+            //    cfg.Name = "Nationality";
+            //    cfg.ShowModelErrors = true;
+            //    cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+            //    cfg.Properties.NullDisplayText = "Nationality"; cfg.Properties.NullText = "Nationality";
+            //}).Bind(DataBinder.Eval(item, "Nationality")).Render();
+            //Html.DevExpress().TextBox(cfg => {
+            //    cfg.Name = "Religion";
+            //    cfg.ShowModelErrors = true;
+            //    cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+            //    cfg.Properties.NullDisplayText = "Religion"; cfg.Properties.NullText = "Religion";
+            //}).Bind(DataBinder.Eval(item, "Religion")).Render();
+
+            Html.DevExpress().TextBox(set => {
+                set.Name = "PhoneNumber";
+                set.Properties.MaskSettings.Mask = "(999) 000-0000";
+                set.Properties.MaskSettings.IncludeLiterals = MaskIncludeLiteralsMode.None;
+                set.Properties.NullText = "Phone"; set.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+            }).Bind(DataBinder.Eval(item, "PhoneNumber")).Render();
+            //Html.DevExpress().Memo(cfg => {
+            //    cfg.Name = "FullAddress";
+            //    cfg.Height = System.Web.UI.WebControls.Unit.Pixel(260);
+            //    cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+            //    cfg.Properties.NullDisplayText = "Full Address"; cfg.Properties.NullText = "Full Address";
+            //}).Bind(DataBinder.Eval(item, "FullAddress")).Render();
+
+            ViewContext.Writer.Write("</div>");
+            ViewContext.Writer.Write("<div class=\"editform col-md-4\" style='float:left;'>");
+
+            //Html.DevExpress().ComboBox(set => {
+            //    set.Name = "DepartmentId";
+            //    set.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+            //    set.Properties.ValueField = "Id";
+            //    set.Properties.TextField = "Name";
+            //    set.Properties.ValueType = typeof(Int32);
+            //    set.Properties.DropDownRows = 4;
+            //    set.Properties.IncrementalFilteringMode = IncrementalFilteringMode.Contains;
+            //    set.Properties.DropDownStyle = DropDownStyle.DropDown;
+            //    set.Properties.NullDisplayText = "Department"; set.Properties.NullText = "Department";
+            //}).BindList(ViewBag.Departments).Bind(DataBinder.Eval(item, "DepartmentId")).GetHtml();
+
+            //Html.DevExpress().ComboBox(set => {
+            //    set.Name = "PositionId";
+            //    set.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+            //    set.Properties.ValueField = "Id";
+            //    set.Properties.TextField = "Name";
+            //    set.Properties.ValueType = typeof(Int32);
+            //    set.Properties.DropDownRows = 4;
+            //    set.Properties.IncrementalFilteringMode = IncrementalFilteringMode.Contains;
+            //    set.Properties.DropDownStyle = DropDownStyle.DropDown;
+            //    set.Properties.NullDisplayText = "Position"; set.Properties.NullText = "Position";
+            //}).BindList(ViewBag.Positions)
+            //        .Bind(DataBinder.Eval(item, "PositionId")).GetHtml();
+
+            //Html.DevExpress().CheckBox(isSupervisor => {
+            //    isSupervisor.Name = "isSupervisor";
+            //    isSupervisor.Checked = Convert.ToBoolean(DataBinder.Eval(item, "isSupervisor"));
+            //    isSupervisor.Text = "Supervisor";
+            //}).Bind(DataBinder.Eval(item, "isSupervisor")).Render();
+
+            //Html.DevExpress().TokenBox(set => {
+            //    set.Name = "Supervisors";
+            //    set.Properties.AllowCustomTokens = false;
+            //    set.Properties.ShowDropDownOnFocus = ShowDropDownOnFocusMode.Always;
+            //    set.Properties.IncrementalFilteringMode = IncrementalFilteringMode.Contains;
+            //    set.Properties.ValueField = "Id";
+            //    set.Properties.TextField = "Name";
+            //    set.Properties.ItemValueType = typeof(Guid);
+            //    set.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+            //    set.Properties.NullDisplayText = "Supervisors"; set.Properties.NullText = "Supervisors";
+            //}).BindList(ViewBag.Supervisors)
+            //.Bind(DataBinder.Eval(item, "Supervisors")).GetHtml();
+
+            //Html.DevExpress().TokenBox(set => {
+            //    set.Name = "Territories";
+            //    set.Properties.AllowCustomTokens = false;
+            //    set.Properties.ShowDropDownOnFocus = ShowDropDownOnFocusMode.Always;
+            //    set.Properties.IncrementalFilteringMode = IncrementalFilteringMode.Contains;
+            //    set.Properties.ValueField = "Id";
+            //    set.Properties.TextField = "Name";
+            //    set.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+            //    set.Properties.NullDisplayText = "Territories"; set.Properties.NullText = "Territories";
+            //}).BindList(ViewBag.Territories)
+            //.Bind(DataBinder.Eval(item, "Territories")).GetHtml();
+
+            using (Html.BeginForm()) {
+                Html.DevExpress().BinaryImage(im => {
+                    im.Name = "Photo";
+                    //im.ColumnType = MVCxGridViewColumnType.BinaryImage;
+                    //im.Properties.ImageHeight
+                    //im.Properties.ImageWidth = System.Web.UI.WebControls.Unit.Pixel(260);
+                    im.Height = System.Web.UI.WebControls.Unit.Pixel(260);
+                    im.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                    //im.Properties.EnableServerResize = true;
+                    im.Properties.ImageSizeMode = ImageSizeMode.FillAndCrop;
+                    im.CallbackRouteValues = new { Action = "BinaryImageColumnPhotoUpdate", Controller = "Member" };
+                    //im.CallbackRouteValues
+                    im.Properties.EditingSettings.Enabled = true;
+                    im.Properties.EditingSettings.UploadSettings.UploadValidationSettings.MaxFileSize = 4194304;
+                }).Bind(DataBinder.Eval(item, "Photo")).GetHtml();
+            }
+
+            //using (Html.BeginForm()) {
+            //    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Photo:"; lbl.AssociatedControlName = "Photo"; }).GetHtml();
+            //    Html.DevExpress().BinaryImage(im => {
+            //        im.Name = "Photo";
+            //        im.Height = System.Web.UI.WebControls.Unit.Pixel(170);
+            //        im.Width = System.Web.UI.WebControls.Unit.Pixel(170);
+            //        im.Properties.ImageSizeMode = ImageSizeMode.FillAndCrop;
+            //        im.CallbackRouteValues = new { Action = "BinaryImageColumnPhotoUpdate", Controller = "Resident" };
+            //        //im.CallbackRouteValues
+            //        im.Properties.EditingSettings.Enabled = true;
+            //        im.Properties.EditingSettings.UploadSettings.UploadValidationSettings.MaxFileSize = 4194304;
+            //    }).Bind(DataBinder.Eval(item, "Photo")).Render();
+            //}
+
+
+            ViewContext.Writer.Write("</div>");
+            ViewContext.Writer.Write("<div class=\"editform col-md-4\" style='float:left;'>");
+            Html.DevExpress().TextBox( cfg => {
+                cfg.Name = "Email";
+                cfg.ShowModelErrors = true;
+                cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                cfg.Properties.NullDisplayText = "Email | UserName"; cfg.Properties.NullText = "Email | UserName";
+            }).Bind(DataBinder.Eval(item, "Email")).Render();
+            Html.DevExpress().TextBox(cfg => {
+                cfg.Name = "Password";
+                cfg.ShowModelErrors = true;
+                cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                cfg.ClientVisible = c.Grid.IsNewRowEditing;
+                cfg.Properties.Password = true;
+                cfg.Properties.NullDisplayText = "Password"; cfg.Properties.NullText = "Password";
+            }).Render();
+
+            Html.DevExpress().CheckBoxList(cbl => {
+                cbl.Name = "UserRolesValues";
+                cbl.Properties.ValueField = "Name";
+                cbl.Properties.TextField = "Name";
+                //cbl.Properties.ValueType = typeof(string);
+                cbl.Properties.RepeatLayout = System.Web.UI.WebControls.RepeatLayout.Table;
+                cbl.Properties.RepeatDirection = System.Web.UI.WebControls.RepeatDirection.Vertical;
+                cbl.Properties.RepeatColumns = 1;
+                cbl.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                cbl.PreRender = (sender, e) => {
+                    if (DataBinder.Eval(item, "UserRoles") != null) {
+                        var uRoles = ((HashSet<UserRole>)DataBinder.Eval(item, "UserRoles")).ToList();
+
+                        string sRoles = "";
+                        foreach (var uRole in uRoles) {
+                            sRoles = sRoles + uRole.Name + ", ";
+                        }
+                        sRoles = !string.IsNullOrEmpty(sRoles) ? sRoles.Substring(0, sRoles.Length - 2) : sRoles;
+
+                        ASPxCheckBoxList cblb = (ASPxCheckBoxList)sender;
+                        foreach (ListEditItem listItem in cblb.Items) {
+                            listItem.Selected = sRoles.Contains((string)listItem.Text);
+                        }
+                    }
+                };
+            }).BindList(ViewData["AllRoles"]).GetHtml();
+            Html.DevExpress().DateEdit(cfg => {
+                cfg.Name = "LockoutEndDateUtc";
+                cfg.Properties.EditFormat = EditFormat.DateTime;
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+                cfg.Properties.NullText = "Locked Until";
+                cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+            }).Bind(DataBinder.Eval(item, "LockoutEndDateUtc")).GetHtml();
+            Html.DevExpress().SpinEdit(cfg => {
+                cfg.Name = "AccessFailedCount"; cfg.ToolTip = "Failed Logins";
+                cfg.ShowModelErrors = true;
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+                cfg.Properties.NullText = "Failed Logins";
+                cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+            }).Bind(DataBinder.Eval(item, "AccessFailedCount")).GetHtml();
+
+
+            Html.DevExpress().TextBox(cfg => {
+                cfg.Name = "NewPassword";
+                cfg.ShowModelErrors = true;
+                cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                cfg.Properties.NullDisplayText = "New Password"; cfg.Properties.NullText = "New Password";
+            }).Render();
+
+
+
+            ViewContext.Writer.Write("</div>");
+            ViewContext.Writer.Write("<div class=\"editform col-md-12\" style='float:left; padding-top:20px;'>");
+
+            Html.DevExpress().Button(
+                btnSettings => {
+                    btnSettings.Name = "btnUpdate";
+                    btnSettings.Text = "Update";
+                    btnSettings.ClientSideEvents.Click = "function(s, e){ if (ASPxClientEdit.AreEditorsValid()) gvUser.UpdateEdit(); }";
+                }).Render();
+            Html.DevExpress().Button(
+                btnSettings => {
+                    btnSettings.Name = "btnCancel";
+                    btnSettings.Text = "Cancel";
+                    btnSettings.Style[HtmlTextWriterStyle.MarginLeft] = "5px";
+                    btnSettings.ClientSideEvents.Click = "function(s, e){ gvUser.CancelEdit(); }";
+                }).Render();
+            ViewContext.Writer.Write("</div>");
+
+        });
+
+
+    });
+    if (ViewData["EditError"] != null){
+        grid.SetEditErrorText((string)ViewData["EditError"]);
+    }
+}
+@grid.BindToEF(string.Empty, string.Empty, (s, e) => {
+    e.KeyExpression = "Id"; e.QueryableSource = Model;
+}).GetHtml()

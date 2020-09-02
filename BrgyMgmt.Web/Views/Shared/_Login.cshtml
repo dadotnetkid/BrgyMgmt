@@ -1,0 +1,37 @@
+﻿
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Login</title>
+    @Styles.Render("~/bundles/css")
+
+    @Html.DevExpress().GetStyleSheets(
+        new StyleSheet { ExtensionSuite = ExtensionSuite.NavigationAndLayout },
+        new StyleSheet { ExtensionSuite = ExtensionSuite.Editors }
+    )
+    @Html.DevExpress().GetScripts(
+        new Script { ExtensionSuite = ExtensionSuite.NavigationAndLayout },
+        new Script { ExtensionSuite = ExtensionSuite.Editors }
+    )
+
+    @Scripts.Render("~/bundles/js")
+</head>
+<body class="hold-transition login-page">
+    <div class="login-box">
+        <div class="login-logo">
+            <img src="~/Content/img/logo-begin.png" />
+            @*<a href="../../index2.html"><b>Admin</b>LTE</a>*@
+        </div>
+        <!-- /.login-logo -->
+        <section>
+            @RenderBody()
+        </section>
+        <!-- /.login-box-body -->
+    </div>
+    <!-- /.login-box -->
+    @RenderSection("scripts", required: false)
+</body>
+</html>

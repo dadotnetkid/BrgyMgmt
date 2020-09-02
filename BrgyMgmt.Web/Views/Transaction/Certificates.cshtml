@@ -1,0 +1,42 @@
+﻿@{
+    ViewBag.Title = "CERTIFICATES"; ViewBag.Description = "TRANSACTIONS";
+}
+
+@Html.DevExpress().LoadingPanel(settings => {
+    settings.Name = "ldpLoading";
+}).GetHtml()
+<script>
+    function showCertificateReportViewer(certificateId) {
+        ldpLoading.Show()
+        $.ajax({
+            url: '@Url.Action("CertificateReportViewerPartial")',
+            data: { certificateId: certificateId },
+            success: function (s) {
+                ldpLoading.Hide();
+                $('#container').html(s);
+            }
+        })
+    }
+
+    function SearchResidentOnSelectedIndex(s, e) {
+        ResidentId.SetValue(s.GetValue()); ResidentName.SetText(s.GetText());
+        TemplateName.PerformCallback({ residentId: s.GetValue() });
+    }
+    function SaveCertificate(s, e) {
+        if (ResidentId.GetValue() == null) {
+            alert("Please select/search for a Resident.");
+            e.cancel = true;
+        } else
+            if (ASPxClientEdit.AreEditorsValid()) {
+                gvCertificates.UpdateEdit();
+            }
+    }
+    function PreventLetters(s, e) {
+        if (!((e.htmlEvent.keyCode >= 96 && e.htmlEvent.keyCode <= 105) || (e.htmlEvent.keyCode >= 48 && e.htmlEvent.keyCode <= 57)))
+            ASPxClientUtils.PreventEventAndBubble(e.htmlEvent);
+    }  
+</script>
+@Html.Action("gvCertificatesPartial")
+<div id="container"></div>
+
+

@@ -1,0 +1,28 @@
+@{
+    var grid = Html.DevExpress().GridView(settings => {
+        settings.Name = "gvTax";
+        settings.CallbackRouteValues = new { Controller = "Home", Action = "gvTaxPartial" };
+        settings.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+
+
+        settings.KeyFieldName = "TaxCertificateId";
+
+        settings.SettingsPager.Visible = false;
+        settings.Settings.ShowGroupPanel = false;
+        settings.Settings.ShowFilterRow = false;
+        settings.SettingsBehavior.AllowSelectByRowClick = false;
+
+        settings.SettingsAdaptivity.AdaptivityMode = GridViewAdaptivityMode.Off;
+        settings.SettingsAdaptivity.AdaptiveColumnPosition = GridViewAdaptiveColumnPosition.Right;
+        settings.SettingsAdaptivity.AdaptiveDetailColumnCount = 1;
+        settings.SettingsAdaptivity.AllowOnlyOneAdaptiveDetailExpanded = false;
+        settings.SettingsAdaptivity.HideDataCellsAtWindowInnerWidth = 0;
+
+
+        settings.Columns.Add("TaxCertificateId").Caption = "CTC";
+        settings.Columns.Add("Resident.FullName").Caption = "Name";
+        settings.Columns.Add(col => { col.FieldName = "AmountPaid"; col.Caption = "Amount"; col.Width = 80; col.PropertiesEdit.DisplayFormatString = "c"; });
+
+    });
+}
+@grid.Bind(Model).GetHtml()

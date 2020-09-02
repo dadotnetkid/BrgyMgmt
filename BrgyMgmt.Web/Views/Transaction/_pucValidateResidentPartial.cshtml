@@ -1,0 +1,24 @@
+@Html.DevExpress().PopupControl(puc => {
+    puc.Name = "pucValidateResident";
+    puc.CallbackRouteValues = new { Controller = "Transaction", Action = "pucValidateResidentPartial" };
+    puc.ClientSideEvents.CloseUp = "function (s,e){ ResidentId.SetValue(null); ResidentName.SetValue(null); SearchResident.SetValue(null)}";
+    puc.ClientSideEvents.EndCallback = "pucValidateResidentEndCallback";
+    puc.AllowResize = true; puc.Width = System.Web.UI.WebControls.Unit.Pixel(300);
+    puc.PopupHorizontalAlign = PopupHorizontalAlign.WindowCenter; puc.PopupVerticalAlign = PopupVerticalAlign.WindowCenter;
+
+    puc.AllowResize = false;
+    puc.ShowHeader = true;
+    puc.ShowOnPageLoad = false;
+    puc.AllowDragging = false;
+    puc.CloseAction = CloseAction.CloseButton;
+    puc.CloseOnEscape = true;
+    puc.Modal = true;
+    puc.HeaderText = "Alert";
+    puc.SetContent(() => {
+        Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = ViewBag.AlertMessage; lbl.AssociatedControlName = "ResidentId"; }).GetHtml();
+        Html.DevExpress().TextBox(cfg => { cfg.ClientVisible = false; cfg.Name = "tb"; cfg.Text = @ViewBag.HasCase; }).GetHtml();
+
+
+    });
+}).GetHtml()
+

@@ -1,0 +1,130 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        @if (!string.IsNullOrWhiteSpace(ViewBag.Title)) {
+            @ViewBag.Title@: -
+        }
+        Barangay Runruno Transaction Management System
+    </title>
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+    <link href="~/Content/css/fontello/fontello.css" rel="stylesheet" />
+    @Styles.Render("~/bundles/css")
+
+    @Html.DevExpress().GetStyleSheets(
+        new StyleSheet { ExtensionSuite = ExtensionSuite.NavigationAndLayout },
+        new StyleSheet { ExtensionSuite = ExtensionSuite.Report },
+        new StyleSheet { ExtensionSuite = ExtensionSuite.Editors },
+        new StyleSheet { ExtensionSuite = ExtensionSuite.RichEdit }
+    )
+    @Html.DevExpress().GetScripts(
+        new Script { ExtensionSuite = ExtensionSuite.NavigationAndLayout },
+        new Script { ExtensionSuite = ExtensionSuite.Report },
+        new Script { ExtensionSuite = ExtensionSuite.Editors },
+        new Script { ExtensionSuite = ExtensionSuite.RichEdit }
+    )
+
+
+    @Scripts.Render("~/bundles/js")
+
+</head>
+<body class="hold-transition sidebar-mini layout-fixed text-sm">
+    <div class="wrapper">
+        <!-- Navbar -->
+        @Html.Partial("_Navbar")
+        <!-- /.navbar -->
+        <!-- Main Sidebar Container -->
+        <aside class="main-sidebar sidebar-dark-lightblue" elevation-4">
+            <!-- Brand Logo -->
+            <a href="" class="brand-link">
+                <img src="~/content/img/logo-begin-header.png" alt="brgy-mgmt logo" class="brand-image img-circle elevation-3">
+                <span class="brand-text font-weight-normal h5">BEGIN</span>
+            </a>
+
+            <!-- Sidebar -->
+            @Html.Partial("_LeftSidebar")
+
+            <!-- /.sidebar -->
+        </aside>
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            <div class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <h1 class="m-0 text-dark" style="float:left; padding-right: 10px;">@ViewBag.Title</h1> <span>@ViewBag.Description</span>
+                        </div><!-- /.col -->
+                        <div class="col-sm-6">
+                            <ol class="breadcrumb float-sm-right">
+                                <li class="breadcrumb-item"><a href="#">@ViewBag.Description</a></li>
+                                <li class="breadcrumb-item active">@ViewBag.Title</li>
+                            </ol>
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                </div><!-- /.container-fluid -->
+            </div>
+            <!-- /.content-header -->
+            <!-- Main content -->
+            <section class="content">
+                <div class="container-fluid">
+                    @RenderBody()
+
+
+
+                </div>
+            </section>
+            <!-- /.content -->
+        </div>
+
+        <footer class="main-footer">
+            <strong>Copyright &copy; @DateTime.Now.Year <a href="https://techstatic.asia">TECHSTATIC IT Solutions</a>.</strong>
+            All rights reserved.
+            <div class="float-right d-none d-sm-inline-block">
+                <b>Version</b> 3.0.5
+            </div>
+        </footer>
+
+        <!-- Control Sidebar -->
+        <aside class="control-sidebar control-sidebar-dark">
+            <!-- Control sidebar content goes here -->
+        </aside>
+        <!-- /.control-sidebar -->
+    </div>
+
+
+
+    @*<div class="navbar navbar-inverse navbar-fixed-top">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                    </div>
+                    <div class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav">
+                            <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                            <li>@Html.ActionLink("About", "About", "Home")</li>
+                            <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                        </ul>
+                        @Html.Partial("_LoginPartial")
+                    </div>
+                </div>
+            </div>
+        <div class="container body-content">
+            <hr />
+            <footer>
+                <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+            </footer>
+        </div>*@
+
+    @*@Scripts.Render("~/bundles/jquery")
+        @RenderSection("scripts", required: false)*@
+    <script src="~/Content/js/demo.js"></script>
+</body>
+</html>

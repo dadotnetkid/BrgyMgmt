@@ -1,0 +1,82 @@
+﻿@{
+    ViewBag.Title = "CERTIFICATES"; ViewBag.Description = "TRANSACTIONS";
+}
+
+@Html.DevExpress().LoadingPanel(settings => {
+    settings.Name = "ldpLoading";
+}).GetHtml()
+<script>
+    function showClearanceReportViewer(clearanceId) {
+        ldpLoading.Show()
+        $.ajax({
+            url: '@Url.Action("ClearanceReportViewerPartial")',
+            data: { clearanceId: clearanceId },
+            success: function (s) {
+                ldpLoading.Hide();
+                $('#container').html(s);
+            }
+        })
+    }
+    function SearchResidentOnSelectedIndex(s, e) {
+        if (document.getElementById('gvClearances')) {
+            pucValidateResident.PerformCallback({ residentId: s.GetValue() });
+        } else {
+            //ResidentId.SetValue(s.GetValue()); ResidentName.SetText(s.GetText());
+        }
+        ResidentId.SetValue(s.GetValue()); ResidentName.SetText(s.GetText());
+        //
+        ////alert(source);
+        @*if ('@ViewBag.Source' == "Clearance") {
+
+        }*@
+
+
+        //
+
+        //if (hasAlert == 0) {
+        //    pucValidateResident.Show();
+        //}
+
+        //
+        //ResidentId.SetValue(s.GetValue()); ResidentName.SetValue(s.GetValue());
+
+        }
+    function pucValidateResidentEndCallback(s, e) {
+        //alert(tb.GetValue());
+        if (tb.GetValue() == "True") {
+            pucValidateResident.Show();
+            //ResidentId.SetValue(null); ResidentName.SetValue(null); SearchResident.SetValue(null);
+        }
+    }
+    function SearchResidentBeginCallback(s, e) {
+        //alert('callback began');
+        //ResidentId.SetValue(s.GetValue()); ResidentName.SetValue(s.GetValue());
+        //ResidentId.SetValue(s.GetValue()); ResidentName.SetValue(s.GetValue());
+        //TemplateName.PerformCallback({ residentId: s.GetValue() });
+        }
+
+    function SaveClearance(s, e) {
+        if (ResidentId.GetValue() == null) {
+            alert("Please select/search for a Resident.");
+            e.cancel = true;
+        } else
+            if (ASPxClientEdit.AreEditorsValid()) {
+                gvClearances.UpdateEdit();
+            }
+    }
+    function PreventLetters(s, e) {
+        if (!((e.htmlEvent.keyCode >= 96 && e.htmlEvent.keyCode <= 105) || (e.htmlEvent.keyCode >= 48 && e.htmlEvent.keyCode <= 57)))
+            ASPxClientUtils.PreventEventAndBubble(e.htmlEvent);
+    }
+    </script>
+
+
+@Html.Action("gvClearancesPartial")
+
+
+
+<div id="container"></div>
+
+@Html.Partial("_pucValidateResidentPartial")
+
+

@@ -1,0 +1,17 @@
+@using BrgyMgmt.Web.Services
+@Html.DevExpress().ComboBox(cmb => {
+    cmb.Name = "SearchRespondents";
+    cmb.Properties.IncrementalFilteringMode = IncrementalFilteringMode.StartsWith;
+    cmb.Properties.DropDownStyle = DropDownStyle.DropDown;
+    cmb.CallbackRouteValues = new { Controller = "Mediation", Action = "cmbRespondentsPartial" };
+    cmb.Properties.CallbackPageSize = 50;
+    cmb.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+    cmb.Properties.DropDownRows = 4;
+    cmb.Properties.DropDownButton.Visible = false;
+    cmb.Properties.IncrementalFilteringMode = IncrementalFilteringMode.Contains;
+    cmb.Properties.NullText = "(Start Typing...)";
+    cmb.Properties.ValueField = "Id";
+    cmb.Properties.TextField = "Name";
+    cmb.Properties.ValueType = typeof(string);
+    cmb.Properties.ClientSideEvents.SelectedIndexChanged = string.Format("function(s, e){{ SearchResidentOnSelectedIndexChanged(s, e, {0}); }}", "btnAddResidentResp");
+}).BindList(ResidentServices.GetResidentRange, ResidentServices.GetResidentByID).GetHtml()

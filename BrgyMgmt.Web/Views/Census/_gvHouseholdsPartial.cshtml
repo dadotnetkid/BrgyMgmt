@@ -1,0 +1,832 @@
+@using BrgyMgmt.Web.Services
+@{
+    var grid = Html.DevExpress().GridView(settings => {
+        settings.Name = "gvHouseholds";
+        settings.CallbackRouteValues = new { Controller = "Census", Action = "gvHouseholdsPartial" };
+
+        settings.SettingsEditing.AddNewRowRouteValues = new { Controller = "Census", Action = "gvHouseholdsPartialAddNew" };
+        settings.SettingsEditing.UpdateRowRouteValues = new { Controller = "Census", Action = "gvHouseholdsPartialUpdate" };
+        settings.SettingsEditing.DeleteRowRouteValues = new { Controller = "Census", Action = "gvHouseholdsPartialDelete" };
+        settings.SettingsEditing.Mode = GridViewEditingMode.EditFormAndDisplayRow;
+
+        settings.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+        settings.SettingsDetail.AllowOnlyOneMasterRowExpanded = true;
+        settings.SettingsDetail.ShowDetailRow = true;
+
+        settings.CommandColumn.ShowClearFilterButton = true;
+        settings.CommandColumn.Visible = true;
+        settings.CommandColumn.ShowDeleteButton = User.IsInRole("Administrator") || User.IsInRole("SA");
+        settings.CommandColumn.ShowEditButton = true;
+        settings.CommandColumn.ShowNewButtonInHeader = true;
+        settings.SettingsPager.PageSize = 10;
+        settings.SettingsBehavior.ConfirmDelete = true;
+
+        settings.KeyFieldName = "HouseholdId";
+
+        settings.SettingsPager.Visible = true;
+        settings.Settings.ShowGroupPanel = false;
+        settings.Settings.ShowFilterRow = true;
+        settings.SettingsBehavior.AllowSelectByRowClick = true;
+
+        settings.SettingsAdaptivity.AdaptivityMode = GridViewAdaptivityMode.HideDataCells;
+        settings.SettingsAdaptivity.AdaptiveColumnPosition = GridViewAdaptiveColumnPosition.Right;
+        settings.SettingsAdaptivity.AdaptiveDetailColumnCount = 1;
+        settings.SettingsAdaptivity.AllowOnlyOneAdaptiveDetailExpanded = true;
+        settings.SettingsAdaptivity.HideDataCellsAtWindowInnerWidth = 300;
+
+        settings.Columns.Add(col => { col.FieldName = "HouseholdId"; col.Caption = "HH #"; col.Width = 40; });
+        settings.Columns.Add(col => { col.FieldName = "FriendlyName"; col.Caption = "Friendly Name"; col.Width = 200; });
+        //settings.Columns.Add("RoomNumber");
+        //settings.Columns.Add("FloorNumber");
+        //settings.Columns.Add("BuildingNumber");
+        //settings.Columns.Add("StreetName");
+        settings.Columns.Add(col => {
+            col.FieldName = "SitioId"; col.Caption = "Sitio"; col.Width = 120;
+            col.EditorProperties().ComboBox(cb => {
+                cb.DataSource = ViewBag.Sitio;
+                cb.TextField = "Name";
+                cb.ValueField = "Id";
+                cb.ValueType = typeof(int);
+                cb.DropDownStyle = DropDownStyle.DropDownList;
+                //cb.DropDownRows = 10;
+
+            });
+        });
+        //settings.Columns.Add("HomeTenure");
+        settings.Columns.Add(col => {
+            col.FieldName = "HomeTenure"; col.Caption = "Home Tenure"; col.Width = 180;
+            col.EditorProperties().ComboBox(cb => {
+                cb.DataSource = BrgyMgmt.Web.Services.EnumHelpers.SpacesToList(typeof(HomeTenure));
+                cb.TextField = "Value";
+                cb.ValueField = "Key";
+                cb.ValueType = typeof(int);
+                cb.DropDownStyle = DropDownStyle.DropDownList;
+                cb.DropDownRows = 10;
+
+            });
+        });
+        //settings.Columns.Add("ConstructionType");
+        settings.Columns.Add(col => {
+            col.FieldName = "ConstructionType"; col.Caption = "Construction Type"; col.Width = 180;
+            col.EditorProperties().ComboBox(cb => {
+                cb.DataSource = ViewBag.ConstructionTypes; cb.TextField = "Name"; cb.ValueField = "Id";
+                cb.ValueType = typeof(int);
+                cb.DropDownStyle = DropDownStyle.DropDownList;
+                cb.DropDownRows = 10;
+            });
+        });
+        //settings.Columns.Add("FamilyCount");
+        //settings.Columns.Add("FamilyWithSameKitchen");
+        //settings.Columns.Add("FamilyWithSeparateKitchen");
+        settings.Columns.Add(col => {
+            col.FieldName = "AverageMonthlyIncome"; col.Caption = "Ave. Monthly Income"; col.Width = 180;
+            col.EditorProperties().ComboBox(cb => {
+                cb.DataSource = ViewBag.MonthlyIncome; cb.TextField = "Name"; cb.ValueField = "Id";
+                cb.ValueType = typeof(int);
+                cb.DropDownStyle = DropDownStyle.DropDownList;
+                cb.DropDownRows = 10;
+            });
+        });
+        settings.Columns.Add(col => {
+            col.FieldName = "PotableWaterSupplySource"; col.Caption = "Potable Water Source"; col.Width = 180;
+            col.EditorProperties().ComboBox(cb => {
+                cb.DataSource = ViewBag.WaterSupply; cb.TextField = "Name"; cb.ValueField = "Id";
+                cb.ValueType = typeof(int);
+                cb.DropDownStyle = DropDownStyle.DropDownList;
+                cb.DropDownRows = 10;
+            });
+        });
+        settings.Columns.Add(col => {
+            col.FieldName = "ToiletFacility"; col.Caption = "Toilet Facility"; col.Width = 180;
+            col.EditorProperties().ComboBox(cb => {
+                cb.DataSource = ViewBag.ToiletFacility; cb.TextField = "Name"; cb.ValueField = "Id";
+                cb.ValueType = typeof(int);
+                cb.DropDownStyle = DropDownStyle.DropDownList;
+                cb.DropDownRows = 10;
+            });
+        });
+        settings.Columns.Add("SanitationPractices");
+        settings.Columns.Add("CompostHeap");
+        settings.Columns.Add("TrashSegregation");
+        //settings.Columns.Add("VegetableGardens");
+        //settings.Columns.Add("HasFishPond");
+        //settings.Columns.Add("NeedsFirst");
+        //settings.Columns.Add("NeedsSecond");
+        //settings.Columns.Add("NeedsThird");
+        //settings.Columns.Add("PregnantMonths");
+        //settings.Columns.Add("IsPregnantTeen");
+
+        settings.InitNewRow = (s, e) => {
+            e.NewValues["HouseholdId"] = 0;
+            e.NewValues["MemberOfLivelihood"] = false;
+
+        };
+
+
+        settings.SetEditFormTemplateContent(c => {
+            var item = ViewData["item"] != null ? ViewData["item"] : c.DataItem;
+            ViewContext.Writer.Write(Html.Hidden("houseHoldProperties", ""));
+
+            ViewContext.Writer.Write("<div class=\"editform col-md-4\" style='float:left;'>");
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Friendly Name"; lbl.AssociatedControlName = "FriendlyName"; }).GetHtml();
+            Html.DevExpress().TextBox(cfg => {
+                cfg.Name = "FriendlyName";
+                cfg.Style.Add("margin-bottom", "20px");
+                cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+            }).Bind(DataBinder.Eval(item, "FriendlyName")).Render();
+
+            Html.DevExpress().RoundPanel(rp => {
+                rp.Name = "rpAddress";
+                rp.HeaderText = "Household Address";
+                rp.ShowHeader = true;
+                rp.Style.Add("margin-bottom", "20px");
+                rp.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+                rp.SetContent(() => {
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Room Number"; lbl.AssociatedControlName = "RoomNumber"; }).GetHtml();
+                    Html.DevExpress().TextBox(cfg => {
+                        cfg.Name = "RoomNumber";
+                        cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                    }).Bind(DataBinder.Eval(item, "RoomNumber")).Render();
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Floor Number"; lbl.AssociatedControlName = "FloorNumber"; }).GetHtml();
+                    Html.DevExpress().TextBox(cfg => {
+                        cfg.Name = "FloorNumber";
+                        cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                    }).Bind(DataBinder.Eval(item, "FloorNumber")).Render();
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Building Number"; lbl.AssociatedControlName = "BuildingNumber"; }).GetHtml();
+                    Html.DevExpress().TextBox(cfg => {
+                        cfg.Name = "BuildingNumber";
+                        cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                    }).Bind(DataBinder.Eval(item, "BuildingNumber")).Render();
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Street Name"; lbl.AssociatedControlName = "StreetName"; }).GetHtml();
+                    Html.DevExpress().TextBox(cfg => {
+                        cfg.Name = "StreetName";
+                        cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                    }).Bind(DataBinder.Eval(item, "StreetName")).Render();
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Sitio:"; lbl.AssociatedControlName = "SitioId"; }).GetHtml();
+                    Html.DevExpress().ComboBox(cb => {
+                        cb.Name = "SitioId";
+                        cb.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                        cb.Properties.ValueField = "Id";
+                        cb.Properties.TextField = "Name";
+                        cb.Properties.ValueType = typeof(int);
+                        cb.Properties.DropDownStyle = DropDownStyle.DropDownList;
+                        cb.Properties.DropDownRows = 10;
+                    }).BindList(ViewBag.Sitio).Bind(DataBinder.Eval(item, "SitioId")).GetHtml();
+                });
+            }).GetHtml();
+
+            Html.DevExpress().RoundPanel(rp => {
+                rp.Name = "rpHomeOwnership";
+                rp.HeaderText = "Home Ownership";
+                rp.ShowHeader = true;
+                rp.Style.Add("margin-bottom", "10px");
+                rp.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+                rp.SetContent(() => {
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Home Tenure:"; lbl.AssociatedControlName = "HomeTenure"; }).GetHtml();
+                    Html.DevExpress().ComboBox(set => {
+                        set.Name = "HomeTenure";
+                        set.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                        set.Properties.ValueField = "Key";
+                        set.Properties.TextField = "Value";
+                        set.Properties.ValueType = typeof(Int32);
+                        set.Properties.DropDownRows = 4;
+                        set.Properties.IncrementalFilteringMode = IncrementalFilteringMode.Contains;
+                        set.Properties.DropDownStyle = DropDownStyle.DropDown;
+                    }).BindList(BrgyMgmt.Web.Services.EnumHelpers.SpacesToList(typeof(HomeTenure))).Bind(DataBinder.Eval(item, "HomeTenure")).GetHtml();
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Construction Type:"; lbl.AssociatedControlName = "ConstructionType"; }).GetHtml();
+                    Html.DevExpress().ComboBox(cfg => {
+                        cfg.Name = "ConstructionType";
+                        cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                        cfg.Properties.DropDownRows = 3;
+                        cfg.Properties.IncrementalFilteringMode = IncrementalFilteringMode.None;
+                        cfg.Properties.DropDownStyle = DropDownStyle.DropDownList;
+                        cfg.Properties.TextField = "Name"; cfg.Properties.ValueField = "Id";
+                        cfg.Properties.ValueType = typeof(Int32);
+                        cfg.Properties.DropDownRows = 5;
+                    }).BindList(ViewBag.ConstructionTypes).Bind(DataBinder.Eval(item, "ConstructionType")).GetHtml();
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Family Count:"; lbl.AssociatedControlName = "FamilyCount"; }).GetHtml();
+                    Html.DevExpress().SpinEdit(cfg => {
+                        cfg.Name = "FamilyCount";
+                        cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                        cfg.Properties.SpinButtons.ShowIncrementButtons = false;
+                        cfg.Properties.MinValue = 1; cfg.Properties.MaxValue = 10;
+                    }).Bind(DataBinder.Eval(item, "FamilyCount")).GetHtml();
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Family Same Kitchen:"; lbl.AssociatedControlName = "FamilyWithSameKitchen"; }).GetHtml();
+                    Html.DevExpress().SpinEdit(cfg => {
+                        cfg.Name = "FamilyWithSameKitchen";
+                        cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                        cfg.Properties.SpinButtons.ShowIncrementButtons = false;
+                        cfg.Properties.MinValue = 0; cfg.Properties.MaxValue = 10;
+                    }).Bind(DataBinder.Eval(item, "FamilyWithSameKitchen")).GetHtml();
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Family Diff Kitchen:"; lbl.AssociatedControlName = "FamilyWithSeparateKitchen"; }).GetHtml();
+                    Html.DevExpress().SpinEdit(cfg => {
+                        cfg.Name = "FamilyWithSeparateKitchen";
+                        cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                        cfg.Properties.SpinButtons.ShowIncrementButtons = false;
+                        cfg.Properties.MinValue = 0; cfg.Properties.MaxValue = 10;
+                    }).Bind(DataBinder.Eval(item, "FamilyWithSeparateKitchen")).GetHtml();
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Land Tenure:"; lbl.AssociatedControlName = "LandTenure"; }).GetHtml();
+                    Html.DevExpress().ComboBox(cfg => {
+                        cfg.Name = "LandTenure";
+                        cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                        cfg.Properties.DropDownRows = 3;
+                        cfg.Properties.IncrementalFilteringMode = IncrementalFilteringMode.None;
+                        cfg.Properties.DropDownStyle = DropDownStyle.DropDownList;
+                        cfg.Properties.TextField = "Name"; cfg.Properties.ValueField = "Id";
+                        cfg.Properties.ValueType = typeof(Int32);
+                        cfg.Properties.DropDownRows = 5;
+                    }).BindList(ViewBag.LandTenure).Bind(DataBinder.Eval(item, "LandTenure")).GetHtml();
+                });
+            }).GetHtml();
+            Html.DevExpress().RoundPanel(rp => {
+                rp.Name = "rpVehicleOwnership";
+                rp.HeaderText = "Vehicle Ownership";
+                rp.ShowHeader = true;
+                rp.Style.Add("margin-bottom", "10px");
+                rp.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+                rp.SetContent(() => {
+
+
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Add Vehicles / Qty:"; lbl.AssociatedControlName = "Vehicles"; }).GetHtml();
+                    Html.RenderAction("cmbVehiclesPartial");
+
+                    Html.DevExpress().SpinEdit(cfg => {
+                        cfg.Name = "VehicleQuantity"; cfg.ControlStyle.CssClass = "fl";
+                        cfg.Width = System.Web.UI.WebControls.Unit.Pixel(80);
+                        cfg.Properties.SpinButtons.ShowIncrementButtons = false;
+                        cfg.Properties.MinValue = 1;
+                        cfg.Properties.MaxValue = 1000;
+                        cfg.Properties.ClientSideEvents.ValueChanged = "CheckAddButtonState";
+                    }).GetHtml();
+
+
+
+
+
+
+                    //Html.DevExpress().ComboBox(cfg => {
+                    //    cfg.Name = "Vehicles"; cfg.ControlStyle.CssClass = "fl";
+                    //    cfg.Width = System.Web.UI.WebControls.Unit.Pixel(180);
+                    //    cfg.Properties.DropDownRows = 3;
+                    //    cfg.Properties.IncrementalFilteringMode = IncrementalFilteringMode.None;
+                    //    cfg.Properties.DropDownStyle = DropDownStyle.DropDownList;
+                    //    cfg.Properties.TextField = "Name"; cfg.Properties.ValueField = "Id";
+                    //    cfg.Properties.ValueType = typeof(Int32);
+                    //    cfg.Properties.DropDownRows = 8;
+                    //}).BindList(ViewBag.AvaialableVehicles).GetHtml();
+
+
+
+
+                    Html.DevExpress().Button(btn => {
+                        //btn.ControlStyle.CssClass = "fl"; //btn.Width = 20;
+                        btn.Name = "btnAddVehicke";
+                        btn.Text = "+";
+                        btn.Style[HtmlTextWriterStyle.MarginLeft] = "5px";
+                        btn.ClientEnabled = false;
+                        btn.UseSubmitBehavior = false;
+                        btn.ClientSideEvents.Click = string.Format("function(s, e){{ AddResourceToHousehold(s, e, {0}, {1}, {2},'{3}'); }}", "lbCurrentVehicles", "cmbVehicles", "VehicleQuantity", "Vehicle");
+
+                        //btn.ClientSideEvents.Click = string.Format("function(s, e){{ AddResourceToHousehold(s, e, {0}, {1}, {2}); }}", "lbCurrentVehicles", "cmbVehicles", "VehicleQuantity");
+                    }).Render();
+
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Current Vehicles:"; lbl.AssociatedControlName = "lbCurrentVehicles"; }).GetHtml();
+
+                    Html.DevExpress().ListBox(lb => {
+                        lb.Name = "lbCurrentVehicles"; lb.ControlStyle.CssClass = "fl";
+                        lb.Properties.SelectionMode = ListEditSelectionMode.Multiple;
+                        lb.Width = System.Web.UI.WebControls.Unit.Pixel(250);
+                        lb.Height = System.Web.UI.WebControls.Unit.Pixel(160);
+                        lb.Properties.EnableClientSideAPI = true;
+                        lb.Properties.ClientSideEvents.SelectedIndexChanged = string.Format("function(s, e){{ lbOnSelectedIndexChanged(s, e, {0}); }}", "btnRemoveVehicle");
+                        //lb.Properties.ValidationSettings.RequiredField.IsRequired = true;
+                        lb.Properties.ValueField = "Id";
+                        lb.Properties.TextField = "Name";
+                        lb.Properties.Columns.Add("Name").Width = System.Web.UI.WebControls.Unit.Percentage(100);
+                        lb.Properties.Columns.Add("Quantity").Width = System.Web.UI.WebControls.Unit.Percentage(50);
+                        //lb.Style.Add("margin.bottom","5px");
+                        lb.Style[HtmlTextWriterStyle.MarginBottom] = "5px";
+
+                    }).BindList(BrgyMgmt.Web.Services.HouseholdServices.GetCurrentProperties((int)DataBinder.Eval(item, "HouseholdId"),"Vehicle")).GetHtml();
+
+
+                    Html.DevExpress().Button(btn => {
+                        //btn.ControlStyle.CssClass = "fl"; 
+                        btn.Width = 65;
+                        btn.ClientEnabled = false;
+                        btn.Name = "btnRemoveVehicle";
+                        btn.Text = "-";
+                        btn.ClientSideEvents.Click = string.Format("function(s, e){{ btnRemoveItemsFromListbox(s, e, {0}, {1}); }}", "lbCurrentVehicles", "cmbVehicles");
+
+                        btn.Style[HtmlTextWriterStyle.MarginLeft] = "5px";
+                        btn.UseSubmitBehavior = false;
+
+                        //btn.ClientSideEvents.Click = "AddLivestock";
+                    }).Render();
+
+                });
+            }).GetHtml();
+            Html.DevExpress().RoundPanel(rp => {
+                rp.Name = "rpFamilyIncome";
+                rp.HeaderText = "Family Income";
+                rp.ShowHeader = true;
+                rp.Style.Add("margin-bottom", "10px");
+                rp.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+                rp.SetContent(() => {
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Ave. Monthly Income:"; lbl.AssociatedControlName = "AverageMonthlyIncome"; }).GetHtml();
+                    Html.DevExpress().ComboBox(cfg => {
+                        cfg.Name = "AverageMonthlyIncome";
+                        cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                        cfg.Properties.DropDownRows = 3;
+                        cfg.Properties.IncrementalFilteringMode = IncrementalFilteringMode.None;
+                        cfg.Properties.DropDownStyle = DropDownStyle.DropDownList;
+                        cfg.Properties.TextField = "Name"; cfg.Properties.ValueField = "Id";
+                        cfg.Properties.ValueType = typeof(Int32);
+                        cfg.Properties.DropDownRows = 5;
+                    }).BindList(ViewBag.MonthlyIncome).Bind(DataBinder.Eval(item, "AverageMonthlyIncome")).GetHtml();
+                });
+            }).GetHtml();
+            Html.DevExpress().RoundPanel(rp => {
+                rp.Name = "rpHygieneUtilities";
+                rp.HeaderText = "Hygiene & Utilities";
+                rp.ShowHeader = true;
+                rp.Style.Add("margin-bottom", "10px");
+                rp.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+                rp.SetContent(() => {
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Potable Water Source:"; lbl.AssociatedControlName = "PotableWaterSupplySource"; }).GetHtml();
+                    Html.DevExpress().ComboBox(cfg => {
+                        cfg.Name = "PotableWaterSupplySource";
+                        cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                        cfg.Properties.DropDownRows = 3;
+                        cfg.Properties.IncrementalFilteringMode = IncrementalFilteringMode.None;
+                        cfg.Properties.DropDownStyle = DropDownStyle.DropDownList;
+                        cfg.Properties.TextField = "Name"; cfg.Properties.ValueField = "Id";
+                        cfg.Properties.ValueType = typeof(Int32);
+                        cfg.Properties.DropDownRows = 5;
+                    }).BindList(ViewBag.WaterSupply).Bind(DataBinder.Eval(item, "PotableWaterSupplySource")).GetHtml();
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Toilet Facility:"; lbl.AssociatedControlName = "ToiletFacility"; }).GetHtml();
+                    Html.DevExpress().ComboBox(cfg => {
+                        cfg.Name = "ToiletFacility";
+                        cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                        cfg.Properties.DropDownRows = 3;
+                        cfg.Properties.IncrementalFilteringMode = IncrementalFilteringMode.None;
+                        cfg.Properties.DropDownStyle = DropDownStyle.DropDownList;
+                        cfg.Properties.TextField = "Name"; cfg.Properties.ValueField = "Id";
+                        cfg.Properties.ValueType = typeof(Int32);
+                        cfg.Properties.DropDownRows = 5;
+                    }).BindList(ViewBag.ToiletFacility).Bind(DataBinder.Eval(item, "ToiletFacility")).GetHtml();
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Power Source:"; lbl.AssociatedControlName = "PowerSupply"; }).GetHtml();
+                    Html.DevExpress().ComboBox(cfg => {
+                        cfg.Name = "PowerSupply";
+                        cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                        cfg.Properties.DropDownRows = 3;
+                        cfg.Properties.IncrementalFilteringMode = IncrementalFilteringMode.None;
+                        cfg.Properties.DropDownStyle = DropDownStyle.DropDownList;
+                        cfg.Properties.TextField = "Name"; cfg.Properties.ValueField = "Id";
+                        cfg.Properties.ValueType = typeof(Int32);
+                        cfg.Properties.DropDownRows = 5;
+                    }).BindList(ViewBag.Electricity).Bind(DataBinder.Eval(item, "PowerSupply")).GetHtml();
+                });
+            }).GetHtml();
+
+            ViewContext.Writer.Write("</div>");
+            ViewContext.Writer.Write("<div class=\"editform col-md-4\" style='float:left;'>");
+            Html.DevExpress().RoundPanel(rp => {
+                rp.Name = "rpSanitation";
+                rp.HeaderText = "Sanitation Practices";
+                rp.ShowHeader = true;
+                rp.Style.Add("margin-bottom", "10px");
+                rp.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+                rp.SetContent(() => {
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Waste Disposal"; lbl.AssociatedControlName = "SanitationPractices"; }).GetHtml();
+                    Html.DevExpress().TokenBox(set => {
+                        set.Name = "SanitationPractices";
+                        set.Properties.AllowCustomTokens = false;
+                        set.Properties.ShowDropDownOnFocus = ShowDropDownOnFocusMode.Always;
+                        set.Properties.IncrementalFilteringMode = IncrementalFilteringMode.Contains;
+                        set.Properties.ValueField = "Id";
+                        set.Properties.TextField = "Name";
+                        set.Width = System.Web.UI.WebControls.Unit.Pixel(300);
+                    }).BindList(ViewBag.SanitationPractice)
+                    .Bind(DataBinder.Eval(item, "SanitationPractices")).GetHtml();
+
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Has Compost Heap:"; lbl.AssociatedControlName = "CompostHeap"; }).GetHtml();
+                    Html.DevExpress().CheckBox(chkb => {
+                        chkb.Name = "CompostHeap";
+                        chkb.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                        chkb.ControlStyle.CssClass = "chk";
+                        chkb.Checked = Convert.ToBoolean(DataBinder.Eval(item, "CompostHeap"));
+                    }).Bind(DataBinder.Eval(item, "CompostHeap")).Render();
+
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Has Trash Segregation:"; lbl.AssociatedControlName = "TrashSegregation"; }).GetHtml();
+                    Html.DevExpress().CheckBox(chkb => {
+                        chkb.Name = "TrashSegregation";
+                        chkb.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                        chkb.ControlStyle.CssClass = "chk";
+                        chkb.Checked = Convert.ToBoolean(DataBinder.Eval(item, "TrashSegregation"));
+                    }).Bind(DataBinder.Eval(item, "TrashSegregation")).Render();
+                });
+            }).GetHtml();
+            Html.DevExpress().RoundPanel(rp => {
+                rp.Name = "rpLivelihood";
+                rp.HeaderText = "Livelihood Programs";
+                rp.ShowHeader = true;
+                rp.Style.Add("margin-bottom", "10px");
+                rp.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+                rp.SetContent(() => {
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Member Of Livelihood:"; lbl.AssociatedControlName = "MemberOfLivelihood"; }).GetHtml();
+                    Html.DevExpress().CheckBox(chkb => {
+                        chkb.Name = "MemberOfLivelihood";
+                        chkb.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                        chkb.ControlStyle.CssClass = "chk";
+                        chkb.Checked = Convert.ToBoolean(DataBinder.Eval(item, "MemberOfLivelihood"));
+                        chkb.Properties.ClientSideEvents.CheckedChanged = "function(s, e){ ProgramName.SetEnabled(s.GetValue()); if (s.GetValue() == false) ProgramName.SetValue(null);}";
+                    }).Bind(DataBinder.Eval(item, "MemberOfLivelihood")).Render();
+
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Program Name:"; lbl.AssociatedControlName = "ProgramName"; }).GetHtml();
+                    Html.DevExpress().TextBox(cfg => {
+                        cfg.Name = "ProgramName";
+                        cfg.ClientEnabled = Convert.ToBoolean(DataBinder.Eval(item, "MemberOfLivelihood"));
+                        cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                    }).Bind(DataBinder.Eval(item, "ProgramName")).Render();
+                });
+            }).GetHtml();
+            Html.DevExpress().RoundPanel(rp => {
+                rp.Name = "rpFoodProduction";
+                rp.HeaderText = "Food Production";
+                rp.ShowHeader = true;
+                rp.Style.Add("margin-bottom", "10px");
+                rp.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+                rp.SetContent(() => {
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Vegetable Gardens"; lbl.AssociatedControlName = "VegetableGardens"; }).GetHtml();
+                    Html.DevExpress().TokenBox(set => {
+                        set.Name = "VegetableGardens";
+                        set.Properties.AllowCustomTokens = false;
+                        set.Properties.ShowDropDownOnFocus = ShowDropDownOnFocusMode.Always;
+                        set.Properties.IncrementalFilteringMode = IncrementalFilteringMode.Contains;
+                        set.Properties.ValueField = "Id";
+                        set.Properties.TextField = "Name";
+                        set.Width = System.Web.UI.WebControls.Unit.Pixel(300);
+                    }).BindList(ViewBag.Garden)
+                    .Bind(DataBinder.Eval(item, "VegetableGardens")).GetHtml();
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Has Fish Pond:"; lbl.AssociatedControlName = "HasFishPond"; }).GetHtml();
+                    Html.DevExpress().CheckBox(chkb => {
+                        chkb.Name = "HasFishPond";
+                        chkb.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                        chkb.ControlStyle.CssClass = "chk";
+                        chkb.Checked = Convert.ToBoolean(DataBinder.Eval(item, "HasFishPond"));
+                        chkb.Style[HtmlTextWriterStyle.Display] = "block";
+                    }).Bind(DataBinder.Eval(item, "HasFishPond")).Render();
+
+
+
+
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Add Livestock / Qty:"; lbl.AssociatedControlName = "Livestock"; }).GetHtml();
+                    Html.DevExpress().ComboBox(cfg => {
+                        cfg.Name = "cmbLivestock"; cfg.ControlStyle.CssClass = "fl";
+                        cfg.Properties.ClientSideEvents.SelectedIndexChanged = "CheckAddButtonState";
+                        //cfg.Width = System.Web.UI.WebControls.Unit.Pixel(160);
+                        cfg.Properties.DropDownRows = 3;
+                        cfg.Properties.IncrementalFilteringMode = IncrementalFilteringMode.None;
+                        cfg.Properties.DropDownStyle = DropDownStyle.DropDownList;
+                        cfg.Properties.TextField = "Name"; cfg.Properties.ValueField = "Id";
+                        cfg.Properties.ValueType = typeof(Int32);
+                        cfg.Properties.DropDownRows = 8;
+                    }).BindList(ViewBag.AvailableLivestock).GetHtml();
+
+                    Html.DevExpress().SpinEdit(cfg => {
+                        cfg.Name = "LivestockQuantity"; cfg.ControlStyle.CssClass = "fl";
+                        cfg.Width = System.Web.UI.WebControls.Unit.Pixel(80);
+                        cfg.Properties.SpinButtons.ShowIncrementButtons = false;
+                        cfg.Properties.MinValue = 1;
+                        cfg.Properties.MaxValue = 1000;
+                        cfg.Properties.ClientSideEvents.ValueChanged = "CheckAddButtonState";
+                    }).GetHtml();
+                    Html.DevExpress().Button(btn => {
+                        //btn.ControlStyle.CssClass = "fl"; btn.Width = 20;
+                        btn.Name = "btnAddLivestock";
+                        btn.ClientEnabled = false;
+                        btn.Text = "+";
+                        btn.Style[HtmlTextWriterStyle.MarginLeft] = "5px";
+                        btn.UseSubmitBehavior = false;
+                        btn.ClientSideEvents.Click = string.Format("function(s, e){{ AddResourceToHousehold(s, e, {0}, {1}, {2}); }}", "lbCurrentLivestock", "cmbLivestock", "LivestockQuantity");
+                    }).Render();
+
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Current Livestock:"; lbl.AssociatedControlName = "lbCurrentLivestock"; }).GetHtml();
+                    Html.DevExpress().ListBox(lb => {
+                        lb.Name = "lbCurrentLivestock"; lb.ControlStyle.CssClass = "fl";
+                        lb.Properties.SelectionMode = ListEditSelectionMode.Multiple;
+                        lb.Width = System.Web.UI.WebControls.Unit.Pixel(250);
+                        lb.Height = System.Web.UI.WebControls.Unit.Pixel(160);
+                        lb.Properties.EnableClientSideAPI = true;
+                        lb.Properties.ClientSideEvents.SelectedIndexChanged = string.Format("function(s, e){{ lbOnSelectedIndexChanged(s, e, {0}); }}", "btnRemoveLivestock");                        //lb.Properties.ValidationSettings.RequiredField.IsRequired = true;
+                        lb.Properties.ValueField = "Id";
+                        lb.Properties.TextField = "Name";
+                        lb.Properties.Columns.Add("Name").Width = System.Web.UI.WebControls.Unit.Percentage(100);
+                        lb.Properties.Columns.Add("Quantity").Width = System.Web.UI.WebControls.Unit.Percentage(50);
+                        lb.Style[HtmlTextWriterStyle.MarginBottom] = "5px";
+                    }).BindList(BrgyMgmt.Web.Services.HouseholdServices.GetCurrentProperties((int)DataBinder.Eval(item, "HouseholdId"), "Livestock")).GetHtml();
+                    Html.DevExpress().Button(btn => {
+                        //btn.ControlStyle.CssClass = "fl"; 
+                        btn.Width = 65;
+                        btn.ClientEnabled = false;
+                        btn.Name = "btnRemoveLivestock";
+                        btn.Text = "-";
+                        btn.ClientSideEvents.Click = string.Format("function(s, e){{ btnRemoveItemsFromListbox(s, e, {0}, {1}); }}", "lbCurrentLivestock", "cmbLivestock");
+                        btn.Style[HtmlTextWriterStyle.MarginLeft] = "5px";
+                        btn.UseSubmitBehavior = false;
+
+                        //btn.ClientSideEvents.Click = "AddLivestock";
+                    }).Render();
+
+                });
+            }).GetHtml();
+            Html.DevExpress().RoundPanel(rp => {
+                rp.Name = "rpAgriFacilities";
+                rp.HeaderText = "Agricultural Facilities & Equipment";
+                rp.ShowHeader = true;
+                rp.Style.Add("margin-bottom", "10px");
+                rp.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+                rp.SetContent(() => {
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Add Equipment / Qty:"; lbl.AssociatedControlName = "Equipment"; }).GetHtml();
+                    Html.DevExpress().ComboBox(cfg => {
+                        cfg.Name = "cmbEquipment"; cfg.ControlStyle.CssClass = "fl";
+                        cfg.Properties.ClientSideEvents.SelectedIndexChanged = "CheckAddButtonState";
+                        cfg.Width = System.Web.UI.WebControls.Unit.Pixel(168);
+                        cfg.Properties.DropDownRows = 3;
+                        cfg.Properties.IncrementalFilteringMode = IncrementalFilteringMode.None;
+                        cfg.Properties.DropDownStyle = DropDownStyle.DropDownList;
+                        cfg.Properties.TextField = "Name"; cfg.Properties.ValueField = "Id";
+                        cfg.Properties.ValueType = typeof(Int32);
+                        cfg.Properties.DropDownRows = 8;
+                    }).BindList(ViewBag.AvaialableEquipments).GetHtml();
+
+                    Html.DevExpress().SpinEdit(cfg => {
+                        cfg.Name = "EquipmentQuantity"; cfg.ControlStyle.CssClass = "fl";
+                        cfg.Width = System.Web.UI.WebControls.Unit.Pixel(82);
+                        cfg.Properties.SpinButtons.ShowIncrementButtons = false;
+                        cfg.Properties.MinValue = 1;
+                        cfg.Properties.MaxValue = 1000;
+                        cfg.Properties.ClientSideEvents.ValueChanged = "CheckAddButtonState";
+                    }).GetHtml();
+                    Html.DevExpress().Button(btn => {
+                        //btn.ControlStyle.CssClass = "fl"; btn.Width = 20;
+                        btn.Name = "btnAddEquipment";
+                        btn.Text = "+";
+                        btn.ClientEnabled = false;
+                        btn.Style[HtmlTextWriterStyle.MarginLeft] = "5px";
+                        btn.UseSubmitBehavior = false;
+                        btn.ClientSideEvents.Click = string.Format("function(s, e){{ AddResourceToHousehold(s, e, {0}, {1}, {2}); }}", "lbCurrentEquipments", "cmbEquipment", "EquipmentQuantity");
+                    }).Render();
+
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Current Equipments:"; lbl.AssociatedControlName = "lbCurrentEquipments"; }).GetHtml();
+
+                    Html.DevExpress().ListBox(lb => {
+                        lb.Name = "lbCurrentEquipments"; lb.ControlStyle.CssClass = "fl";
+                        lb.Properties.SelectionMode = ListEditSelectionMode.Multiple;
+                        lb.Width = System.Web.UI.WebControls.Unit.Pixel(250);
+                        lb.Height = System.Web.UI.WebControls.Unit.Pixel(160);
+                        lb.Properties.EnableClientSideAPI = true;
+                        lb.Properties.ClientSideEvents.SelectedIndexChanged = string.Format("function(s, e){{ lbOnSelectedIndexChanged(s, e, {0}); }}", "btnRemoveEquipment");                        //lb.Properties.ValidationSettings.RequiredField.IsRequired = true;
+                        lb.Properties.ValueField = "Id";
+                        lb.Properties.TextField = "Name";
+                        lb.Properties.Columns.Add("Name").Width = System.Web.UI.WebControls.Unit.Percentage(100);
+                        lb.Properties.Columns.Add("Quantity").Width = System.Web.UI.WebControls.Unit.Percentage(50);
+                        lb.Style[HtmlTextWriterStyle.MarginBottom] = "5px";
+                    }).BindList(BrgyMgmt.Web.Services.HouseholdServices.GetCurrentProperties((int)DataBinder.Eval(item, "HouseholdId"), "Equipment")).GetHtml();
+                    Html.DevExpress().Button(btn => {
+                        btn.Width = 65;
+                        btn.Text = "-";
+                        btn.ClientEnabled = false;
+                        btn.Name = "btnRemoveEquipment";
+                        btn.ClientSideEvents.Click = string.Format("function(s, e){{ btnRemoveItemsFromListbox(s, e, {0}, {1}); }}", "lbCurrentEquipments", "cmbEquipment");
+                        btn.Style[HtmlTextWriterStyle.MarginLeft] = "5px";
+                        btn.UseSubmitBehavior = false;
+                    }).Render();
+
+                });
+            }).GetHtml();
+
+            ViewContext.Writer.Write("</div>");
+            ViewContext.Writer.Write("<div class=\"editform col-md-4\" style='float:left;'>");
+            Html.DevExpress().RoundPanel(rp => {
+                rp.Name = "rpTopNeeds";
+                rp.HeaderText = "Top Needs For Sitio";
+                rp.ShowHeader = true;
+                rp.Style.Add("margin-bottom", "10px");
+                rp.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+                rp.SetContent(() => {
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Top 1"; lbl.AssociatedControlName = "NeedsFirst"; }).GetHtml();
+                    Html.DevExpress().TextBox(cfg => {
+                        cfg.Name = "NeedsFirst";
+                        cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                    }).Bind(DataBinder.Eval(item, "NeedsFirst")).Render();
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Top 2"; lbl.AssociatedControlName = "NeedsSecond"; }).GetHtml();
+                    Html.DevExpress().TextBox(cfg => {
+                        cfg.Name = "NeedsSecond";
+                        cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                    }).Bind(DataBinder.Eval(item, "NeedsSecond")).Render();
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Top 3"; lbl.AssociatedControlName = "NeedsThird"; }).GetHtml();
+                    Html.DevExpress().TextBox(cfg => {
+                        cfg.Name = "NeedsThird";
+                        cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                    }).Bind(DataBinder.Eval(item, "NeedsThird")).Render();
+                });
+            }).GetHtml();
+            Html.DevExpress().RoundPanel(rp => {
+                rp.Name = "rpHealthNutrition";
+                rp.HeaderText = "Health & Nutrition";
+                rp.ShowHeader = true;
+                rp.Style.Add("margin-bottom", "10px");
+                rp.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+                rp.SetContent(() => {
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Add Children / Qty:"; lbl.AssociatedControlName = "Children"; }).GetHtml();
+                    Html.DevExpress().ComboBox(cfg => {
+                        cfg.Name = "cmbChildren"; cfg.ControlStyle.CssClass = "fl";
+                        //cfg.Width = System.Web.UI.WebControls.Unit.Pixel(160);
+                        cfg.Properties.ClientSideEvents.SelectedIndexChanged = "CheckAddButtonState";
+                        cfg.Properties.DropDownRows = 3;
+                        cfg.Properties.IncrementalFilteringMode = IncrementalFilteringMode.None;
+                        cfg.Properties.DropDownStyle = DropDownStyle.DropDownList;
+                        cfg.Properties.TextField = "Name"; cfg.Properties.ValueField = "Id";
+                        cfg.Properties.ValueType = typeof(Int32);
+                        cfg.Properties.DropDownRows = 8;
+                    }).BindList(ViewBag.AvaialableChildrenRangess).GetHtml();
+
+                    Html.DevExpress().SpinEdit(cfg => {
+                        cfg.Name = "ChildQuantity"; cfg.ControlStyle.CssClass = "fl";
+                        cfg.Width = System.Web.UI.WebControls.Unit.Pixel(80);
+                        cfg.Properties.SpinButtons.ShowIncrementButtons = false;
+                        cfg.Properties.MinValue = 1;
+                        cfg.Properties.MaxValue = 1000;
+                        cfg.Properties.ClientSideEvents.ValueChanged = "CheckAddButtonState";
+                    }).GetHtml();
+                    Html.DevExpress().Button(btn => {
+                        //btn.ControlStyle.CssClass = "fl"; btn.Width = 20;
+                        btn.Name = "btnAddChild";
+                        btn.Text = "+";
+                        btn.Style[HtmlTextWriterStyle.MarginLeft] = "5px";
+                        btn.UseSubmitBehavior = false;
+                        btn.ClientEnabled = false;
+                        btn.ClientSideEvents.Click = string.Format("function(s, e){{ AddResourceToHousehold(s, e, {0}, {1}, {2}); }}", "lbCurrentChildren", "cmbChildren", "ChildQuantity");
+                    }).Render();
+
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Current Children:"; lbl.AssociatedControlName = "lbCurrentChildren"; }).GetHtml();
+                    Html.DevExpress().ListBox(lb => {
+                        lb.Name = "lbCurrentChildren"; lb.ControlStyle.CssClass = "fl";
+                        lb.Properties.SelectionMode = ListEditSelectionMode.Multiple;
+                        lb.Width = System.Web.UI.WebControls.Unit.Pixel(250);
+                        lb.Height = System.Web.UI.WebControls.Unit.Pixel(160);
+                        lb.Properties.EnableClientSideAPI = true;
+                        lb.Properties.ClientSideEvents.SelectedIndexChanged = string.Format("function(s, e){{ lbOnSelectedIndexChanged(s, e, {0}); }}", "btnRemoveChildren");
+                        lb.Properties.ValueField = "Id";
+                        lb.Properties.TextField = "Name";
+                        lb.Properties.Columns.Add("Name").Width = System.Web.UI.WebControls.Unit.Percentage(100);
+                        lb.Properties.Columns.Add("Quantity").Width = System.Web.UI.WebControls.Unit.Percentage(50);
+                        lb.Style[HtmlTextWriterStyle.MarginBottom] = "5px";
+                    }).BindList(BrgyMgmt.Web.Services.HouseholdServices.GetCurrentProperties((int)DataBinder.Eval(item, "HouseholdId"), "Children")).GetHtml();
+
+                    Html.DevExpress().Button(btn => {
+                        //btn.ControlStyle.CssClass = "fl";
+                        btn.Width = 65;
+                        btn.ClientEnabled = false;
+                        btn.Name = "btnRemoveChildren";
+                        btn.Text = "-";
+                        btn.ClientSideEvents.Click = string.Format("function(s, e){{ btnRemoveItemsFromListbox(s, e, {0}, {1}); }}", "lbCurrentChildren", "cmbChildren");
+                        btn.Style[HtmlTextWriterStyle.MarginLeft] = "5px";
+                        btn.UseSubmitBehavior = false;
+
+                        //btn.ClientSideEvents.Click = "AddLivestock";
+                    }).Render();
+
+
+
+
+
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Family Planning"; lbl.AssociatedControlName = "FamilyPlanning"; }).GetHtml();
+                    Html.DevExpress().TokenBox(set => {
+                        set.Name = "FamilyPlanning";
+                        set.Properties.AllowCustomTokens = false;
+                        set.Properties.ShowDropDownOnFocus = ShowDropDownOnFocusMode.Always;
+                        set.Properties.IncrementalFilteringMode = IncrementalFilteringMode.Contains;
+                        set.Properties.ValueField = "Id";
+                        set.Properties.TextField = "Name";
+                        set.Width = System.Web.UI.WebControls.Unit.Pixel(300);
+                    }).BindList(ViewBag.FamilyPlanning)
+                    .Bind(DataBinder.Eval(item, "FamilyPlanning")).GetHtml();
+
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Pregnant Mothers:"; lbl.AssociatedControlName = "HavePregnantMothers"; }).GetHtml();
+                    Html.DevExpress().CheckBox(chkb => {
+                        chkb.Name = "HavePregnantMothers";
+                        chkb.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                        chkb.ControlStyle.CssClass = "chk";
+                        chkb.Checked = Convert.ToBoolean(DataBinder.Eval(item, "HavePregnantMothers"));
+                    }).Bind(DataBinder.Eval(item, "HavePregnantMothers")).Render();
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Pregnant Months:"; lbl.AssociatedControlName = "PregnantMonths"; }).GetHtml();
+                    Html.DevExpress().SpinEdit(cfg => {
+                        cfg.Name = "PregnantMonths";
+                        cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                        cfg.Properties.SpinButtons.ShowIncrementButtons = false;
+                        cfg.Properties.MinValue = 1; cfg.Properties.MaxValue = 10;
+                    }).Bind(DataBinder.Eval(item, "PregnantMonths")).GetHtml();
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Is Teen:"; lbl.AssociatedControlName = "IsPregnantTeen"; }).GetHtml();
+                    Html.DevExpress().CheckBox(chkb => {
+                        chkb.Name = "IsPregnantTeen";
+                        chkb.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                        chkb.ControlStyle.CssClass = "chk";
+                        chkb.Checked = Convert.ToBoolean(DataBinder.Eval(item, "IsPregnantTeen"));
+                    }).Bind(DataBinder.Eval(item, "IsPregnantTeen")).Render();
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Breast Feeding"; lbl.AssociatedControlName = "BreastFeeding"; }).GetHtml();
+                    Html.DevExpress().TokenBox(set => {
+                        set.Name = "BreastFeeding";
+                        set.Properties.AllowCustomTokens = false;
+                        set.Properties.ShowDropDownOnFocus = ShowDropDownOnFocusMode.Always;
+                        set.Properties.IncrementalFilteringMode = IncrementalFilteringMode.Contains;
+                        set.Properties.ValueField = "Id";
+                        set.Properties.TextField = "Name";
+                        set.Width = System.Web.UI.WebControls.Unit.Pixel(300);
+                    }).BindList(ViewBag.BreastFeed)
+                    .Bind(DataBinder.Eval(item, "BreastFeeding")).GetHtml();
+                    Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Other Nutritional Info"; lbl.AssociatedControlName = "OtherNutrition"; }).GetHtml();
+                    Html.DevExpress().TokenBox(set => {
+                        set.Name = "OtherNutrition";
+                        set.Properties.AllowCustomTokens = false;
+                        set.Properties.ShowDropDownOnFocus = ShowDropDownOnFocusMode.Always;
+                        set.Properties.IncrementalFilteringMode = IncrementalFilteringMode.Contains;
+                        set.Properties.ValueField = "Id";
+                        set.Properties.TextField = "Name";
+                        set.Width = System.Web.UI.WebControls.Unit.Pixel(300);
+                    }).BindList(ViewBag.OtherNutrition)
+                    .Bind(DataBinder.Eval(item, "OtherNutrition")).GetHtml();
+                });
+            }).GetHtml();
+            Html.DevExpress().RoundPanel(rp => {
+                rp.Name = "rpOtherHouseholdInfo";
+                rp.HeaderText = "Other Household Information";
+                rp.ShowHeader = true;
+                rp.Style.Add("margin-bottom", "10px");
+                rp.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+                rp.SetContent(() => {
+                    ////Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Top 1"; lbl.AssociatedControlName = "NeedsFirst"; }).GetHtml();
+                    Html.DevExpress().Memo(cfg => {
+                        cfg.Name = "OtherInformation";
+                        cfg.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+                        cfg.Height = System.Web.UI.WebControls.Unit.Pixel(170);
+                    }).Bind(DataBinder.Eval(item, "OtherInformation")).Render();
+                });
+            }).GetHtml();
+
+
+            ViewContext.Writer.Write("</div>");
+            ViewContext.Writer.Write("<div class=\"editform col-md-12\" style='float:left; padding-top:20px;'>");
+
+            Html.DevExpress().TextBox(cfg => {
+                cfg.Name = "hide"; cfg.ClientVisible = false;
+                cfg.Width = System.Web.UI.WebControls.Unit.Pixel(1200);
+            }).Render();
+
+
+
+            Html.DevExpress().Button(btn => {
+                btn.ControlStyle.CssClass = "fl";
+                btn.Name = "btnSaveTab";
+                btn.Text = "Save";
+                btn.Style[HtmlTextWriterStyle.MarginLeft] = "5px";
+                btn.UseSubmitBehavior = false;
+                btn.ClientSideEvents.Click = "SaveHousehold";
+            }).Render();
+            Html.DevExpress().Button(btn => {
+                btn.ControlStyle.CssClass = "fl";
+                btn.Name = "btnCancelTab"; btn.Text = "Cancel";
+                btn.UseSubmitBehavior = false;
+                btn.ClientSideEvents.Click = "function(s, e){ gvHouseholds.CancelEdit(); }";
+            }).Render();
+            //Html.DevExpress().Button(btn => {
+            //    btn.ControlStyle.CssClass = "fl";
+            //    btn.Name = "btnShowTest"; btn.Text = "Show";
+            //    btn.UseSubmitBehavior = false;
+            //    //btn.ClientSideEvents.Click = "function(s, e){ gvHouseholds.CancelEdit(); }";
+            //    //btn.ClientSideEvents.Click = string.Format("function(s, e){{ ShowListboxItems(s, e, {0}); }}", "lbCurrentVehicles");
+            //    btn.ClientSideEvents.Click = "ShowMe";
+            //}).Render();
+            ViewContext.Writer.Write("</div>");
+        });
+        settings.SetDetailRowTemplateContent(c => {
+            //ViewContext.Writer.Write(
+            //    "Contact Phone: <b>" +
+            //        DataBinder.Eval(c.DataItem, "Phone") + "</b>, Fax: <b>" +
+            //            DataBinder.Eval(c.DataItem, "Fax") + "</b>" +
+            //    "<br />" +
+            //    "<br />"
+            //);
+            //Html.RenderAction("MasterDetailDetailPartial", new { CustomerID = DataBinder.Eval(c.DataItem, "CustomerID") });
+
+            Html.RenderAction("gvResidentDetailPartial", new { HouseholdId = DataBinder.Eval(c.DataItem, "HouseholdId") });
+
+        });
+    });
+    if (ViewData["EditError"] != null) {
+        grid.SetEditErrorText((string)ViewData["EditError"]);
+    }
+}
+@grid.Bind(Model).GetHtml()

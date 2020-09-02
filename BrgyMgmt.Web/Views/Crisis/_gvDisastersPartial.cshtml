@@ -1,0 +1,62 @@
+@{
+    var grid = Html.DevExpress().GridView(settings => {
+        settings.Name = "gvDisasters";
+        settings.CallbackRouteValues = new { Controller = "Crisis", Action = "gvDisastersPartial" };
+
+        settings.SettingsEditing.AddNewRowRouteValues = new { Controller = "Crisis", Action = "gvDisastersPartialAddNew" };
+        settings.SettingsEditing.UpdateRowRouteValues = new { Controller = "Crisis", Action = "gvDisastersPartialUpdate" };
+        settings.SettingsEditing.DeleteRowRouteValues = new { Controller = "Crisis", Action = "gvDisastersPartialDelete" };
+        settings.SettingsEditing.Mode = GridViewEditingMode.EditFormAndDisplayRow;
+
+        settings.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+
+        settings.CommandColumn.ShowClearFilterButton = true;
+        settings.CommandColumn.Visible = true;
+        settings.CommandColumn.ShowDeleteButton = User.IsInRole("Administrator") || User.IsInRole("SA");
+        settings.CommandColumn.ShowEditButton = true;
+        settings.CommandColumn.ShowNewButtonInHeader = true;
+        settings.SettingsPager.PageSize = 10;
+        settings.SettingsBehavior.ConfirmDelete = true;
+
+        settings.KeyFieldName = "DisasterId";
+
+        settings.SettingsPager.Visible = true;
+        settings.Settings.ShowGroupPanel = false;
+        settings.Settings.ShowFilterRow = true;
+        settings.SettingsBehavior.AllowSelectByRowClick = true;
+
+        settings.SettingsAdaptivity.AdaptivityMode = GridViewAdaptivityMode.HideDataCellsWindowLimit;
+        settings.SettingsAdaptivity.AdaptiveColumnPosition = GridViewAdaptiveColumnPosition.Right;
+        settings.SettingsAdaptivity.AdaptiveDetailColumnCount = 1;
+        settings.SettingsAdaptivity.AllowOnlyOneAdaptiveDetailExpanded = true;
+        settings.SettingsAdaptivity.HideDataCellsAtWindowInnerWidth = 600;
+
+        settings.Columns.Add("DisasterId").Visible = false;
+        settings.Columns.Add("DisasterName").Caption = "Code Name | Title";
+        settings.Columns.Add(col => {
+            col.FieldName = "DisasterType"; col.Caption = "Type"; col.Width = 180;
+            col.EditorProperties().ComboBox(cb => {
+                cb.DataSource = ViewBag.DisasterTypes; cb.TextField = "Name"; cb.ValueField = "Id";
+                cb.ValueType = typeof(int);
+                cb.DropDownStyle = DropDownStyle.DropDownList;
+                cb.DropDownRows = 10;
+            });
+        });
+        settings.Columns.Add(col => {
+            col.Width = 100;
+            col.SetDataItemTemplateContent(c => {
+                Html.DevExpress().Button(btn => {
+                    btn.Name = "btnSms" + c.KeyValue;
+                    btn.Text = "Send SMS";
+                    //btn.ClientSideEvents.Click = "function(s, e) { showCertificateReportViewer('" + c.KeyValue + "')}";
+                }).GetHtml();
+            });
+        });
+        //settings.Columns.Add("DisasterType").Caption = "Type";
+        //settings.Columns.Add("DisasterRelocationSites");
+    });
+    if (ViewData["EditError"] != null){
+        grid.SetEditErrorText((string)ViewData["EditError"]);
+    }
+}
+@grid.Bind(Model).GetHtml()

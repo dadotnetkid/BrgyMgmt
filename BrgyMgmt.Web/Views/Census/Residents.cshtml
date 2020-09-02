@@ -1,0 +1,239 @@
+﻿@{
+    ViewBag.Title = "CENSUS"; ViewBag.Description = "RESIDENT";
+}
+<script>
+    function PopUpMessage(message) {
+        if (gvResidents.IsEditing()) {
+            alert(message);
+
+        }
+    }
+    function NewHousehold(s, e) {
+        if (e.buttonIndex == 0) {
+            if (LastName.GetValue() != null && FirstName.GetValue() != null) {
+                var d = new Date();
+                FriendlyName.SetValue(LastName.GetValue().toLowerCase() + '-' + FirstName.GetValue().toLowerCase() + '-' + (d.getMonth() + 1) + d.getFullYear())
+                ppcHousehold.Show();
+            }
+            else {
+                MessageLabel.SetText("Please fill in the First and Last names to generate a unique friendly name"); ppcMessage.Show();
+                //alert('Please fill in the First and Last names to generate a unique friendly name')
+            }
+        }
+        if (e.buttonIndex == 1) {
+            alert("Reset");
+        }
+    }
+    function NewHouseholdPopup(s, e) {
+        //alert("Toink");
+        if (e.buttonIndex == 0) {
+            if (LastName.GetValue() != null && FirstName.GetValue() != null) {
+                var d = new Date();
+                FriendlyName.SetValue(LastName.GetValue().toLowerCase() + '-' + FirstName.GetValue().toLowerCase() + '-' + (d.getMonth() + 1) + d.getFullYear())
+                ppcNewHouseHold.Show();
+            }
+            else {
+                MessageLabel.SetText("Please fill in the First and Last names to generate a unique friendly name"); ppcMessage.Show();
+                //alert('Please fill in the First and Last names to generate a unique friendly name')
+            }
+        }
+        if (e.buttonIndex == 1) {
+            alert("Reset");
+        }
+    }
+
+    function SaveHousehold(s, e) {
+        ppcHousehold.PerformCallback({
+            friendlyName: FriendlyName.GetValue()
+            , homeTenure: HomeTenure.GetValue()
+            , constructionType: ConstructionType.GetValue()
+            , averageMonthlyIncome: AverageMonthlyIncome.GetValue()
+            , potableWaterSupplySource: PotableWaterSupplySource.GetValue()
+            , toiletFacility: ToiletFacility.GetValue()
+            , powerSupply: PowerSupply.GetValue()
+        });
+        //alert(FriendlyName.GetValue());
+        //alert(HomeTenure.GetValue());
+        //alert(ConstructionType.GetValue());
+        //alert(AverageMonthlyIncome.GetValue());
+        //alert(PotableWaterSupplySource.GetValue());
+        //alert(ToiletFacility.GetValue());
+        //alert(PowerSupply.GetValue());
+
+    }
+    function SaveResident(s, e) {
+        if (HouseholdHead.GetValue() == false && RelToHouseholdHead.GetValue() == null) {
+            alert("Please select the resident relationship to the household head.");
+            //pcResidents.SetActiveTabIndex(0);
+            PPPPYear.Focus();
+            return;
+        }
+        if (Disability.GetValue() == true && DisabilityKind.GetValue() == null) {
+            alert("Please enter the type of disability");
+            //MessageLabel.SetText("Please enter the type of disability"); ppcMessage.Show();
+            pcResidents.SetActiveTabIndex(1);
+            DisabilityKind.Focus();
+            return;
+        }
+        if (PPPP.GetValue() == true && PPPPYear.GetValue() == null) {
+            //MessageLabel.SetText("Please enter the starting year as a 4P's recipient."); ppcMessage.Show();
+            alert("Please enter the starting year as a 4P's recipient.");
+            //pcResidents.SetActiveTabIndex(1);
+            PPPPYear.Focus();
+            return;
+        }
+        if (isVoter.GetValue() == true && VoteRegistrationLoc.GetValue() == null && ResidenceYears.GetValue() == null) {
+            alert("Please enter voters registration location and year.");
+            //pcResidents.SetActiveTabIndex(1);
+            PPPPYear.Focus();
+            return;
+        }
+        if (isVoter.GetValue() == true && VoteRegistrationLoc.GetValue() == null && ResidenceYears.GetValue() == null) {
+            alert("Please enter voters registration location and year.");
+            //pcResidents.SetActiveTabIndex(1);
+            PPPPYear.Focus();
+            return;
+        }
+        if (ASPxClientEdit.AreEditorsValid()) gvResidents.UpdateEdit();
+    }
+
+    function onNextButtonClick(s, e) {
+        var indexTab = (pcResidents.GetActiveTab()).index;
+        if (ASPxClientEdit.AreEditorsValid())
+            pcResidents.SetActiveTab(pcResidents.GetTab(indexTab + 1));
+    }
+    function onActiveTabChanged(s, e) {
+        //var tabIndex = s.GetActiveTabIndex();
+        //var tabCount = s.GetTabCount();
+        //var progressBar = ASPxClientControl.GetControlCollection().GetByName("progressBar" + tabIndex);
+        //progressBar.SetPosition(100 * tabIndex / tabCount);
+        var activeTabIndex = s.GetActiveTabIndex();
+        if (e.tab.index < activeTabIndex)
+            return;
+        e.cancel = !ASPxClientEdit.AreEditorsValid();
+    }
+    function onTabClick(s, e) {
+        var activeTabIndex = s.GetActiveTabIndex();
+        if (e.tab.index < activeTabIndex)
+            return;
+        e.cancel = !ASPxClientEdit.AreEditorsValid();
+    }
+
+    function OnHouseholdHeadCheckChanged(s, e) {
+        //if (s.GetValue() == true) {
+        //    RelToHouseholdHead.SetValue(null);
+        //    RelToHouseholdHead.SetEnabled(false);
+        //}
+
+        //(isMember ? '$2.00' : '$10.00');
+
+
+        //if (!gvResidents.IsNewRowEditing()) {
+
+        //    ChangeHouseHold.SetChecked(true);
+        //    alert(ChangeHouseHold.GetValue());
+        //}
+
+
+        if (s.GetValue()) {
+            RelToHouseholdHead.SetValue(null);
+        }
+        RelToHouseholdHead.SetEnabled(!s.GetValue());
+    }
+
+</script>
+@using (Html.BeginForm()) {
+    @Html.Action("gvResidentsPartial")
+}
+
+@*@Html.Partial("_ppcHousehold")*@
+
+
+@Html.DevExpress().PopupControl(ppc => {
+    ppc.Name = "ppcMessage";
+    //ppc.ClientSideEvents.EndCallback = "function(s, e){ ChildName.SetValue(MasterName.GetValue()); }";
+    ppc.Width = System.Web.UI.WebControls.Unit.Pixel(300);
+    ppc.AllowResize = false;
+    ppc.ShowHeader = true;
+    ppc.ShowOnPageLoad = false;
+    ppc.AllowDragging = false;
+    ppc.CloseAction = CloseAction.CloseButton;
+    ppc.CloseOnEscape = false;
+    ppc.Modal = true;
+    ppc.HeaderText = "Message";
+    ppc.PopupHorizontalAlign = PopupHorizontalAlign.WindowCenter;
+    ppc.PopupVerticalAlign = PopupVerticalAlign.WindowCenter;
+    //ppc.ContentUrl = "/resident/quickhousehold";
+    ppc.SetContent(() => {
+
+        //Html.RenderAction("frmHousehold");
+        //Html.RenderPartial("_frmSavingPopNoModel");
+
+        //Html.Partial("_frmSavingPop");
+        //Html.DevExpress().Label(lbl => {  }).Render();
+
+
+        Html.DevExpress().Label(lbl => {
+            lbl.Name = "Label"; lbl.Properties.ClientInstanceName = "MessageLabel";
+            //lbl.Text = "Text";
+            lbl.Style.Add("display", "block");
+            lbl.Style.Add("text-align", "center");
+        }).GetHtml();
+
+
+        Html.DevExpress().Button(btn => {
+            btn.Name = "btnClose";
+            btn.Text = "Close";
+            btn.UseSubmitBehavior = false;
+            //btn.ClientSideEvents.Click = "function(s, e){ ppcHousehold.PerformCallback({mykey: 1}); }";
+            btn.ClientSideEvents.Click = "function(s, e){ ppcMessage.Hide(); }";
+            //btn.ClientSideEvents.Click = "function(s, e){ alert( MasterName.GetValue()); }";
+            btn.Style.Add("text-align", "center");
+        }).Render();
+    });
+}).GetHtml()
+@Html.DevExpress().PopupControl(ppc => {
+    ppc.Name = "ppcNewHouseHold";
+    //ppc.ClientSideEvents.EndCallback = "function(s, e){ ChildName.SetValue(MasterName.GetValue()); }";
+    ppc.Width = System.Web.UI.WebControls.Unit.Pixel(400);
+    ppc.AllowResize = false;
+    ppc.ShowHeader = true;
+    ppc.ShowOnPageLoad = false;
+    ppc.AllowDragging = false;
+    ppc.CloseAction = CloseAction.CloseButton;
+    ppc.CloseOnEscape = false;
+    ppc.Modal = true;
+    ppc.HeaderText = "New Household";
+    ppc.PopupHorizontalAlign = PopupHorizontalAlign.WindowCenter;
+    ppc.PopupVerticalAlign = PopupVerticalAlign.WindowCenter;
+    //ppc.ContentUrl = "/resident/quickhousehold";
+    ppc.SetContent(() => {
+
+        Html.DevExpress().Label(lbl => {
+            lbl.Name = "NewHouseholdMessage"; lbl.Properties.ClientInstanceName = "NewHouseholdMessage";
+            lbl.Text = "Please type in the preferred household name, make sure there are no duplicates to prevent confusion.";
+            lbl.Style.Add("display", "block");
+            lbl.Style.Add("text-align", "center");
+            lbl.Style.Add("margin-bottom", "10px");
+
+        }).GetHtml();
+
+        //Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Friendly Name:"; lbl.AssociatedControlName = "FriendlyName"; }).GetHtml();
+        Html.DevExpress().TextBox(cfg => {
+            cfg.Name = "FriendlyName";
+            cfg.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+        }).Render();
+
+        Html.DevExpress().Button(btn => {
+            btn.Name = "btnClosePopup";
+            btn.Text = "Close";
+            btn.UseSubmitBehavior = false;
+            //btn.ClientSideEvents.Click = "function(s, e){ ppcHousehold.PerformCallback({mykey: 1}); }";
+            btn.ClientSideEvents.Click = "function(s, e){ HouseHoldName.SetValue(FriendlyName.GetValue()); ppcNewHouseHold.Hide(); }";
+            //btn.ClientSideEvents.Click = "function(s, e){ alert( MasterName.GetValue()); }";
+            btn.Style.Add("text-align", "center");
+            btn.Style.Add("margin-top", "10px");
+        }).Render();
+    });
+}).GetHtml()
+

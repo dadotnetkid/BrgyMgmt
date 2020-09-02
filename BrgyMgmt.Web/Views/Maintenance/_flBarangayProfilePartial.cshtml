@@ -1,0 +1,109 @@
+@model BrgyMgmt.Web.Models.BarangayProfileData
+@using System.Web.UI.WebControls
+
+@Html.DevExpress().FormLayout(fl => {
+    fl.Name = "flBarangayProfile";
+    var groupItem = fl.Items.AddGroupItem(groupSettings => {
+        groupSettings.Caption = "Information";
+        groupSettings.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+        groupSettings.ColumnCount = 3;
+    });
+    groupItem.GridSettings.StretchLastItem = DefaultBoolean.True;
+    groupItem.GridSettings.WrapCaptionAtWidth = 660;
+    groupItem.GridSettings.Breakpoints.Add(new LayoutBreakpoint() { Name = "S", ColumnCount = 1, MaxWidth = 500 });
+    groupItem.GridSettings.Breakpoints.Add(new LayoutBreakpoint() { Name = "M", ColumnCount = 2, MaxWidth = 800 });
+
+    groupItem.Items.Add(m => m.BarangayName, i => {
+        i.Caption = "Barangay Name";
+        i.VerticalAlign = FormLayoutVerticalAlign.Top;
+        i.NestedExtension().TextBox(s => {
+            s.Name = "BarangayName";
+            s.Width = Unit.Percentage(100);
+        });
+        i.SpanRules.Add(new SpanRule() { BreakpointName = "S", ColumnSpan = 1, RowSpan = 1 });
+        i.SpanRules.Add(new SpanRule() { BreakpointName = "M", ColumnSpan = 2, RowSpan = 1 });
+    });
+    groupItem.Items.Add(m => m.Municipality, i => {
+        i.Caption = "Municipality";
+        i.VerticalAlign = FormLayoutVerticalAlign.Middle;
+        i.NestedExtension().TextBox(s => {
+            s.Name = "Municipality";
+            s.Width = Unit.Percentage(100);
+        });
+        i.SpanRules.Add(new SpanRule() { BreakpointName = "S", ColumnSpan = 1, RowSpan = 1 });
+        i.SpanRules.Add(new SpanRule() { BreakpointName = "M", ColumnSpan = 1, RowSpan = 1 });
+    });
+    groupItem.Items.Add(m => m.Province, i => {
+        i.Caption = "Province";
+        i.VerticalAlign = FormLayoutVerticalAlign.Middle;
+        i.NestedExtension().TextBox(s => {
+            s.Name = "Province";
+            s.Width = Unit.Percentage(100);
+        });
+        i.SpanRules.Add(new SpanRule() { BreakpointName = "S", ColumnSpan = 1, RowSpan = 1 });
+        i.SpanRules.Add(new SpanRule() { BreakpointName = "M", ColumnSpan = 1, RowSpan = 1 });
+    });
+    groupItem.Items.Add(m => m.ZIP, i => {
+        i.Caption = "ZIP";
+        i.VerticalAlign = FormLayoutVerticalAlign.Top;
+        i.NestedExtension().TextBox(s => {
+            s.Name = "ZIP";
+            s.Width = Unit.Percentage(100);
+        });
+        i.SpanRules.Add(new SpanRule() { BreakpointName = "S", ColumnSpan = 1, RowSpan = 1 });
+        i.SpanRules.Add(new SpanRule() { BreakpointName = "M", ColumnSpan = 1, RowSpan = 1 });
+    });
+    groupItem.Items.Add(m => m.Slogan1, i => {
+        i.Caption = "Slogan1";
+        i.VerticalAlign = FormLayoutVerticalAlign.Top;
+        i.NestedExtension().Memo(s => {
+            s.Name = "Slogan1";
+            s.Width = Unit.Percentage(100); s.Height = 150;
+        });
+        i.SpanRules.Add(new SpanRule() { BreakpointName = "S", ColumnSpan = 1, RowSpan = 1 });
+        i.SpanRules.Add(new SpanRule() { BreakpointName = "M", ColumnSpan = 2, RowSpan = 1 });
+    });
+    groupItem.Items.Add(m => m.Slogan2, i => {
+        i.Caption = "Slogan2";
+        i.VerticalAlign = FormLayoutVerticalAlign.Top;
+        i.NestedExtension().Memo(s => {
+            s.Name = "Slogan2";
+            s.Width = Unit.Percentage(100); s.Height = 150;
+        });
+        i.SpanRules.Add(new SpanRule() { BreakpointName = "S", ColumnSpan = 1, RowSpan = 1 });
+        i.SpanRules.Add(new SpanRule() { BreakpointName = "M", ColumnSpan = 2, RowSpan = 1 });
+    });
+    groupItem.Items.Add(m => m.History, i => {
+        i.Caption = "History";
+        i.VerticalAlign = FormLayoutVerticalAlign.Top;
+        i.NestedExtension().Memo(s => {
+            s.Name = "History";
+            s.Width = Unit.Percentage(100); s.Height = 150;
+        });
+        i.SpanRules.Add(new SpanRule() { BreakpointName = "S", ColumnSpan = 1, RowSpan = 1 });
+        i.SpanRules.Add(new SpanRule() { BreakpointName = "M", ColumnSpan = 2, RowSpan = 1 });
+    });
+    groupItem.Items.Add(m => m.Demographics, i => {
+        i.Caption = "Demographics";
+        i.VerticalAlign = FormLayoutVerticalAlign.Top;
+        i.NestedExtension().Memo(s => {
+            s.Name = "Demographics";
+            s.Width = Unit.Percentage(100); s.Height = 150;
+        });
+        i.SpanRules.Add(new SpanRule() { BreakpointName = "S", ColumnSpan = 1, RowSpan = 1 });
+        i.SpanRules.Add(new SpanRule() { BreakpointName = "M", ColumnSpan = 2, RowSpan = 1 });
+    });
+
+    groupItem.Items.Add(i => {
+        i.ShowCaption = DefaultBoolean.False;
+        i.CssClass = "buttonAlign";
+        i.Width = Unit.Percentage(100);
+        i.NestedExtension().Button(s => {
+            s.Name = "applyButton";
+            s.Text = "Save";
+            s.UseSubmitBehavior = true;
+            s.Width = Unit.Pixel(150);
+            s.ClientSideEvents.Click = "function (s,e){ cbpProfile.PerformCallback({actionParam:'update'}); }";
+        });
+    });
+}).GetHtml()

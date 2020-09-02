@@ -1,0 +1,358 @@
+@{
+    var grid = Html.DevExpress().GridView(settings => {
+    settings.Name = "gvComplaintSettlementDetail" + ViewData["ComplaintId"];
+    settings.SettingsDetail.MasterGridName = "gvComplaints";
+
+    settings.CallbackRouteValues = new { Controller = "Mediation", Action = "gvComplaintSettlementDetailPartial", ComplaintId = ViewData["ComplaintId"] };
+
+    settings.SettingsEditing.AddNewRowRouteValues = new { Controller = "Mediation", Action = "gvComplaintSettlementDetailPartialAddNew", ComplaintId = ViewData["ComplaintId"] };
+    settings.SettingsEditing.UpdateRowRouteValues = new { Controller = "Mediation", Action = "gvComplaintSettlementDetailPartialUpdate", ComplaintId = ViewData["ComplaintId"] };
+    settings.SettingsEditing.DeleteRowRouteValues = new { Controller = "Mediation", Action = "gvComplaintSettlementDetailPartialDelete", ComplaintId = ViewData["ComplaintId"] };
+    settings.SettingsEditing.Mode = GridViewEditingMode.EditFormAndDisplayRow;
+    settings.SettingsBehavior.ConfirmDelete = true;
+
+    settings.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+
+    settings.CommandColumn.Width = 80;
+    settings.CommandColumn.ShowClearFilterButton = true;
+    settings.CommandColumn.Visible = true;
+    settings.CommandColumn.ShowDeleteButton = User.IsInRole("Administrator") || User.IsInRole("SA");
+    settings.CommandColumn.ShowEditButton = true;
+    settings.CommandColumn.ShowNewButtonInHeader = true;
+
+    settings.SettingsPager.PageSize = 15;
+    settings.SettingsPager.NumericButtonCount = 6;
+    settings.SettingsPager.Visible = true;
+    settings.Settings.ShowGroupPanel = false;
+    settings.Settings.ShowFilterRow = true;
+    settings.SettingsBehavior.AllowSelectByRowClick = true;
+
+    settings.KeyFieldName = "SettlementId";
+
+    settings.SettingsAdaptivity.AdaptivityMode = GridViewAdaptivityMode.Off;
+    settings.SettingsAdaptivity.AdaptiveColumnPosition = GridViewAdaptiveColumnPosition.Right;
+    settings.SettingsAdaptivity.AdaptiveDetailColumnCount = 1;
+    settings.SettingsAdaptivity.AllowOnlyOneAdaptiveDetailExpanded = false;
+    settings.SettingsAdaptivity.HideDataCellsAtWindowInnerWidth = 0;
+
+    settings.Columns.Add(col => { col.FieldName = "SettlementId"; col.Caption = "ID"; col.Width = 80; });
+    //settings.Columns.Add("SettlementId");
+    //settings.Columns.Add("BlotterId");
+    settings.Columns.Add("SettlementDate");
+    settings.Columns.Add("Location");
+
+    settings.Columns.Add(col => {
+        col.FieldName = "PresidingStaff";
+        col.ColumnType = MVCxGridViewColumnType.ComboBox;
+        var cbProp = col.PropertiesEdit as ComboBoxProperties;
+        cbProp.DropDownStyle = DropDownStyle.DropDownList;
+        cbProp.DataSource = ViewBag.Officers;
+        cbProp.TextField = "Name";
+        cbProp.ValueField = "Id";
+        cbProp.ValueType = typeof(int);
+    });
+    settings.Columns.Add(col => {
+        col.FieldName = "LetterTemplate";
+        col.ColumnType = MVCxGridViewColumnType.ComboBox;
+        var cbProp = col.PropertiesEdit as ComboBoxProperties;
+        cbProp.DropDownStyle = DropDownStyle.DropDownList;
+        cbProp.DataSource = ViewBag.Template;
+        cbProp.TextField = "Name";
+        cbProp.ValueField = "Id";
+        cbProp.ValueType = typeof(int);
+    });
+    //settings.Columns.Add("PresidingStaff");
+    settings.Columns.Add("LetterDelivered");
+    settings.Columns.Add("LetterAcknowledged");
+
+    //settings.Columns.Add("LetterTemplate");
+    settings.Columns.Add("CaseClosed");
+    //settings.Columns.Add("LetterContent");
+    //settings.Columns.Add("Decision");
+    //settings.Columns.Add("CreatedBy");
+    settings.Columns.Add(col => {
+        col.Width = 60; col.Settings.AllowAutoFilter = DefaultBoolean.False;
+        col.UnboundType = DevExpress.Data.UnboundColumnType.String;
+        col.SetDataItemTemplateContent(c => Html.DevExpress().Button(btn => {
+            btn.Name = "btnReport" + c.KeyValue;
+            btn.Text = "Invite";
+            //btn.ClientSideEvents.Click = "function(s, e) { showSummonReportViewer('" + c.KeyValue + "')}";
+            //btn.ClientSideEvents.Click = "function(s, e) { showInvitationViewer('" + c.KeyValue + "')}";
+            btn.ClientSideEvents.Click = string.Format("function(s, e) {{ showInvitationViewer('{0}')}}", c.KeyValue);
+            //settingsBtn.RouteValues = new { Controller = "Home", Action = "ButtonClickAction", rowKeyValue = c.KeyValue };  
+        }).Render());
+    });
+
+    //settings.Columns.Add(col => {
+    //    col.Width = 60; col.Settings.AllowAutoFilter = DefaultBoolean.False;
+    //    col.UnboundType = DevExpress.Data.UnboundColumnType.String;
+    //    col.SetDataItemTemplateContent(c => Html.DevExpress().Button(btn => {
+    //        btn.Name = "btnReport" + c.KeyValue;
+    //        btn.Text = "Invite";
+    //        //btn.ClientSideEvents.Click = "function(s, e) { showSummonReportViewer('" + c.KeyValue + "')}";
+    //        //btn.ClientSideEvents.Click = "function(s, e) { showInvitationViewerPopup('" + c.KeyValue + "')}";
+    //        btn.ClientSideEvents.Click = "function(s, e) { InvitationCallback('" + c.KeyValue + "')}";
+    //        //btn.ClientSideEvents.Click = "function(s, e) { pucViewerReport.PerformCallback();}";
+    //        //settingsBtn.RouteValues = new { Controller = "Home", Action = "ButtonClickAction", rowKeyValue = c.KeyValue };  
+    //    }).Render());
+    //});
+    /*Command Column Emulation
+    settings.Columns.Add(column => {
+    column.Caption = "#";*/
+
+    /*DataItemTemplate*/
+    /*New - Edit - Delete Buttons
+    column.SetDataItemTemplateContent(c => {
+        Html.DevExpress().HyperLink(hl => {
+            hl.Name = "hlNew_" + c.KeyValue.ToString();
+            hl.NavigateUrl = "javascript:;";
+            hl.Properties.Text = "New";
+            hl.Properties.ClientSideEvents.Click = string.Format("function(s, e) {{ {0}.AddNewRow(); }}", settings.Name);
+        }).Render();
+
+        ViewContext.Writer.Write("&nbsp;");
+
+        Html.DevExpress().HyperLink(hl => {
+            hl.Name = "hlEdit_" + c.KeyValue.ToString();
+            hl.NavigateUrl = "javascript:;";
+            hl.Properties.Text = "Edit";
+            hl.Properties.ClientSideEvents.Click = string.Format("function(s, e) {{ {0}.StartEditRow('{1}'); }}", settings.Name, c.VisibleIndex);
+        }).Render();
+
+        ViewContext.Writer.Write("&nbsp;");
+
+        Html.DevExpress().HyperLink(hl => {
+            hl.Name = "hlDelete_" + c.KeyValue.ToString();
+            hl.NavigateUrl = "javascript:;";
+            hl.Properties.Text = "Delete";
+            hl.Properties.ClientSideEvents.Click = string.Format("function(s, e) {{ {0}.DeleteRow('{1}'); }}", settings.Name, c.VisibleIndex);
+        }).Render();
+
+    });
+*/
+    /*DataItemTemplate
+
+});*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    settings.InitNewRow = (s, e) => {
+        e.NewValues["SettlementId"] = 0;
+    };
+
+
+    settings.SetEditFormTemplateContent(c => {
+        var item = ViewData["item"] != null ? ViewData["item"] : c.DataItem;
+        //Html.RenderPartial("_frmSettlementsEdit");
+
+        ViewContext.Writer.Write("<div class=\"editform col-md-4\" style='float:left; padding-bottom:20px;'>");
+        //Html.DevExpress().TextBox(set => {
+        //    set.Name = "ComplaintId";
+        //    set.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+        //    set.Properties.ValidationSettings.Display = Display.Dynamic;
+        //}).Bind(DataBinder.Eval(item, "ComplaintId")).Render();
+
+
+        Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Date & Time:"; lbl.AssociatedControlName = "SettlementDate"; }).GetHtml();
+        Html.DevExpress().DateEdit(set => {
+            set.Name = "SettlementDate";
+            set.Properties.EditFormat = EditFormat.DateTime;
+            set.ShowModelErrors = true;
+            set.Properties.ValidationSettings.Display = Display.Dynamic;
+            set.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+            set.Properties.ValidationSettings.RequiredField.IsRequired = true;
+        }).Bind(DataBinder.Eval(item, "SettlementDate")).GetHtml();
+
+        Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Location:"; lbl.AssociatedControlName = "Location"; }).GetHtml();
+        Html.DevExpress().TextBox(set => {
+            set.Name = "Location";
+            set.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+            set.Properties.ValidationSettings.Display = Display.Dynamic;
+        }).Bind(DataBinder.Eval(item, "Location")).Render();
+
+        Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Presiding Staff:"; lbl.AssociatedControlName = "Mediator"; }).GetHtml();
+        Html.DevExpress().ComboBox(cmb => {
+            cmb.Name = "PresidingStaff";
+            cmb.Properties.DropDownStyle = DropDownStyle.DropDownList;
+            cmb.Properties.CallbackPageSize = 50;
+            cmb.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+            cmb.Properties.DropDownRows = 8;
+            cmb.Properties.ValueField = "Id";
+            cmb.Properties.TextField = "Name";
+            cmb.Properties.ValueType = typeof(int);
+        }).BindList(ViewBag.Officers).Bind(DataBinder.Eval(item, "PresidingStaff")).GetHtml();
+
+        Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Template:"; lbl.AssociatedControlName = "LetterTemplate"; }).GetHtml();
+        Html.DevExpress().ComboBox(set => {
+            set.Name = "LetterTemplate";
+            set.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+            set.Properties.ValueField = "Id";
+            set.Properties.TextField = "Name";
+            set.Properties.ValueType = typeof(Int32);
+            set.Properties.DropDownRows = 4;
+            set.Properties.DropDownStyle = DropDownStyle.DropDownList;
+
+
+            set.Properties.Columns.Add("Name");
+            set.Properties.TextFormatString = "{0}";
+
+            //set.Properties.Columns.Add("Title", "Title", 100);
+            set.Properties.Columns.Add("Content", "Content", 0);
+            set.Properties.ClientSideEvents.SelectedIndexChanged = "function (s, e){LetterContent.SetText(s.GetSelectedItem().GetColumnText('Content'));}";
+        }).BindList(ViewBag.Template).Bind(DataBinder.Eval(item, "LetterTemplate")).GetHtml();
+
+        Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Letter Delivered:"; lbl.AssociatedControlName = "LetterDelivered"; }).GetHtml();
+        Html.DevExpress().CheckBox(chkb => {
+            chkb.Name = "LetterDelivered";
+            chkb.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+            chkb.ControlStyle.CssClass = "chk";
+            chkb.Checked = Convert.ToBoolean(DataBinder.Eval(item, "LetterDelivered"));
+            //chkb.Properties.ClientSideEvents.CheckedChanged = "function(s, e){ VoteRegistrationLoc.SetEnabled(s.GetValue()); ResidenceYears.SetEnabled(s.GetValue()); if (s.GetValue() == false) { VoteRegistrationLoc.SetValue(null); ResidenceYears.SetValue(0); }}";
+        }).Bind(DataBinder.Eval(item, "LetterDelivered")).Render();
+
+        Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Letter Delivered:"; lbl.AssociatedControlName = "LetterDelivered"; }).GetHtml();
+        Html.DevExpress().CheckBox(chkb => {
+            chkb.Name = "LetterAcknowledged";
+            chkb.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+            chkb.ControlStyle.CssClass = "chk";
+            chkb.Checked = Convert.ToBoolean(DataBinder.Eval(item, "LetterAcknowledged"));
+            //chkb.Properties.ClientSideEvents.CheckedChanged = "function(s, e){ VoteRegistrationLoc.SetEnabled(s.GetValue()); ResidenceYears.SetEnabled(s.GetValue()); if (s.GetValue() == false) { VoteRegistrationLoc.SetValue(null); ResidenceYears.SetValue(0); }}";
+        }).Bind(DataBinder.Eval(item, "LetterAcknowledged")).Render();
+
+        Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Case Closed:"; lbl.AssociatedControlName = "CaseClosed"; }).GetHtml();
+        Html.DevExpress().CheckBox(chkb => {
+            chkb.Name = "CaseClosed";
+            chkb.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+            chkb.ControlStyle.CssClass = "chk";
+            chkb.Checked = Convert.ToBoolean(DataBinder.Eval(item, "CaseClosed"));
+            //chkb.Properties.ClientSideEvents.CheckedChanged = "function(s, e){ VoteRegistrationLoc.SetEnabled(s.GetValue()); ResidenceYears.SetEnabled(s.GetValue()); if (s.GetValue() == false) { VoteRegistrationLoc.SetValue(null); ResidenceYears.SetValue(0); }}";
+        }).Bind(DataBinder.Eval(item, "CaseClosed")).Render();
+
+
+        ViewContext.Writer.Write("</div>");
+
+
+        ViewContext.Writer.Write("<div class=\"editform col-md-8\" style='float:left;'>");
+
+
+
+
+
+
+
+
+
+
+        Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Letter Content:"; lbl.AssociatedControlName = "LetterContent"; }).GetHtml();
+        Html.DevExpress().Memo(cfg => {
+            cfg.Name = "LetterContent";
+            cfg.Height = System.Web.UI.WebControls.Unit.Pixel(260);
+            cfg.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+        }).Bind(DataBinder.Eval(item, "LetterContent")).Render();
+
+        Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Decision:"; lbl.AssociatedControlName = "Decision"; }).GetHtml();
+        Html.DevExpress().Memo(cfg => {
+            cfg.Name = "Decision";
+            cfg.Height = System.Web.UI.WebControls.Unit.Pixel(260);
+            cfg.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+        }).Bind(DataBinder.Eval(item, "Decision")).Render();
+
+        //Html.DevExpress().HtmlEditor(cfg => {
+        //    cfg.Name = "heDecision";
+        //    cfg.CallbackRouteValues = new { Controller = "Mediation", Action = "heDecisionPartial" };
+        //    cfg.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+        //    cfg.ToolbarMode = DevExpress.Web.ASPxHtmlEditor.HtmlEditorToolbarMode.Ribbon;
+        //}).Bind(DataBinder.Eval(item, "LetterContent")).GetHtml();
+
+        //Html.DevExpress().RichEdit(cfg => {
+        //    cfg.Name = "Notes";
+        //    cfg.CallbackRouteValues = new { Controller = "Mediation", Action = "RichEditPartial" };
+        //    cfg.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+        //    cfg.Height = 500;
+        //    cfg.ReadOnly = false;
+        //    cfg.RibbonMode = RichEditRibbonMode.OneLineRibbon;
+        //}).Open(BarangayManagement.Web.Services.DocumentServices.GetRichEditContent((int)DataBinder.Eval(item, "SettlementId")).ToString(), DevExpress.XtraRichEdit.DocumentFormat.Rtf, () => { return BarangayManagement.Web.Services.DocumentServices.ObjectToByteArray(DataBinder.Eval(item, "Notes")); }).GetHtml();
+
+
+    @*.Open("FakeDocumentID", DevExpress.XtraRichEdit.DocumentFormat.PlainText, () =>
+    {
+    return System.Text.Encoding.Default.GetBytes('<h1>This is a Heading</h1>');
+    }
+    ).GetHtml()*@
+
+
+
+
+    //}).Bind(DataBinder.Eval(item, "Notes")).Render();
+
+    //using (Html.BeginForm()) {
+    //    Html.Action("RichEditPartial");
+    //}
+
+
+
+    ViewContext.Writer.Write("</div>");
+
+
+
+
+
+
+                    ViewContext.Writer.Write("<div class=\"editform col-md-12\" style='float:left; padding-top:20px;'>");
+            Html.DevExpress().Button(btn => {
+                btn.ControlStyle.CssClass = "fl";
+                btn.Name = "btnSave";
+                btn.Text = "Save";
+                btn.Style[HtmlTextWriterStyle.MarginLeft] = "5px";
+                btn.UseSubmitBehavior = false;
+                btn.ClientSideEvents.Click = string.Format("function(s, e){{ {0}.UpdateEdit(); }}", settings.Name);
+            }).Render();
+            Html.DevExpress().Button(btn => {
+                btn.ControlStyle.CssClass = "fl";
+                btn.Name = "btnCancel"; btn.Text = "Cancel";
+                btn.UseSubmitBehavior = false;
+                btn.ClientSideEvents.Click = string.Format("function(s, e){{ {0}.CancelEdit(); }}", settings.Name);
+
+                //btn.ClientSideEvents.Click = "function(s, e){ gvSettlements.CancelEdit(); }";
+            }).Render();
+
+            ViewContext.Writer.Write("</div>");
+
+        });
+
+    });
+    if (ViewData["EditError"] != null) {
+        grid.SetEditErrorText((string)ViewData["EditError"]);
+    }
+}
+@grid.Bind(Model).GetHtml()

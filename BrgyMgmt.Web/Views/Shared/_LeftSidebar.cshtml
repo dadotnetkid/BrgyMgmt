@@ -1,0 +1,364 @@
+﻿@using BrgyMgmt.Web.Controllers
+
+@{
+    int lastIndex = ViewBag.LocalPath.LastIndexOf("/");
+    int secondLastIndex = lastIndex > 0 ? ViewBag.LocalPath.LastIndexOf("/", lastIndex - 1) : -1;
+    string currentPath = secondLastIndex >= 0 ? ViewBag.LocalPath.Substring(0, ViewBag.LocalPath.Substring(0, ViewBag.LocalPath.LastIndexOf('/')).LastIndexOf('/')) : ViewBag.LocalPath.Substring(0, ViewBag.LocalPath.LastIndexOf('/'));
+}
+
+    <div class="sidebar">
+        <!-- Sidebar user panel (optional)
+            <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                <div class="image">
+                    <img src="/content/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
+                </div>
+                <div class="info">
+                    <a href="#" class="d-block">Alexander Pierce</a>
+                </div>
+            </div>
+            -->
+        <!-- Sidebar Menu -->
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column nav-flat nav-compact nav-child-indent" data-widget="treeview" role="menu" data-accordion="false">
+                <!-- Add icons to the links using the .nav-icon class with font-awesome or any other icon font library -->
+                <li class="nav-item">
+                    <a href="@Url.Action("Index", "Home")"
+                       class="@(ViewContext.RouteData.Values["Action"].ToString() == nameof(HomeController.Index) && ViewContext.RouteData.Values["Controller"].ToString() == "Home" ? "nav-link active" : "nav-link")">
+                        <i class="nav-icon icon icon-desktop"></i><p>DASHBOARD</p>
+                    </a>
+                    <!--
+                       <a href="@Url.Action("About", "Home")"
+                          class="@(ViewContext.RouteData.Values["Action"].ToString() == nameof(HomeController.About) && ViewContext.RouteData.Values["Controller"].ToString() == "Home" ? "nav-link active" : "nav-link")">
+                           <i class="nav-icon icon icon-desktop"></i><p>ABOUT</p>
+                       </a>
+        -->
+
+                </li>
+
+                <li class="@("nav-item has-treeview " + (ViewContext.RouteData.Values["Controller"].ToString() == "census" ? "menu-open" : ""))">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon icon icon-home"></i>
+                        <p>CENSUS<i class="right icon icon-left-open-big"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="@Url.Action("residents", "census")"
+                               class="@(ViewContext.RouteData.Values["Action"].ToString() == nameof(CensusController.Residents).ToLower() && ViewContext.RouteData.Values["Controller"].ToString().ToLower() == "census" ? "nav-link active" : "nav-link")">
+                                <i class="nav-icon icon icon-users-2"></i><p>Residents</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="@Url.Action("households", "census")"
+                               class="@(ViewContext.RouteData.Values["Action"].ToString() == nameof(CensusController.HouseHolds).ToLower() && ViewContext.RouteData.Values["Controller"].ToString().ToLower() == "census" ? "nav-link active" : "nav-link")">
+                                <i class="nav-icon icon-home-4"></i><p>Households</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="@("nav-item has-treeview " + (ViewContext.RouteData.Values["Controller"].ToString().ToLower() == "transaction" ? "menu-open" : ""))">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon icon icon-th-list"></i>
+                        <p>TRANSACTIONS<i class="right icon icon-left-open-big"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="@Url.Action("certificates", "transactions")"
+                               class="@(ViewBag.LocalPath == "/transactions/certificates" ? "nav-link active" : "nav-link")">
+                                <i class="nav-icon icon icon-certificate-2"></i><p>Certificates</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="@Url.Action("community-tax-certificate", "transactions")"
+                               class="@(ViewBag.LocalPath == "/transactions/community-tax-certificate" ? "nav-link active" : "nav-link")">
+                                <i class="nav-icon icon-print-6"></i><p>CTC</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="@Url.Action("clearances", "transactions")"
+                               class="@(ViewBag.LocalPath == "/transactions/clearances" ? "nav-link active" : "nav-link")">
+                                <i class="nav-icon icon-address-card-o"></i><p>Clearances</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="@("nav-item has-treeview " + (ViewContext.RouteData.Values["Controller"].ToString().ToLower() == "mediation" ? "menu-open" : ""))">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon icon icon-balance-scale"></i>
+                        <p>KP<i class="right icon icon-left-open-big"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="@Url.Action("complaints", "mediation")"
+                               class="@(ViewBag.LocalPath == "/mediation/complaints" ? "nav-link active" : "nav-link")">
+                                <i class="nav-icon icon icon-hammer"></i><p>Complaints</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="@Url.Action("monitor", "mediation")"
+                               class="@(ViewBag.LocalPath == "/mediation/monitor" ? "nav-link active" : "nav-link")">
+                                <i class="nav-icon icon icon-docs"></i><p>Monitor Report</p>
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
+                <li class="@("nav-item has-treeview " + (ViewContext.RouteData.Values["Controller"].ToString().ToLower() == "ledger" ? "menu-open" : ""))">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon icon icon-list-numbered-1"></i>
+                        <p>LEDGER<i class="right icon icon-left-open-big"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="@Url.Action("tax", "ledger")"
+                               class="@(ViewBag.LocalPath == "/ledger/tax" ? "nav-link active" : "nav-link")">
+                                <i class="nav-icon icon icon-money"></i><p>CTC Collections</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="@Url.Action("receipts", "ledger")"
+                               class="@(ViewBag.LocalPath == "/ledger/receipts" ? "nav-link active" : "nav-link")">
+                                <i class="nav-icon icon icon-bank"></i><p>Receipts</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="@("nav-item has-treeview " + (ViewContext.RouteData.Values["Controller"].ToString().ToLower() == "crisis" ? "menu-open" : ""))">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon icon icon-ambulance"></i>
+                        <p>CRISIS<i class="right icon icon-left-open-big"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="@Url.Action("disasters", "crisis")"
+                               class="@(ViewBag.LocalPath == "/crisis-management/disasters" ? "nav-link active" : "nav-link")">
+                                <i class="nav-icon icon icon-cloud-flash"></i><p>Disaster Management</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="@Url.Action("rescueteams", "crisis")"
+                               class="@(ViewBag.LocalPath == "/crisis-management/rescue-teams" ? "nav-link active" : "nav-link")">
+                                <i class="nav-icon icon icon-medkit"></i><p>Rescue Teams</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="@Url.Action("relocationsites", "crisis")"
+                               class="@(ViewBag.LocalPath == "/crisis-management/relocation-sites" ? "nav-link active" : "nav-link")">
+                                <i class="nav-icon icon icon-map-signs"></i><p>Relocation Sites</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+
+                <li class="@("nav-item has-treeview " + (currentPath == "/maintenance" ? "menu-open" : ""))">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon icon icon-cogs"></i>
+                        <p>MAINTENANCE<i class="right icon icon-left-open-big"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="@("nav-item has-treeview " + (ViewBag.LocalPath.Substring(0, ViewBag.LocalPath.LastIndexOf('/')) == "/maintenance/barangay-setup" ? "menu-open" : ""))">
+                            <a href="#" class="nav-link">
+                                <i class="icon icon-circle-thin"></i>
+                                <p>Barangay Setup<i class="right icon icon-left-open-big"></i></p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="@Url.Action("barangayprofile", "maintenance")"
+                                       class="@(ViewBag.LocalPath == "/maintenance/barangay-setup/profile" ? "nav-link active" : "nav-link")">
+                                        <i class="nav-icon icon-town-hall"></i><p>Profile</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="@Url.Action("officials", "maintenance")"
+                                       class="@(ViewBag.LocalPath == "/maintenance/barangay-setup/officials" ? "nav-link active" : "nav-link")">
+                                        <i class="nav-icon icon-police"></i><p>Officials</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="@Url.Action("staff", "maintenance")"
+                                       class="@(ViewBag.LocalPath == "/maintenance/barangay-setup/staff" ? "nav-link active" : "nav-link")">
+                                        <i class="nav-icon icon-user-add"></i><p>Staff</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="@Url.Action("templates", "maintenance")"
+                                       class="@(ViewBag.LocalPath == "/maintenance/barangay-setup/certificate-templates" ? "nav-link active" : "nav-link")">
+                                        <i class="nav-icon icon-docs"></i><p>Letter Templates</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <ul class="nav nav-treeview">
+                        <li class="@("nav-item has-treeview " + (ViewBag.LocalPath.Substring(0, ViewBag.LocalPath.LastIndexOf('/')) == "/maintenance/resident-config" ? "menu-open" : ""))">
+                            <a href="#" class="nav-link">
+                                <i class="icon icon-circle-thin"></i>
+                                <p>Resident Configurations<i class="right icon icon-left-open-big"></i></p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="@Url.Action("religions", "maintenance")"
+                                       class="@(ViewBag.LocalPath == "/maintenance/resident-config/religions" ? "nav-link active" : "nav-link")">
+                                        <i class="nav-icon icon-religious-christian"></i><p>Religions</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="@Url.Action("ethnicities", "maintenance")"
+                                       class="@(ViewBag.LocalPath == "/maintenance/resident-config/ethnicities" ? "nav-link active" : "nav-link")">
+                                        <i class="nav-icon icon-location-1"></i><p>Ethnicities</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="@Url.Action("relationships", "maintenance")"
+                                       class="@(ViewBag.LocalPath == "/maintenance/resident-config/relationships" ? "nav-link active" : "nav-link")">
+                                        <i class="nav-icon icon-handshake-o"></i><p>Relationships</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="@Url.Action("education", "maintenance")"
+                                       class="@(ViewBag.LocalPath == "/maintenance/resident-config/education" ? "nav-link active" : "nav-link")">
+                                        <i class="nav-icon icon-college"></i><p>Education Status</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="@Url.Action("educationalattainment", "maintenance")"
+                                       class="@(ViewBag.LocalPath == "/maintenance/resident-config/educational-attainment" ? "nav-link active" : "nav-link")">
+                                        <i class="nav-icon icon-graduation-cap-2"></i><p>Education Levels</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+
+                    </ul>
+                    <ul class="nav nav-treeview">
+                        <li class="@("nav-item has-treeview " + (ViewBag.LocalPath.Substring(0, ViewBag.LocalPath.LastIndexOf('/')) == "/maintenance/household-config" ? "menu-open" : ""))">
+                            <a href="#" class="nav-link">
+                                <i class="icon icon-circle-thin"></i>
+                                <p>Household Configurations<i class="right icon icon-left-open-big"></i></p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="@Url.Action("landtenure", "maintenance")"
+                                       class="@(ViewBag.LocalPath == "/maintenance/household-config/land-tenure" ? "nav-link active" : "nav-link")">
+                                        <i class="nav-icon icon-address"></i><p>Land Tenure</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="@Url.Action("monthlyincome", "maintenance")"
+                                       class="@(ViewBag.LocalPath == "/maintenance/household-config/monthly-income" ? "nav-link active" : "nav-link")">
+                                        <i class="nav-icon icon-money"></i><p>Monthly Income</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="@Url.Action("watersupplies", "maintenance")"
+                                       class="@(ViewBag.LocalPath == "/maintenance/household-config/water-supplies" ? "nav-link active" : "nav-link")">
+                                        <i class="nav-icon icon-water"></i><p>Water Supplies</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="@Url.Action("toiletfacilities", "maintenance")"
+                                       class="@(ViewBag.LocalPath == "/maintenance/household-config/toilet-facilities" ? "nav-link active" : "nav-link")">
+                                        <i class="nav-icon icon-bell"></i><p>Toilet Facilities</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="@Url.Action("powersources", "maintenance")"
+                                       class="@(ViewBag.LocalPath == "/maintenance/household-config/power-sources" ? "nav-link active" : "nav-link")">
+                                        <i class="nav-icon icon-lightbulb-2"></i><p>Power Sources</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="@Url.Action("wastedisposal", "maintenance")"
+                                       class="@(ViewBag.LocalPath == "/maintenance/household-config/waste-disposal" ? "nav-link active" : "nav-link")">
+                                        <i class="nav-icon icon-trash-7"></i><p>Waste Disposal</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="@Url.Action("vegetablegardens", "maintenance")"
+                                       class="@(ViewBag.LocalPath == "/maintenance/household-config/vegetable-gardens" ? "nav-link active" : "nav-link")">
+                                        <i class="nav-icon icon-tree-2"></i><p>Vegetable Gardens</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="@Url.Action("familyplanning", "maintenance")"
+                                       class="@(ViewBag.LocalPath == "/maintenance/household-config/family-planning" ? "nav-link active" : "nav-link")">
+                                        <i class="nav-icon icon-list-numbered-1"></i><p>Family Planning</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="@Url.Action("breastfeeding", "maintenance")"
+                                       class="@(ViewBag.LocalPath == "/maintenance/household-config/breast-feeding" ? "nav-link active" : "nav-link")">
+                                        <i class="nav-icon icon-droplet"></i><p>Breast Feeding</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="@Url.Action("othernutritional", "maintenance")"
+                                       class="@(ViewBag.LocalPath == "/maintenance/household-config/other-nutritional-info" ? "nav-link active" : "nav-link")">
+                                        <i class="nav-icon icon-article-alt-1"></i><p>Other Nutritional Info</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="@Url.Action("livestock", "maintenance")"
+                                       class="@(ViewBag.LocalPath == "/maintenance/household-config/livestock" ? "nav-link active" : "nav-link")">
+                                        <i class="nav-icon icon-guidedog"></i><p>Livestock</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="@Url.Action("vehicles", "maintenance")"
+                                       class="@(ViewBag.LocalPath == "/maintenance/household-config/vehicles" ? "nav-link active" : "nav-link")">
+                                        <i class="nav-icon icon-cab"></i><p>Vehicles</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="@Url.Action("equipments", "maintenance")"
+                                       class="@(ViewBag.LocalPath == "/maintenance/household-config/equipments" ? "nav-link active" : "nav-link")">
+                                        <i class="nav-icon icon-tools"></i><p>Equipments</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="@Url.Action("childrencount", "maintenance")"
+                                       class="@(ViewBag.LocalPath == "/maintenance/household-config/children-count" ? "nav-link active" : "nav-link")">
+                                        <i class="nav-icon icon-school"></i><p>Children Count</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+
+                    </ul>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="@Url.Action("maintenance", "configurations")"
+                               class="@(ViewContext.RouteData.Values["Action"].ToString() == nameof(MemberController.Users).ToLower() && ViewContext.RouteData.Values["Controller"].ToString().ToLower() == "member" ? "nav-link active" : "nav-link")">
+                                <i class="nav-icon icon icon-wrench-4"></i><p>Configurations</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+
+                @if (User.IsInRole("Administrator") | User.IsInRole("SA")) {
+                    <li class="@("nav-item has-treeview " + (ViewContext.RouteData.Values["Controller"].ToString() == "member" ? "menu-open" : ""))">
+                        <a href="#" class="nav-link">
+                            <i class="nav-icon icon icon-lock-open-1"></i>
+                            <p>
+                                MEMBERSHIP<i class="right icon icon-left-open-big"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="@Url.Action("users", "member")"
+                                   class="@(ViewContext.RouteData.Values["Action"].ToString() == nameof(MemberController.Users).ToLower() && ViewContext.RouteData.Values["Controller"].ToString().ToLower() == "member" ? "nav-link active" : "nav-link")">
+                                    <i class="nav-icon icon icon-user-secret"></i><p>Users</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                }
+            </ul>
+                
+        </nav>
+        <!-- /.sidebar-menu -->
+    </div>

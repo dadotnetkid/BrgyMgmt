@@ -1,0 +1,518 @@
+@using BrgyMgmt.Web.Models;
+@using BrgyMgmt.Web.Services
+@{
+    var grid = Html.DevExpress().GridView(settings => {
+        settings.Name = "gvResidents";
+        settings.CallbackRouteValues = new { Controller = "Census", Action = "gvResidentsPartial" };
+
+        settings.SettingsEditing.AddNewRowRouteValues = new { Controller = "Census", Action = "gvResidentsPartialAddNew" };
+        settings.SettingsEditing.UpdateRowRouteValues = new { Controller = "Census", Action = "gvResidentsPartialUpdate" };
+        settings.SettingsEditing.DeleteRowRouteValues = new { Controller = "Census", Action = "gvResidentsPartialDelete" };
+        settings.SettingsEditing.Mode = GridViewEditingMode.EditFormAndDisplayRow;
+
+        settings.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+
+        settings.CommandColumn.ShowClearFilterButton = true;
+        settings.CommandColumn.Visible = true;
+        settings.CommandColumn.ShowDeleteButton = User.IsInRole("Administrator") || User.IsInRole("SA");
+        settings.CommandColumn.ShowEditButton = true;
+        settings.CommandColumn.ShowNewButtonInHeader = true;
+        settings.SettingsPager.PageSize = 10;
+        settings.SettingsBehavior.ConfirmDelete = true;
+
+
+        settings.KeyFieldName = "ResidentId";
+
+        settings.SettingsPager.Visible = true;
+        settings.Settings.ShowGroupPanel = false;
+        settings.Settings.ShowFilterRow = true;
+        settings.SettingsBehavior.AllowSelectByRowClick = true;
+
+        settings.SettingsAdaptivity.AdaptivityMode = GridViewAdaptivityMode.HideDataCells;
+        settings.SettingsAdaptivity.AdaptiveColumnPosition = GridViewAdaptiveColumnPosition.Right;
+        settings.SettingsAdaptivity.AdaptiveDetailColumnCount = 1;
+        settings.SettingsAdaptivity.AllowOnlyOneAdaptiveDetailExpanded = true;
+        settings.SettingsAdaptivity.HideDataCellsAtWindowInnerWidth = 300;
+
+        settings.Columns.Add(col => { col.FieldName = "ResidentId"; col.Caption = "ID"; col.Width = 40; });
+        settings.Columns.Add(col => { col.FieldName = "FullName"; col.Caption = "Name"; col.Width = 250; col.Settings.AutoFilterCondition = AutoFilterCondition.Contains; });
+
+
+        //settings.Columns.Add("MiddleName");
+        settings.Columns.Add(col => {
+            col.FieldName = "CivilStatus";
+            col.ColumnType = MVCxGridViewColumnType.ComboBox; col.Width = 120;
+            var comboBoxProperties = col.PropertiesEdit as ComboBoxProperties;
+            comboBoxProperties.Items.Add("Single", "Single");
+            comboBoxProperties.Items.Add("Married", "Married");
+            comboBoxProperties.Items.Add("Widowed", "Widowed");
+            comboBoxProperties.Items.Add("Separated", "Separated");
+            comboBoxProperties.Items.Add("Divorced", "Divorced");
+        });
+        //settings.Columns.Add("CivilStatus");
+        settings.Columns.Add(col => {
+            col.FieldName = "Gender"; col.Width = 120;
+            col.ColumnType = MVCxGridViewColumnType.ComboBox;
+            var comboBoxProperties = col.PropertiesEdit as ComboBoxProperties;
+            comboBoxProperties.Items.Add("Male", "Male");
+            comboBoxProperties.Items.Add("Female", "Female");
+        });
+        //settings.Columns.Add("BirthDate");
+        settings.Columns.Add(col => {
+            col.UnboundType = DevExpress.Data.UnboundColumnType.String;
+            col.FieldName = "Age"; col.ReadOnly = true; col.Width = 120;
+        });
+        //settings.Columns.Add("Nationality");
+        //settings.Columns.Add(col => { col.FieldName = "Nationality"; col.Width = 80; });
+        settings.Columns.Add(col => {
+            col.FieldName = "ReligionId"; col.Caption = "Religion"; col.Width = 180;
+            col.EditorProperties().ComboBox(cb => {
+                cb.DataSource = ViewBag.Religions;
+                cb.TextField = "Name";
+                cb.ValueField = "Id";
+                cb.ValueType = typeof(int);
+                cb.DropDownStyle = DropDownStyle.DropDownList;
+                cb.DropDownRows = 10;
+
+            });
+        });
+        //settings.Columns.Add("isVoter", MVCxGridViewColumnType.CheckBox).Caption = "Voter";
+        settings.Columns.Add(col => { col.FieldName = "isVoter"; col.ColumnType = MVCxGridViewColumnType.CheckBox; col.Caption = "Voter"; col.Width = 80; });
+        settings.Columns.Add(col => { col.FieldName = "HouseholdHead"; col.ColumnType = MVCxGridViewColumnType.CheckBox; col.Caption = "Head"; col.Width = 80; });
+
+        //settings.Columns.Add("isVoter");
+        settings.Columns.Add("Cellular").MaxWidth = 60;
+        settings.Columns.Add("PhoneNumber");
+        settings.Columns.Add("Email");
+        //settings.Columns.Add("AddressLine");
+
+        settings.Columns.Add(col => {
+            col.FieldName = "Household.SitioId"; col.Caption = "Sitio"; col.Width = 120;
+            col.EditorProperties().ComboBox(cb => {
+                cb.DataSource = ViewBag.Sitio;
+                cb.TextField = "Name";
+                cb.ValueField = "Id";
+                cb.ValueType = typeof(int);
+                cb.DropDownStyle = DropDownStyle.DropDownList;
+                //cb.DropDownRows = 10;
+
+            });
+        });
+
+        settings.CustomUnboundColumnData = (sender, e) => {
+            //if (e.Column.FieldName == "Name") {
+            //    e.Value = e.GetListSourceFieldValue("FirstName") + " " + e.GetListSourceFieldValue("Lastname");
+            //}
+            if (e.Column.FieldName == "Age") {
+                e.Value = e.GetListSourceFieldValue("BirthDate") == null ? string.Empty : BrgyMgmt.Web.Models.Resident.GetAge(DateTime.Parse(e.GetListSourceFieldValue("BirthDate").ToString()));
+            }
+        };
+
+
+        //settings.Columns.Add("Photo");
+        //settings.Columns.Add("BiometricCapture");
+        settings.InitNewRow = (s, e) => {
+            e.NewValues["isVoter"] = false;
+            e.NewValues["PPPP"] = false;
+            e.NewValues["Disability"] = false;
+            e.NewValues["HouseholdHead"] = false;
+            e.NewValues["ChangeHouseHold"] = false;
+        };
+
+        settings.SettingsExport.EnableClientSideExportAPI = true;
+        settings.SettingsExport.ExcelExportMode = DevExpress.Export.ExportType.WYSIWYG;
+        settings.Toolbars.Add(t => {
+            t.SettingsAdaptivity.Enabled = true;
+            t.SettingsAdaptivity.EnableCollapseRootItemsToIcons = true;
+            //t.Items.Add(GridViewToolbarCommand.ExportToPdf);
+            //t.Items.Add(GridViewToolbarCommand.ExportToXls);
+            t.Items.Add(GridViewToolbarCommand.ExportToXlsx);
+            //t.Items.Add(GridViewToolbarCommand.ExportToDocx);
+            //t.Items.Add(GridViewToolbarCommand.ExportToRtf);
+            //t.Items.Add(GridViewToolbarCommand.ExportToCsv);
+        });
+
+
+
+        settings.SetEditFormTemplateContent(c => {
+            var item = ViewData["item"] != null ? ViewData["item"] : c.DataItem;
+
+            ViewContext.Writer.Write("<div class=\"editform col-md-4\" style='float:left;'>");
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "First Name"; lbl.AssociatedControlName = "FirstName"; }).GetHtml();
+            Html.DevExpress().TextBox(cfg => {
+                cfg.Name = "FirstName";
+                cfg.ShowModelErrors = true;
+                //cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                cfg.Properties.ValidationSettings.RequiredField.IsRequired = true;
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+            }).Bind(DataBinder.Eval(item, "FirstName")).Render();
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Last Name:"; lbl.AssociatedControlName = "LastName"; }).GetHtml();
+            Html.DevExpress().TextBox(cfg => {
+                cfg.Name = "LastName";
+                cfg.ShowModelErrors = true;
+                ////cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                cfg.Properties.ValidationSettings.RequiredField.IsRequired = true;
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+            }).Bind(DataBinder.Eval(item, "LastName")).Render();
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Middle Name:"; lbl.AssociatedControlName = "MiddleName"; }).GetHtml();
+            Html.DevExpress().TextBox(cfg => {
+                cfg.Name = "MiddleName";
+                cfg.ShowModelErrors = true; cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+                //cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+            }).Bind(DataBinder.Eval(item, "MiddleName")).Render();
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Alias:"; lbl.AssociatedControlName = "Alias"; }).GetHtml();
+            Html.DevExpress().TextBox(cfg => {
+                cfg.Name = "Alias"; cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+                //cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+            }).Bind(DataBinder.Eval(item, "Alias")).Render();
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Gender:"; lbl.AssociatedControlName = "Gender"; }).GetHtml();
+            Html.DevExpress().RadioButtonList(rb => {
+                rb.Name = "Gender";
+                rb.Width = System.Web.UI.WebControls.Unit.Pixel(170);
+                rb.Properties.ValidationSettings.RequiredField.IsRequired = true;
+                rb.Properties.ValidationSettings.Display = Display.Dynamic;
+                //rb.Properties.RepeatColumns = 2;
+                //rb.Properties.RepeatDirection = System.Web.UI.WebControls.RepeatDirection.Horizontal;
+            }).BindList(Enum.GetValues(typeof(BrgyMgmt.Web.Services.Gender)).Cast<BrgyMgmt.Web.Services.Gender>()).Bind(DataBinder.Eval(item, "Gender")).GetHtml();
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Birth Date:"; lbl.AssociatedControlName = "BirthDate"; }).GetHtml();
+            Html.DevExpress().DateEdit(cfg => {
+                cfg.Name = "BirthDate";
+                cfg.Properties.EditFormat = EditFormat.DateTime;
+                cfg.Properties.DisplayFormatString = "MM/dd/yyyy";
+                cfg.ShowModelErrors = true;
+                cfg.Properties.ValidationSettings.RequiredField.IsRequired = true;
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+                //cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+            }).Bind(DataBinder.Eval(item, "BirthDate")).GetHtml();
+
+            using (Html.BeginForm()) {
+                Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Photo:"; lbl.AssociatedControlName = "Photo"; }).GetHtml();
+                Html.DevExpress().BinaryImage(im => {
+                    im.Name = "Photo";
+                    im.Height = System.Web.UI.WebControls.Unit.Pixel(170);
+                    im.Width = System.Web.UI.WebControls.Unit.Pixel(170);
+                    im.Properties.ImageSizeMode = ImageSizeMode.FillAndCrop;
+                    im.CallbackRouteValues = new { Action = "BinaryImageColumnPhotoUpdate", Controller = "Census" };
+                    //im.CallbackRouteValues
+                    im.Properties.EditingSettings.Enabled = true;
+                    im.Properties.EditingSettings.UploadSettings.UploadValidationSettings.MaxFileSize = 4194304;
+                }).Bind(DataBinder.Eval(item, "Photo")).Render();
+            }
+
+            ViewContext.Writer.Write("</div>");
+            ViewContext.Writer.Write("<div class=\"editform col-md-4\" style='float:left;'>");
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "House Hold:"; lbl.AssociatedControlName = "HouseHoldName"; }).GetHtml();
+
+            ViewBag.FriendlyName = DataBinder.Eval(item, "Household.FriendlyName");
+            Html.RenderPartial("_cmbHousehold");
+            Html.DevExpress().TextBox(cfg => {
+                cfg.Name = "HouseHoldId"; cfg.ClientVisible = false;
+            }).Bind(DataBinder.Eval(item, "HouseHoldId")).Render();
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Household Head:"; lbl.AssociatedControlName = "HouseholdHead"; }).GetHtml();
+            Html.DevExpress().CheckBox(chkb => {
+                chkb.Name = "HouseholdHead"; //chkb.ControlStyle.CssClass = "fl";
+                chkb.Width = System.Web.UI.WebControls.Unit.Pixel(170); //chkb.Text = "Household Head";
+                chkb.ControlStyle.CssClass = "chk";
+                chkb.Properties.ClientSideEvents.CheckedChanged = "OnHouseholdHeadCheckChanged";
+                //chkb.Style.Add("display", "block");
+                //chkb.Style.Add("float", "left");
+                //chkb.Style.Add("clear", "right");
+            }).Bind(DataBinder.Eval(item, "HouseholdHead")).Render();
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Style.Add("clear", "left"); lbl.Text = "Relationship to Head:"; lbl.AssociatedControlName = "RelToHouseholdHead"; }).GetHtml();
+            Html.DevExpress().ComboBox(cfg => {
+                cfg.Name = "RelToHouseholdHead";
+                ////cfg.ControlStyle.CssClass = "clear";
+                cfg.Width = System.Web.UI.WebControls.Unit.Pixel(170);
+                cfg.ClientEnabled = !Convert.ToBoolean(DataBinder.Eval(item, "HouseholdHead"));
+                cfg.Properties.DropDownRows = 3;
+                cfg.Properties.IncrementalFilteringMode = IncrementalFilteringMode.None;
+                cfg.Properties.DropDownStyle = DropDownStyle.DropDownList;
+                cfg.Properties.TextField = "Name"; cfg.Properties.ValueField = "Id";
+                cfg.Properties.ValueType = typeof(Int32);
+                cfg.Properties.DropDownRows = 10;
+            }).BindList(ViewBag.Relationship).Bind(DataBinder.Eval(item, "RelToHouseholdHead")).GetHtml();
+
+
+            //Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Sitio:"; lbl.AssociatedControlName = "SitioId"; }).GetHtml();
+            //Html.DevExpress().ComboBox(cb => {
+            //    cb.Name = "SitioName";
+            //    //cb.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+            //    cb.Properties.DropDownStyle = DropDownStyle.DropDownList;
+            //    cb.Properties.DropDownRows = 10;
+            //}).BindList(Enum.GetValues(typeof(BrgyMgmt.Web.Services.Sitio)).Cast<BrgyMgmt.Web.Services.Sitio>()).Bind(DataBinder.Eval(item, "SitioName")).GetHtml();
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Email:"; lbl.AssociatedControlName = "Email"; }).GetHtml();
+            Html.DevExpress().TextBox(cfg => {
+                cfg.Name = "Email";
+                cfg.ShowModelErrors = true;
+                //cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+            }).Bind(DataBinder.Eval(item, "Email")).Render();
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "PhoneNumber:"; lbl.AssociatedControlName = "Phone"; }).GetHtml();
+            Html.DevExpress().TextBox(set => {
+                set.Name = "PhoneNumber";
+                //set.Properties.MaskSettings.Mask = "(999) 000-0000";
+                set.Properties.ValidationSettings.RequiredField.IsRequired = false;
+                set.Properties.MaskSettings.IncludeLiterals = MaskIncludeLiteralsMode.None;
+                //set.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                set.Properties.ValidationSettings.Display = Display.Dynamic;
+            }).Bind(DataBinder.Eval(item, "PhoneNumber")).Render();
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Cellular:"; lbl.AssociatedControlName = "Cellular"; }).GetHtml();
+            Html.DevExpress().TextBox(cfg => {
+                cfg.Name = "Cellular";
+                //set.Properties.MaskSettings.Mask = "(999) 000-0000";
+                cfg.Properties.MaskSettings.IncludeLiterals = MaskIncludeLiteralsMode.None;
+                cfg.Properties.ValidationSettings.RequiredField.IsRequired = false;
+                //set.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+            }).Bind(DataBinder.Eval(item, "Cellular")).Render();
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Civil Status:"; lbl.AssociatedControlName = "CivilStatus"; }).GetHtml();
+            Html.DevExpress().ComboBox(cfg => {
+                cfg.Name = "CivilStatus";
+                //cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                cfg.Properties.DropDownRows = 3;
+                cfg.Properties.IncrementalFilteringMode = IncrementalFilteringMode.None;
+                cfg.Properties.DropDownStyle = DropDownStyle.DropDownList;
+                //cfg.Properties.TextField = "Key"; cfg.Properties.ValueField = "Key";
+                //cfg.Properties.ValueType = typeof(Int32);
+                cfg.Properties.DropDownRows = 5;
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+                cfg.Properties.ValidationSettings.RequiredField.IsRequired = true;
+            }).BindList(Enum.GetValues(typeof(BrgyMgmt.Web.Services.CivilStatus)).Cast<BrgyMgmt.Web.Services.CivilStatus>()).Bind(DataBinder.Eval(item, "CivilStatus")).GetHtml();
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Religion:"; lbl.AssociatedControlName = "Religion"; }).GetHtml();
+            Html.DevExpress().ComboBox(cfg => {
+                cfg.Name = "ReligionId";
+                //cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                cfg.Properties.DropDownRows = 3;
+                cfg.Properties.IncrementalFilteringMode = IncrementalFilteringMode.None;
+                cfg.Properties.DropDownStyle = DropDownStyle.DropDownList;
+                cfg.Properties.TextField = "Name"; cfg.Properties.ValueField = "Id";
+                cfg.Properties.ValueType = typeof(Int32);
+                cfg.Properties.DropDownRows = 10;
+                cfg.Properties.ValidationSettings.RequiredField.IsRequired = true;
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+            }).BindList(ViewBag.Religions).Bind(DataBinder.Eval(item, "ReligionId")).GetHtml();
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Ethnicity:"; lbl.AssociatedControlName = "EthnicityId"; }).GetHtml();
+            Html.DevExpress().ComboBox(cfg => {
+                cfg.Name = "EthnicityId";
+                //set.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                cfg.Properties.ValueField = "Id";
+                cfg.Properties.TextField = "Name";
+                cfg.Properties.ValueType = typeof(Int32);
+                cfg.Properties.DropDownRows = 4;
+                cfg.Properties.DropDownStyle = DropDownStyle.DropDown;
+                cfg.Properties.ValidationSettings.RequiredField.IsRequired = true;
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+            }).BindList(ViewBag.Ethnicities).Bind(DataBinder.Eval(item, "EthnicityId")).GetHtml();
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Occupation"; lbl.AssociatedControlName = "Occupation"; }).GetHtml();
+            Html.DevExpress().TextBox(cfg => {
+                cfg.Name = "Occupation";
+                //cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+            }).Bind(DataBinder.Eval(item, "Occupation")).Render();
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Special Needs:"; lbl.AssociatedControlName = "FamilyMemberSpecialNeeds"; }).GetHtml();
+            Html.DevExpress().TextBox(cfg => {
+                cfg.Name = "FamilyMemberSpecialNeeds";
+                //cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+            }).Bind(DataBinder.Eval(item, "FamilyMemberSpecialNeeds")).Render();
+            ViewContext.Writer.Write("</div>");
+            ViewContext.Writer.Write("<div class=\"editform col-md-4\" style='float:left;'>");
+
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Has Disability:"; lbl.AssociatedControlName = "Disability"; }).GetHtml();
+            Html.DevExpress().CheckBox(chkb => {
+                chkb.Name = "Disability"; //chkb.ControlStyle.CssClass = "fl";
+                chkb.Width = System.Web.UI.WebControls.Unit.Pixel(170); //chkb.Text = "Household Head";
+                chkb.ControlStyle.CssClass = "chkb";
+                chkb.Style.Add("display", "block");
+                chkb.Checked = Convert.ToBoolean(DataBinder.Eval(item, "Disability"));
+                chkb.Properties.ClientSideEvents.CheckedChanged = "function(s, e){ DisabilityKind.SetEnabled(s.GetValue()); HasDisabilityCard.SetEnabled(s.GetValue()); if (s.GetValue() == false) {DisabilityKind.SetValue(null); HasDisabilityCard.SetValue(false); HasDisabilityCard.SetEnabled(false);}}";
+                //chkb.Style.Add("display", "block");
+                //chkb.Style.Add("float", "left");
+                //chkb.Style.Add("clear", "right");
+            }).Bind(DataBinder.Eval(item, "Disability")).Render();
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Style.Add("clear", "left"); lbl.Text = "Description:"; lbl.AssociatedControlName = "DisabilityKind"; }).GetHtml();
+            Html.DevExpress().TextBox(cfg => {
+                cfg.Name = "DisabilityKind";
+                cfg.ClientEnabled = Convert.ToBoolean(DataBinder.Eval(item, "Disability"));
+                //cfg.Properties.ValidationSettings.RequiredField.IsRequired = Convert.ToBoolean("");
+                cfg.Properties.ClientInstanceName = "DisabilityKind";
+                //cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+            }).Bind(DataBinder.Eval(item, "DisabilityKind")).Render();
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Disability Card:"; lbl.AssociatedControlName = "HasDisabilityCard"; }).GetHtml();
+            Html.DevExpress().CheckBox(chkb => {
+                chkb.Name = "HasDisabilityCard"; //chkb.ControlStyle.CssClass = "fl";
+                chkb.Width = System.Web.UI.WebControls.Unit.Pixel(170); //chkb.Text = "Household Head";
+                chkb.ControlStyle.CssClass = "chk";
+                chkb.Style.Add("display", "block");
+                chkb.ClientEnabled = Convert.ToBoolean(DataBinder.Eval(item, "Disability"));
+                chkb.Checked = Convert.ToBoolean(DataBinder.Eval(item, "HasDisabilityCard"));
+                //chkb.Style.Add("float", "left");
+                //chkb.Style.Add("clear", "right");
+            }).Bind(DataBinder.Eval(item, "HasDisabilityCard")).Render();
+
+            //Html.DevExpress().CheckBox(chkb => {
+            //    chkb.Name = "HasDisabilityCard";
+            //    chkb.ClientEnabled = Convert.ToBoolean(DataBinder.Eval(item, "Disability"));
+            //    chkb.Checked = Convert.ToBoolean(DataBinder.Eval(item, "HasDisabilityCard"));
+            //    chkb.Width = System.Web.UI.WebControls.Unit.Pixel(100);
+            //    chkb.ControlStyle.CssClass = "chkb";
+            //    chkb.Style.Add("margin-bottom", "6px");
+            //}).Bind(DataBinder.Eval(item, "HasDisabilityCard")).Render();
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Style.Add("clear", "left"); lbl.Style.Add("clear", "left"); lbl.Text = "4P's Recipient:"; lbl.AssociatedControlName = "PPPP"; }).GetHtml();
+            Html.DevExpress().CheckBox(chkb => {
+                chkb.Name = "PPPP";
+                chkb.Width = System.Web.UI.WebControls.Unit.Pixel(170);
+                chkb.ControlStyle.CssClass = "chk";
+                chkb.Style.Add("display", "block");
+                chkb.Checked = Convert.ToBoolean(DataBinder.Eval(item, "PPPP"));
+                chkb.Properties.ClientSideEvents.CheckedChanged = "function(s, e){ PPPPYear.SetEnabled(s.GetValue()); if (s.GetValue() == false) PPPPYear.SetValue(0); }";
+            }).Bind(DataBinder.Eval(item, "PPPP")).Render();
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Style.Add("clear", "left"); lbl.Text = "4P's Year Since:"; lbl.AssociatedControlName = "PPPPYear"; }).GetHtml();
+            Html.DevExpress().SpinEdit(cfg => {
+                cfg.Name = "PPPPYear";
+                cfg.ClientEnabled = Convert.ToBoolean(DataBinder.Eval(item, "PPPP"));
+                //cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                cfg.Properties.SpinButtons.ShowIncrementButtons = false;
+                cfg.Properties.MinValue = 2000;
+                cfg.Properties.MaxValue = 2020;
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+            }).Bind(DataBinder.Eval(item, "PPPPYear")).GetHtml();
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Style.Add("clear", "left"); lbl.Text = "Voter:"; lbl.AssociatedControlName = "isVoter"; }).GetHtml();
+            Html.DevExpress().CheckBox(chkb => {
+                chkb.Name = "isVoter";
+                chkb.Width = System.Web.UI.WebControls.Unit.Pixel(170);
+                chkb.ControlStyle.CssClass = "chk";
+                chkb.Style.Add("display", "block");
+                chkb.Checked = Convert.ToBoolean(DataBinder.Eval(item, "isVoter"));
+                chkb.Properties.ClientSideEvents.CheckedChanged = "function(s, e){ VoteRegistrationLoc.SetEnabled(s.GetValue()); ResidenceYears.SetEnabled(s.GetValue()); if (s.GetValue() == false) { VoteRegistrationLoc.SetValue(null); ResidenceYears.SetValue(0); }}";
+            }).Bind(DataBinder.Eval(item, "isVoter")).Render();
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Style.Add("clear", "left"); lbl.Text = "Reg Location:"; lbl.AssociatedControlName = "VoteRegistrationLoc"; }).GetHtml();
+            Html.DevExpress().TextBox(cfg => {
+                cfg.Name = "VoteRegistrationLoc";
+                cfg.ClientEnabled = Convert.ToBoolean(DataBinder.Eval(item, "isVoter"));
+                //cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+            }).Bind(DataBinder.Eval(item, "VoteRegistrationLoc")).Render();
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Residence Years:"; lbl.AssociatedControlName = "ResidenceYears"; }).GetHtml();
+            Html.DevExpress().SpinEdit(cfg => {
+                cfg.Name = "ResidenceYears";
+                cfg.ClientEnabled = Convert.ToBoolean(DataBinder.Eval(item, "isVoter"));
+                //cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                cfg.Properties.SpinButtons.ShowIncrementButtons = false;
+                cfg.Properties.MinValue = 1;
+                cfg.Properties.MaxValue = 100;
+            }).Bind(DataBinder.Eval(item, "ResidenceYears")).GetHtml();
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Educ. Attainment:"; lbl.AssociatedControlName = "EducationalAttainmentId"; }).GetHtml();
+            Html.DevExpress().ComboBox(cfg => {
+                cfg.Name = "EducationalAttainmentId";
+                //set.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                cfg.Properties.ValueField = "Id";
+                cfg.Properties.TextField = "Name";
+                cfg.Properties.ValueType = typeof(Int32);
+                cfg.Properties.DropDownRows = 4;
+                cfg.Properties.IncrementalFilteringMode = IncrementalFilteringMode.Contains;
+                cfg.Properties.ValidationSettings.RequiredField.IsRequired = true;
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+            }).BindList(ViewBag.EducAttainment).Bind(DataBinder.Eval(item, "EducationalAttainmentId")).GetHtml();
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Educ. Status:"; lbl.AssociatedControlName = "EducationStatus"; }).GetHtml();
+            Html.DevExpress().ComboBox(cfg => {
+                cfg.Name = "EducationStatus";
+                //set.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                cfg.Properties.ValueField = "Id";
+                cfg.Properties.TextField = "Name";
+                cfg.Properties.ValueType = typeof(Int32);
+                cfg.Properties.ValidationSettings.RequiredField.IsRequired = true;
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+            }).BindList(ViewBag.EducationStatus).Bind(DataBinder.Eval(item, "EducationStatus")).GetHtml();
+
+            ViewContext.Writer.Write("</div>");
+
+            ViewContext.Writer.Write("<div class=\"editform col-md-12\" style='float:left; padding-top:20px;'>");
+            Html.DevExpress().Button(btn => {
+                btn.ControlStyle.CssClass = "fl";
+                btn.Name = "btnSave";
+                btn.Text = "Save";
+                btn.Style[HtmlTextWriterStyle.MarginLeft] = "5px";
+                btn.UseSubmitBehavior = false;
+                btn.ClientSideEvents.Click = "SaveResident";
+            }).Render();
+            Html.DevExpress().Button(btn => {
+                btn.ControlStyle.CssClass = "fl";
+                btn.Name = "btnCancel"; btn.Text = "Cancel";
+                btn.UseSubmitBehavior = false;
+                btn.ClientSideEvents.Click = "function(s, e){ gvResidents.CancelEdit(); }";
+            }).Render();
+
+            ViewContext.Writer.Write("</div>");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            //ViewContext.Writer.Write("<div class=\"editform col-md-12\" style='float:left; padding-top:20px;'>");
+
+            //Html.DevExpress().Button(
+            //    btnSettings => {
+            //        btnSettings.Name = "btnUpdate";
+            //        btnSettings.Text = "Update";
+            //        btnSettings.ClientSideEvents.Click = "function(s, e){ if (ASPxClientEdit.AreEditorsValid()) gvResidents.UpdateEdit(); }";
+            //    }).Render();
+            //Html.DevExpress().Button(
+            //    btnSettings => {
+            //        btnSettings.Name = "btnCancel";
+            //        btnSettings.Text = "Cancel";
+            //        btnSettings.Style[HtmlTextWriterStyle.MarginLeft] = "5px";
+            //        btnSettings.ClientSideEvents.Click = "function(s, e){ gvResidents.CancelEdit(); }";
+            //    }).Render();
+            //ViewContext.Writer.Write("</div>");
+
+        });
+
+
+    });
+    if (ViewData["EditError"] != null) {
+        grid.SetEditErrorText((string)ViewData["EditError"]);
+    }
+}
+@*@grid.Bind(Model).GetHtml()*@
+
+@grid.BindToEF(string.Empty, string.Empty, (s, e) => {
+    e.KeyExpression = "ResidentId"; e.QueryableSource = Model;
+}).GetHtml()
+

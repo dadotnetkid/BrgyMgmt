@@ -1,0 +1,49 @@
+@{
+    var grid = Html.DevExpress().GridView(settings => {
+        settings.Name = "gvRelocationSites";
+        settings.CallbackRouteValues = new { Controller = "Crisis", Action = "gvRelocationSitesPartial" };
+
+        settings.SettingsEditing.AddNewRowRouteValues = new { Controller = "Crisis", Action = "gvRelocationSitesPartialAddNew" };
+        settings.SettingsEditing.UpdateRowRouteValues = new { Controller = "Crisis", Action = "gvRelocationSitesPartialUpdate" };
+        settings.SettingsEditing.DeleteRowRouteValues = new { Controller = "Crisis", Action = "gvRelocationSitesPartialDelete" };
+        settings.SettingsEditing.Mode = GridViewEditingMode.EditFormAndDisplayRow;
+        settings.SettingsBehavior.ConfirmDelete = true;
+        settings.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+
+        settings.CommandColumn.ShowClearFilterButton = true;
+        settings.CommandColumn.Visible = true;
+        settings.CommandColumn.ShowDeleteButton = User.IsInRole("SA") || User.IsInRole("Administrator");
+        settings.CommandColumn.ShowEditButton = true;
+        settings.CommandColumn.ShowNewButtonInHeader = true;
+        settings.CommandColumn.Width = 100;
+
+        settings.SettingsPager.PageSize = 10;
+
+        settings.KeyFieldName = "DisasterRelocationSiteId";
+
+        settings.SettingsPager.Visible = true;
+        settings.Settings.ShowGroupPanel = false;
+        settings.Settings.ShowFilterRow = true;
+        settings.SettingsBehavior.AllowSelectByRowClick = true;
+
+        settings.SettingsAdaptivity.AdaptivityMode = GridViewAdaptivityMode.HideDataCellsWindowLimit;
+        settings.SettingsAdaptivity.AdaptiveColumnPosition = GridViewAdaptiveColumnPosition.Right;
+        settings.SettingsAdaptivity.AdaptiveDetailColumnCount = 1;
+        settings.SettingsAdaptivity.AllowOnlyOneAdaptiveDetailExpanded = false;
+        settings.SettingsAdaptivity.HideDataCellsAtWindowInnerWidth = 300;
+
+        //settings.Columns.Add("DisasterRelocationSiteId");
+        //settings.Columns.Add("DisasterId");
+        settings.Columns.Add("DisasterRelocationSiteName").Caption = "Site Name";
+        settings.Columns.Add("DisasterRelocationSiteDesc").Caption = "Description";
+        //settings.Columns.Add("DisasterRelocationSiteAddress");
+        settings.Columns.Add("DisasterRelocationSiteCapacity").Caption = "Current/Capacity";
+        settings.Columns.Add("DisasterRelocationSiteContactPerson").Caption = "Contact Person";
+        settings.Columns.Add("DisasterRelocationSiteContactNumber").Caption = "Cellular";
+        //settings.Columns.Add("Disaster");
+    });
+    if (ViewData["EditError"] != null) {
+        grid.SetEditErrorText((string)ViewData["EditError"]);
+    }
+}
+@grid.Bind(Model).GetHtml()

@@ -1,0 +1,15 @@
+﻿@{
+    ViewBag.Title = "BRGY PROFILE"; ViewBag.Description = "MAINTENANCE / BRGY SETUP";
+}
+
+<div class="row">
+    <div class="col-md-12">
+
+        @using (Html.BeginForm()) {
+            @Html.Action("reProfilePartial")
+        }
+
+    </div>
+</div>
+
+@*@Html.Action("cbpProfilePartial")*@

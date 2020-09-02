@@ -1,0 +1,25 @@
+@{
+    var grid = Html.DevExpress().GridView(settings => {
+        settings.Name = "gvSettlements";
+        settings.CallbackRouteValues = new { Controller = "Home", Action = "gvSettlementsPartial" };
+        settings.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+
+
+        settings.KeyFieldName = "SettlementId";
+
+        settings.SettingsPager.Visible = true;
+        settings.Settings.ShowGroupPanel = false;
+        settings.Settings.ShowFilterRow = false;
+        settings.SettingsBehavior.AllowSelectByRowClick = true;
+
+        settings.SettingsAdaptivity.AdaptivityMode = GridViewAdaptivityMode.Off;
+        settings.SettingsAdaptivity.AdaptiveColumnPosition = GridViewAdaptiveColumnPosition.Right;
+        settings.SettingsAdaptivity.AdaptiveDetailColumnCount = 1;
+        settings.SettingsAdaptivity.AllowOnlyOneAdaptiveDetailExpanded = false;
+        settings.SettingsAdaptivity.HideDataCellsAtWindowInnerWidth = 0;
+
+        settings.Columns.Add("SettlementDate").Caption = "Date | Time";
+        settings.Columns.Add("Complaint.ComplaintTitle").Caption = "Title";
+    });
+}
+@grid.Bind(Model).GetHtml()

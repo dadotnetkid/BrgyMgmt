@@ -1,0 +1,149 @@
+@{
+    var grid = Html.DevExpress().GridView(settings => {
+        settings.Name = "gvOfficials";
+        settings.CallbackRouteValues = new {
+            Controller = "Maintenance", Action = "gvOfficialsPartial" };
+
+        settings.SettingsEditing.AddNewRowRouteValues = new { Controller = "Maintenance", Action = "gvOfficialsPartialAddNew" };
+        settings.SettingsEditing.UpdateRowRouteValues = new { Controller = "Maintenance", Action = "gvOfficialsPartialUpdate" };
+        settings.SettingsEditing.DeleteRowRouteValues = new { Controller = "Maintenance", Action = "gvOfficialsPartialDelete" };
+        settings.SettingsEditing.Mode = GridViewEditingMode.EditFormAndDisplayRow;
+        settings.SettingsBehavior.ConfirmDelete = true;
+
+        settings.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+
+        settings.CommandColumn.Visible = true;
+        settings.CommandColumn.ShowNewButton = true;
+        settings.CommandColumn.ShowDeleteButton = User.IsInRole("Administrator") || User.IsInRole("SA");
+        settings.CommandColumn.ShowEditButton = true;
+        settings.CommandColumn.ShowNewButton = false;
+        settings.CommandColumn.ShowNewButtonInHeader = true;
+
+        settings.KeyFieldName = "EmployeeId";
+
+        settings.SettingsPager.Visible = true;
+        settings.Settings.ShowGroupPanel = false;
+        settings.Settings.ShowFilterRow = true;
+        settings.SettingsBehavior.AllowSelectByRowClick = true;
+
+        settings.SettingsAdaptivity.AdaptivityMode = GridViewAdaptivityMode.HideDataCells;
+        settings.SettingsAdaptivity.AdaptiveColumnPosition = GridViewAdaptiveColumnPosition.Right;
+        settings.SettingsAdaptivity.AdaptiveDetailColumnCount = 1;
+        settings.SettingsAdaptivity.AllowOnlyOneAdaptiveDetailExpanded = true;
+        settings.SettingsAdaptivity.HideDataCellsAtWindowInnerWidth = 300;
+
+        settings.Columns.Add("EmployeeId").Visible = false;
+        settings.Columns.Add("EmployeeName");
+        settings.Columns.Add("Designation");
+        //settings.Columns.Add("StartDate").Caption= "From";
+        settings.Columns.Add(column => {
+            column.Caption = "From";
+            column.FieldName = "StartDate";
+            column.PropertiesEdit.DisplayFormatString = "yyyy";
+        });
+        //settings.Columns.Add("EndDate").Caption = "To";
+        settings.Columns.Add(column => {
+            column.Caption = "To";
+            column.FieldName = "EndDate";
+            column.PropertiesEdit.DisplayFormatString = "yyyy";
+        });
+        //settings.Columns.Add("Committees");
+        settings.Columns.Add(column => {
+            column.Caption = "Committe Membership";
+            column.FieldName = "CommitteeNames";
+            column.PropertiesEdit.EncodeHtml = false;
+        });
+        settings.Columns.Add("EmployeeType").Visible = false;
+
+
+        settings.SetEditFormTemplateContent(c => {
+            var item = ViewData["item"] != null ? ViewData["item"] : c.DataItem;
+
+            ViewContext.Writer.Write("<div class=\"editform col-md-4\" style='float:left;'>");
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Employee Name"; lbl.AssociatedControlName = "EmployeeName"; }).GetHtml();
+            Html.DevExpress().TextBox(cfg => {
+                cfg.Name = "EmployeeName";
+                cfg.ShowModelErrors = true;
+                cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                cfg.Properties.ValidationSettings.RequiredField.IsRequired = true;
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+            }).Bind(DataBinder.Eval(item, "EmployeeName")).Render();
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Designation"; lbl.AssociatedControlName = "Designation"; }).GetHtml();
+            Html.DevExpress().TextBox(cfg => {
+                cfg.Name = "Designation";
+                cfg.ShowModelErrors = true;
+                cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                cfg.Properties.ValidationSettings.RequiredField.IsRequired = true;
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+            }).Bind(DataBinder.Eval(item, "Designation")).Render();
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "From"; lbl.AssociatedControlName = "Designation"; }).GetHtml();
+            Html.DevExpress().DateEdit(cfg => {
+                cfg.Name = "StartDate";
+                cfg.Properties.PickerType = DatePickerType.Years;
+                //cfg.Date = DateTime.Today;
+            }).Bind(DataBinder.Eval(item, "StartDate")).Render();
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "To"; lbl.AssociatedControlName = "EndDate"; }).GetHtml();
+            Html.DevExpress().DateEdit(cfg => {
+                cfg.Name = "EndDate";
+                cfg.Properties.PickerType = DatePickerType.Years;
+                //cfg.Date = DateTime.Today;
+            }).Bind(DataBinder.Eval(item, "EndDate")).Render();
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Sort:"; lbl.AssociatedControlName = "SortOrder"; }).GetHtml();
+            Html.DevExpress().SpinEdit(cfg => {
+                cfg.Name = "SortOrder";
+                //cfg.ClientEnabled = Convert.ToBoolean(DataBinder.Eval(item, "PPPP"));
+                cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                cfg.Properties.SpinButtons.ShowIncrementButtons = false;
+                cfg.Properties.MinValue = 1;
+                cfg.Properties.MaxValue = 100;
+            }).Bind(DataBinder.Eval(item, "SortOrder")).GetHtml();
+            ViewContext.Writer.Write("</div>");
+
+
+            ViewContext.Writer.Write("<div class=\"editform col-md-4\" style='float:left;'>");
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Committees"; lbl.AssociatedControlName = "Committees"; }).GetHtml();
+            Html.DevExpress().TokenBox(set => {
+                set.Name = "Committees";
+                set.Properties.AllowCustomTokens = false;
+                set.Properties.ShowDropDownOnFocus = ShowDropDownOnFocusMode.Always;
+                set.Properties.IncrementalFilteringMode = IncrementalFilteringMode.Contains;
+                set.Properties.ValueField = "Id";
+                set.Properties.TextField = "Name";
+                set.Width = System.Web.UI.WebControls.Unit.Pixel(300);
+            }).BindList(ViewBag.Committees)
+            .Bind(DataBinder.Eval(item, "Committees")).GetHtml();
+
+            ViewContext.Writer.Write("</div>");
+
+
+
+
+
+            ViewContext.Writer.Write("<div class=\"editform col-md-12\" style='float:left; padding-top:20px;'>");
+            Html.DevExpress().Button(btn => {
+                btn.ControlStyle.CssClass = "fl";
+                btn.Name = "btnSave";
+                btn.Text = "Save";
+                btn.Style[HtmlTextWriterStyle.MarginLeft] = "5px";
+                btn.UseSubmitBehavior = false;
+                btn.ClientSideEvents.Click = "function(s, e){ gvOfficials.UpdateEdit(); }";
+            }).Render();
+            Html.DevExpress().Button(btn => {
+                btn.ControlStyle.CssClass = "fl";
+                btn.Name = "btnCancelTab"; btn.Text = "Cancel";
+                btn.UseSubmitBehavior = false;
+                btn.ClientSideEvents.Click = "function(s, e){ gvOfficials.CancelEdit(); }";
+            }).Render();
+
+            ViewContext.Writer.Write("</div>");
+        });
+
+
+
+
+    });
+    if (ViewData["EditError"] != null) {
+        grid.SetEditErrorText((string)ViewData["EditError"]);
+    }
+}
+@grid.Bind(Model).GetHtml()

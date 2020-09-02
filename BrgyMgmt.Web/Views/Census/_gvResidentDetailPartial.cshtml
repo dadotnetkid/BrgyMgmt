@@ -1,0 +1,69 @@
+@{
+    var grid = Html.DevExpress().GridView(settings => {
+        settings.Name = "gvResidentDetail";
+        settings.CallbackRouteValues = new { Controller = "Resident", Action = "gvResidentDetailPartial", HouseholdId = ViewData["HouseholdId"] };
+
+        settings.SettingsEditing.AddNewRowRouteValues = new { Controller = "Resident", Action = "gvResidentDetailPartialAddNew" };
+        settings.SettingsEditing.UpdateRowRouteValues = new { Controller = "Resident", Action = "gvResidentDetailPartialUpdate" };
+        settings.SettingsEditing.DeleteRowRouteValues = new { Controller = "Resident", Action = "gvResidentDetailPartialDelete" };
+        settings.SettingsEditing.Mode = GridViewEditingMode.EditFormAndDisplayRow;
+        settings.SettingsBehavior.ConfirmDelete = true;
+
+        settings.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+
+        settings.CommandColumn.Visible = false;
+        settings.CommandColumn.ShowNewButton = true;
+        settings.CommandColumn.ShowDeleteButton = User.IsInRole("Administrator") || User.IsInRole("SA");
+        settings.CommandColumn.ShowEditButton = true;
+
+        settings.KeyFieldName = "ResidentId";
+
+        settings.SettingsPager.Visible = false;
+        settings.Settings.ShowGroupPanel = false;
+        settings.Settings.ShowFilterRow = true;
+        settings.SettingsBehavior.AllowSelectByRowClick = true;
+
+        settings.SettingsAdaptivity.AdaptivityMode = GridViewAdaptivityMode.Off;
+        settings.SettingsAdaptivity.AdaptiveColumnPosition = GridViewAdaptiveColumnPosition.Right;
+        settings.SettingsAdaptivity.AdaptiveDetailColumnCount = 1;
+        settings.SettingsAdaptivity.AllowOnlyOneAdaptiveDetailExpanded = false;
+        settings.SettingsAdaptivity.HideDataCellsAtWindowInnerWidth = 0;
+
+        settings.Columns.Add(col => { col.FieldName = "ResidentId"; col.Caption = "Resident #"; col.Width = 40; });
+        settings.Columns.Add("FullName");
+        settings.Columns.Add(col => { col.FieldName = "HouseholdHead"; col.ColumnType = MVCxGridViewColumnType.CheckBox; col.Caption = "Head"; col.Width = 80; });
+        settings.Columns.Add("Gender");
+        settings.Columns.Add(col => { col.FieldName = "isVoter"; col.ColumnType = MVCxGridViewColumnType.CheckBox; col.Caption = "Voter"; col.Width = 80; });
+        settings.Columns.Add(col => {
+            col.UnboundType = DevExpress.Data.UnboundColumnType.String;
+            col.FieldName = "Age"; col.ReadOnly = true; col.Width = 120;
+        });
+        settings.Columns.Add("Cellular");
+        settings.Columns.Add(col => {
+            col.FieldName = "RelToHouseholdHead"; col.Caption = "Relationship to Head"; col.Width = 120;
+            col.EditorProperties().ComboBox(cb => {
+                cb.DataSource = ViewBag.Relationships;
+                cb.TextField = "Name";
+                cb.ValueField = "Id";
+                cb.ValueType = typeof(int);
+                cb.DropDownStyle = DropDownStyle.DropDownList;
+                //cb.DropDownRows = 10;
+
+            });
+        });
+
+        settings.CustomUnboundColumnData = (sender, e) => {
+            //if (e.Column.FieldName == "Name") {
+            //    e.Value = e.GetListSourceFieldValue("FirstName") + " " + e.GetListSourceFieldValue("Lastname");
+            //}
+            if (e.Column.FieldName == "Age") {
+                e.Value = e.GetListSourceFieldValue("BirthDate") == null ? string.Empty : BrgyMgmt.Web.Models.Resident.GetAge(DateTime.Parse(e.GetListSourceFieldValue("BirthDate").ToString()));
+            }
+        };
+
+    });
+    if (ViewData["EditError"] != null){
+        grid.SetEditErrorText((string)ViewData["EditError"]);
+    }
+}
+@grid.Bind(Model).GetHtml()

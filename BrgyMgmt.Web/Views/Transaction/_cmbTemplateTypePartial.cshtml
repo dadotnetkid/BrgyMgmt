@@ -1,0 +1,23 @@
+@using BrgyMgmt.Web.Services
+
+@Html.DevExpress().ComboBox(cfg => {
+    cfg.Name = "TemplateName";
+    cfg.CallbackRouteValues = new { Controller = "Transaction", Action = "cmbTemplateTypePartial" };
+    //set.Width = System.Web.UI.WebControls.Unit.Pixel(200);
+    cfg.Properties.ValueField = "Id";
+    cfg.Properties.TextField = "Name";
+    cfg.Properties.ValueType = typeof(Int32);
+    cfg.Properties.DropDownRows = 4;
+    cfg.Properties.DropDownStyle = DropDownStyle.DropDownList;
+
+    cfg.Properties.Columns.Add("Name");
+    cfg.Properties.TextFormatString = "{0}";
+
+    //set.Properties.Columns.Add("Title", "Title", 100);
+    cfg.Properties.Columns.Add("Content", "Content", 0);
+    cfg.Properties.ClientSideEvents.SelectedIndexChanged = "function (s, e){TemplateId.SetValue(s.GetValue()); CertificateContent.SetText(s.GetSelectedItem().GetColumnText('Content'));}";
+    //cfg.Properties.ClientSideEvents.EndCallback = "function (s, e){ alert(Viewbag.Notice ); }";
+    cfg.Properties.ValidationSettings.RequiredField.IsRequired = true;
+    cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+}).BindList(ViewBag.CertificateType).Bind(ViewData["TemplateId"]).GetHtml()
+

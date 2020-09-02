@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="adbb1fe0b5c243acb8c755978e227da8" Name="Diagram1">
+        <EntityTypeShape EntityType="BrgyMgmt.Web.Models.UserClaim" Width="1.5" PointX="0.75" PointY="0.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="BrgyMgmt.Web.Models.UserLogin" Width="1.5" PointX="0.75" PointY="5.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="BrgyMgmt.Web.Models.UserRole" Width="1.5" PointX="0.75" PointY="3" IsExpanded="true" />
+        <EntityTypeShape EntityType="BrgyMgmt.Web.Models.User" Width="1.875" PointX="3" PointY="1" IsExpanded="true" />
+        <AssociationConnector Association="BrgyMgmt.Web.Models.FK_UserClaims_Users" ManuallyRouted="false" />
+        <AssociationConnector Association="BrgyMgmt.Web.Models.FK_UserLogins_Users" ManuallyRouted="false" />
+        <AssociationConnector Association="BrgyMgmt.Web.Models.UsersInRoles" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="BrgyMgmt.Web.Models.Complaint" Width="2.125" PointX="10.75" PointY="0.5" />
+        <EntityTypeShape EntityType="BrgyMgmt.Web.Models.Resident" Width="2" PointX="7.75" PointY="0.5" />
+        <AssociationConnector Association="BrgyMgmt.Web.Models.ComplaintRespondents" />
+        <AssociationConnector Association="BrgyMgmt.Web.Models.ComplaintComplainants" />
+        <AssociationConnector Association="BrgyMgmt.Web.Models.ComplaintVictims" />
+        <EntityTypeShape EntityType="BrgyMgmt.Web.Models.CertificateCommunity" Width="1.875" PointX="5.375" PointY="0.5" />
+        <EntityTypeShape EntityType="BrgyMgmt.Web.Models.Settlement" Width="2.125" PointX="10.75" PointY="7.5" />
+        <AssociationConnector Association="BrgyMgmt.Web.Models.FK_CertificateCommunity_Residents" />
+        <AssociationConnector Association="BrgyMgmt.Web.Models.FK_Settlements_Complaints" />
+        <EntityTypeShape EntityType="BrgyMgmt.Web.Models.MaintenanceTable" Width="2.25" PointX="13.75" PointY="0.5" />
+        <AssociationConnector Association="BrgyMgmt.Web.Models.FK_Complaints_MaintenanceTables" />
+        <AssociationConnector Association="BrgyMgmt.Web.Models.FK_Complaints_MaintenanceTables1" />
+        <AssociationConnector Association="BrgyMgmt.Web.Models.FK_Complaints_MaintenanceTables2" />
+        <EntityTypeShape EntityType="BrgyMgmt.Web.Models.HouseholdPropertyProduction" Width="2.25" PointX="16.75" PointY="0.5" />
+        <EntityTypeShape EntityType="BrgyMgmt.Web.Models.Household" Width="2.25" PointX="16.75" PointY="3.875" />
+        <AssociationConnector Association="BrgyMgmt.Web.Models.FK_HouseholdProductions_MaintenanceTables" />
+        <AssociationConnector Association="BrgyMgmt.Web.Models.FK_HouseholdPropertyProductions_Households" />
+        <AssociationConnector Association="BrgyMgmt.Web.Models.FK_Residents_Households" />
+        <EntityTypeShape EntityType="BrgyMgmt.Web.Models.LetterTemplate" Width="2" PointX="7.75" PointY="13" />
+        <EntityTypeShape EntityType="BrgyMgmt.Web.Models.Certificate" Width="2" PointX="7.75" PointY="9.25" />
+        <AssociationConnector Association="BrgyMgmt.Web.Models.FK_Certificates_LetterTemplates" />
+        <AssociationConnector Association="BrgyMgmt.Web.Models.FK_Certificates_Residents" />
+        <EntityTypeShape EntityType="BrgyMgmt.Web.Models.Clearance" Width="2.25" PointX="13.75" PointY="3.75" />
+        <EntityTypeShape EntityType="BrgyMgmt.Web.Models.CustomLog" Width="1.875" PointX="5.375" PointY="5" />
+        <EntityTypeShape EntityType="BrgyMgmt.Web.Models.Employee" Width="1.875" PointX="3" PointY="6.125" />
+        <AssociationConnector Association="BrgyMgmt.Web.Models.FK_Clearances_Residents" />
+        <AssociationConnector Association="BrgyMgmt.Web.Models.ClearancePurposes" />
+        <EntityTypeShape EntityType="BrgyMgmt.Web.Models.ApplicationSetting" Width="1.875" PointX="3" PointY="9.5" />
+        <EntityTypeShape EntityType="BrgyMgmt.Web.Models.ConfigData" Width="1.5" PointX="0.75" PointY="7.625" />
+        <EntityTypeShape EntityType="BrgyMgmt.Web.Models.DisasterRelocationSite" Width="3" PointX="3" PointY="13" />
+        <EntityTypeShape EntityType="BrgyMgmt.Web.Models.Disaster" Width="1.5" PointX="0.75" PointY="13.5" />
+        <AssociationConnector Association="BrgyMgmt.Web.Models.FK_DisasterRelocationSites_Disasters" />
+        <EntityTypeShape EntityType="BrgyMgmt.Web.Models.DisasterStatus" Width="3" PointX="3" PointY="16.25" />
+        <AssociationConnector Association="BrgyMgmt.Web.Models.FK_DisasterStatuses_Disasters" />
+        <EntityTypeShape EntityType="BrgyMgmt.Web.Models.EstablishmentLog" Width="1.5" PointX="10.375" PointY="12.75" />
+        <EntityTypeShape EntityType="BrgyMgmt.Web.Models.Establishment" Width="1.5" PointX="12.375" PointY="12.75" />
+        <AssociationConnector Association="BrgyMgmt.Web.Models.FK_EstablishmentLogs_Establishments" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

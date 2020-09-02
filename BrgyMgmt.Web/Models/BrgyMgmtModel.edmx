@@ -1,0 +1,2005 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="BrgyMgmt.Web.Models.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="ApplicationSettings">
+          <Key>
+            <PropertyRef Name="ApplicationSettingsId" />
+          </Key>
+          <Property Name="ApplicationSettingsId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ApplicationSettingsName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="ApplicationSettingsValue" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="ApplicationSettingsCategory" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="ApplicationSettingsSortOrder" Type="smallint" />
+        </EntityType>
+        <EntityType Name="CertificateCommunity">
+          <Key>
+            <PropertyRef Name="TaxCertificateId" />
+          </Key>
+          <Property Name="TaxCertificateId" Type="int" Nullable="false" />
+          <Property Name="CCI" Type="int" Nullable="false" />
+          <Property Name="Year" Type="int" Nullable="false" />
+          <Property Name="PlaceIssued" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="DateIssued" Type="date" Nullable="false" />
+          <Property Name="ResidentId" Type="int" Nullable="false" />
+          <Property Name="Height" Type="nvarchar" MaxLength="10" />
+          <Property Name="Weight" Type="nvarchar" MaxLength="10" />
+          <Property Name="BasicCommunityTax" Type="money" />
+          <Property Name="BusinessEarningsTax" Type="money" />
+          <Property Name="ProfessionalEarningsTax" Type="money" />
+          <Property Name="PropertyEarningsTax" Type="money" />
+          <Property Name="Interest" Type="int" />
+          <Property Name="AmountPaid" Type="money" />
+        </EntityType>
+        <EntityType Name="Certificates">
+          <Key>
+            <PropertyRef Name="CertificateId" />
+          </Key>
+          <Property Name="CertificateId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TemplateId" Type="int" Nullable="false" />
+          <Property Name="ResidentId" Type="int" Nullable="false" />
+          <Property Name="DateIssued" Type="datetime" Nullable="false" />
+          <Property Name="CertificateContent" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="OfficialReceiptNum" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="TaxCertificateNum" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="Amount" Type="money" />
+        </EntityType>
+        <EntityType Name="ClearancePurposes">
+          <Key>
+            <PropertyRef Name="ClearanceId" />
+            <PropertyRef Name="MaintenanceId" />
+          </Key>
+          <Property Name="ClearanceId" Type="int" Nullable="false" />
+          <Property Name="MaintenanceId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Clearances">
+          <Key>
+            <PropertyRef Name="ClearanceId" />
+          </Key>
+          <Property Name="ClearanceId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ResidentId" Type="int" Nullable="false" />
+          <Property Name="IssuedDate" Type="datetime" Nullable="false" />
+          <Property Name="CTC" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="CTCDate" Type="datetime" Nullable="false" />
+          <Property Name="CTCPlaceIssued" Type="nvarchar" MaxLength="200" />
+          <Property Name="ORNumber" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="YearsOfStay" Type="int" />
+          <Property Name="Comelec" Type="nvarchar" MaxLength="500" />
+          <Property Name="Amount" Type="money" />
+        </EntityType>
+        <EntityType Name="ComplaintComplainants">
+          <Key>
+            <PropertyRef Name="ComplaintId" />
+            <PropertyRef Name="ResidentId" />
+          </Key>
+          <Property Name="ComplaintId" Type="int" Nullable="false" />
+          <Property Name="ResidentId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ComplaintRespondents">
+          <Key>
+            <PropertyRef Name="ComplaintId" />
+            <PropertyRef Name="ResidentId" />
+          </Key>
+          <Property Name="ComplaintId" Type="int" Nullable="false" />
+          <Property Name="ResidentId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Complaints">
+          <Key>
+            <PropertyRef Name="ComplaintId" />
+          </Key>
+          <Property Name="ComplaintId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ComplaintTitle" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="NonResidentComplainants" Type="nvarchar(max)" />
+          <Property Name="NonResidentRespondents" Type="nvarchar(max)" />
+          <Property Name="NonResidentVictims" Type="nvarchar(max)" />
+          <Property Name="IncidentLocation" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="DisputeNature" Type="int" Nullable="false" />
+          <Property Name="IncidentDateTime" Type="datetime" Nullable="false" />
+          <Property Name="DateTimeRecorded" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="ComplainantNarrative" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="CreatedBy" Type="nvarchar" MaxLength="100" />
+          <Property Name="LastUpdatedBy" Type="nvarchar" MaxLength="100" />
+          <Property Name="ModeOfSettlement" Type="int" Nullable="false" />
+          <Property Name="ComplaintStatus" Type="int" Nullable="false" />
+          <Property Name="GovernmentSavings" Type="money" />
+          <Property Name="Remarks" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="ComplaintVictims">
+          <Key>
+            <PropertyRef Name="ComplaintId" />
+            <PropertyRef Name="ResidentId" />
+          </Key>
+          <Property Name="ComplaintId" Type="int" Nullable="false" />
+          <Property Name="ResidentId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ConfigData">
+          <Key>
+            <PropertyRef Name="ConfigId" />
+          </Key>
+          <Property Name="ConfigId" Type="int" Nullable="false" />
+          <Property Name="ConfigName" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="ConfigValue" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="ConfigCategory" Type="smallint" Nullable="false" />
+          <Property Name="SortOrder" Type="smallint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CustomLogs">
+          <Key>
+            <PropertyRef Name="EventId" />
+          </Key>
+          <Property Name="EventId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="JsonData" Type="nvarchar(max)" />
+          <Property Name="LastUpdatedDate" Type="datetime" />
+          <Property Name="EventType" Type="nvarchar" MaxLength="50" />
+          <Property Name="ByUser" Type="nvarchar" MaxLength="128" />
+        </EntityType>
+        <EntityType Name="DisasterRelocationSites">
+          <Key>
+            <PropertyRef Name="DisasterRelocationSiteId" />
+          </Key>
+          <Property Name="DisasterRelocationSiteId" Type="int" Nullable="false" />
+          <Property Name="DisasterId" Type="int" Nullable="false" />
+          <Property Name="DisasterRelocationSiteName" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="DisasterRelocationSiteDesc" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="DisasterRelocationSiteAddress" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="DisasterRelocationSiteCapacity" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="DisasterRelocationSiteContactPerson" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="DisasterRelocationSiteContactNumber" Type="nvarchar" MaxLength="25" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Disasters">
+          <Key>
+            <PropertyRef Name="DisasterId" />
+          </Key>
+          <Property Name="DisasterId" Type="int" Nullable="false" />
+          <Property Name="DisasterName" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="DisasterType" Type="smallint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DisasterStatuses">
+          <Key>
+            <PropertyRef Name="DisasterStatusId" />
+          </Key>
+          <Property Name="DisasterStatusId" Type="int" Nullable="false" />
+          <Property Name="DisasterId" Type="int" Nullable="false" />
+          <Property Name="DisasterStatusDateTime" Type="datetime" Nullable="false" />
+          <Property Name="DisasterLevel" Type="int" Nullable="false" />
+          <Property Name="DisasterStatusDesc" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="SmsMessage" Type="nvarchar(max)" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Employees">
+          <Key>
+            <PropertyRef Name="EmployeeId" />
+          </Key>
+          <Property Name="EmployeeId" Type="int" Nullable="false" />
+          <Property Name="EmployeeName" Type="nvarchar" MaxLength="150" />
+          <Property Name="Designation" Type="nvarchar" MaxLength="150" />
+          <Property Name="StartDate" Type="smalldatetime" />
+          <Property Name="EndDate" Type="smalldatetime" />
+          <Property Name="Committees" Type="nvarchar" MaxLength="500" />
+          <Property Name="EmployeeType" Type="smallint" />
+          <Property Name="IsElected" Type="bit" Nullable="false" />
+          <Property Name="SortOrder" Type="smallint" />
+        </EntityType>
+        <EntityType Name="EstablishmentLogs">
+          <Key>
+            <PropertyRef Name="EstablishmentLogId" />
+          </Key>
+          <Property Name="EstablishmentLogId" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EstablishmentId" Type="int" />
+          <Property Name="ResidentId" Type="int" />
+          <Property Name="FirstName" Type="nvarchar" MaxLength="50" />
+          <Property Name="LastName" Type="nvarchar" MaxLength="50" />
+          <Property Name="BarangayName" Type="nvarchar" MaxLength="100" />
+          <Property Name="BarangayId" Type="int" />
+          <Property Name="BarangayTownCity" Type="int" />
+          <Property Name="Temperature" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="LogDateTime" Type="datetime" Nullable="false" />
+          <Property Name="Phone" Type="nvarchar" MaxLength="25" />
+        </EntityType>
+        <EntityType Name="Establishments">
+          <Key>
+            <PropertyRef Name="EstablishmentId" />
+          </Key>
+          <Property Name="EstablishmentId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EstablishmentName" Type="nvarchar" MaxLength="250" />
+          <Property Name="EstablishmentAddress" Type="nvarchar" MaxLength="500" />
+        </EntityType>
+        <EntityType Name="HouseholdPropertyProductions">
+          <Key>
+            <PropertyRef Name="HouseholdProductionId" />
+          </Key>
+          <Property Name="HouseholdProductionId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="MaintenanceId" Type="int" Nullable="false" />
+          <Property Name="Quantity" Type="int" Nullable="false" />
+          <Property Name="HouseholdId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Households">
+          <Key>
+            <PropertyRef Name="HouseholdId" />
+          </Key>
+          <Property Name="HouseholdId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FriendlyName" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="RoomNumber" Type="nvarchar" MaxLength="10" />
+          <Property Name="FloorNumber" Type="nvarchar" MaxLength="10" />
+          <Property Name="BuildingNumber" Type="nvarchar" MaxLength="10" />
+          <Property Name="StreetName" Type="nvarchar" MaxLength="100" />
+          <Property Name="SitioId" Type="int" />
+          <Property Name="HomeTenure" Type="int" />
+          <Property Name="ConstructionType" Type="int" />
+          <Property Name="FamilyCount" Type="int" />
+          <Property Name="FamilyWithSameKitchen" Type="int" />
+          <Property Name="FamilyWithSeparateKitchen" Type="int" />
+          <Property Name="LandTenure" Type="int" />
+          <Property Name="AverageMonthlyIncome" Type="int" />
+          <Property Name="PotableWaterSupplySource" Type="int" />
+          <Property Name="ToiletFacility" Type="int" />
+          <Property Name="PowerSupply" Type="int" />
+          <Property Name="SanitationPractices" Type="nvarchar" MaxLength="200" />
+          <Property Name="CompostHeap" Type="bit" />
+          <Property Name="TrashSegregation" Type="bit" />
+          <Property Name="MemberOfLivelihood" Type="bit" Nullable="false" />
+          <Property Name="ProgramName" Type="nvarchar" MaxLength="200" />
+          <Property Name="VegetableGardens" Type="nvarchar" MaxLength="200" />
+          <Property Name="HasFishPond" Type="bit" />
+          <Property Name="NeedsFirst" Type="nvarchar" MaxLength="100" />
+          <Property Name="NeedsSecond" Type="nvarchar" MaxLength="100" />
+          <Property Name="NeedsThird" Type="nvarchar" MaxLength="100" />
+          <Property Name="FamilyPlanning" Type="nvarchar" MaxLength="200" />
+          <Property Name="HavePregnantMothers" Type="bit" />
+          <Property Name="PregnantMonths" Type="int" />
+          <Property Name="IsPregnantTeen" Type="bit" />
+          <Property Name="BreastFeeding" Type="nvarchar" MaxLength="200" />
+          <Property Name="OtherNutrition" Type="nvarchar" MaxLength="200" />
+          <Property Name="HealthCard" Type="nvarchar" MaxLength="200" />
+          <Property Name="OtherInformation" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="LetterTemplates">
+          <Key>
+            <PropertyRef Name="TemplateId" />
+          </Key>
+          <Property Name="TemplateId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TemplateName" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="TemplateType" Type="int" Nullable="false" />
+          <Property Name="TemplateBody" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="DateCreated" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="CreatedBy" Type="nvarchar" MaxLength="128" />
+          <Property Name="SortOrder" Type="smallint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MaintenanceTables">
+          <Key>
+            <PropertyRef Name="MaintenanceId" />
+          </Key>
+          <Property Name="MaintenanceId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="MaintenanceEntryName" Type="nvarchar" MaxLength="70" Nullable="false" />
+          <Property Name="MaintenanceTableType" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="SortOrder" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Residents">
+          <Key>
+            <PropertyRef Name="ResidentId" />
+          </Key>
+          <Property Name="ResidentId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FirstName" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="LastName" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="MiddleName" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Alias" Type="nvarchar" MaxLength="100" />
+          <Property Name="Cellular" Type="nvarchar" MaxLength="25" />
+          <Property Name="PhoneNumber" Type="nvarchar" MaxLength="25" />
+          <Property Name="Email" Type="nvarchar" MaxLength="128" />
+          <Property Name="Photo" Type="varbinary(max)" />
+          <Property Name="HouseHoldId" Type="int" Nullable="false" />
+          <Property Name="BiometricCapture" Type="varbinary(max)" />
+          <Property Name="FullName" Type="nvarchar" MaxLength="204" StoreGeneratedPattern="Computed" Nullable="false" />
+          <Property Name="HouseholdHead" Type="bit" Nullable="false" />
+          <Property Name="RelToHouseholdHead" Type="int" />
+          <Property Name="Disability" Type="bit" Nullable="false" />
+          <Property Name="DisabilityKind" Type="nvarchar" MaxLength="200" />
+          <Property Name="HasDisabilityCard" Type="bit" />
+          <Property Name="PPPP" Type="bit" Nullable="false" />
+          <Property Name="PPPPYear" Type="int" />
+          <Property Name="isVoter" Type="bit" Nullable="false" />
+          <Property Name="VoteRegistrationLoc" Type="nvarchar" MaxLength="200" />
+          <Property Name="ResidenceYears" Type="int" />
+          <Property Name="BirthDate" Type="smalldatetime" Nullable="false" />
+          <Property Name="Gender" Type="varchar" MaxLength="6" Nullable="false" />
+          <Property Name="CivilStatus" Type="varchar" MaxLength="9" Nullable="false" />
+          <Property Name="EthnicityId" Type="int" Nullable="false" />
+          <Property Name="ReligionId" Type="int" Nullable="false" />
+          <Property Name="EducationalAttainmentId" Type="int" Nullable="false" />
+          <Property Name="EducationStatus" Type="int" Nullable="false" />
+          <Property Name="FamilyMemberSpecialNeeds" Type="nvarchar" MaxLength="200" />
+          <Property Name="Occupation" Type="nvarchar" MaxLength="200" />
+        </EntityType>
+        <EntityType Name="Settlements">
+          <Key>
+            <PropertyRef Name="SettlementId" />
+          </Key>
+          <Property Name="SettlementId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ComplaintId" Type="int" Nullable="false" />
+          <Property Name="SettlementDate" Type="datetime" Nullable="false" />
+          <Property Name="Location" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="PresidingStaff" Type="int" Nullable="false" />
+          <Property Name="LetterDelivered" Type="bit" />
+          <Property Name="LetterAcknowledged" Type="bit" />
+          <Property Name="LetterTemplate" Type="int" />
+          <Property Name="CaseClosed" Type="bit" />
+          <Property Name="LetterContent" Type="nvarchar(max)" />
+          <Property Name="Decision" Type="nvarchar(max)" />
+          <Property Name="CreatedBy" Type="nvarchar" MaxLength="100" />
+          <Property Name="LastUpdatedBy" Type="nvarchar" MaxLength="100" />
+        </EntityType>
+        <EntityType Name="UserClaims">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserId" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="ClaimType" Type="nvarchar(max)" />
+          <Property Name="ClaimValue" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="UserLogins">
+          <Key>
+            <PropertyRef Name="LoginProvider" />
+            <PropertyRef Name="ProviderKey" />
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="LoginProvider" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="ProviderKey" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="UserId" Type="nvarchar" MaxLength="128" Nullable="false" />
+        </EntityType>
+        <EntityType Name="UserRoles">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Description" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="Users">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="Email" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="EmailConfirmed" Type="bit" Nullable="false" />
+          <Property Name="PasswordHash" Type="nvarchar(max)" />
+          <Property Name="SecurityStamp" Type="nvarchar(max)" />
+          <Property Name="PhoneNumber" Type="nvarchar" MaxLength="50" />
+          <Property Name="PhoneNumberConfirmed" Type="bit" Nullable="false" />
+          <Property Name="TwoFactorEnabled" Type="bit" Nullable="false" />
+          <Property Name="LockoutEndDateUtc" Type="datetime" />
+          <Property Name="LockoutEnabled" Type="bit" Nullable="false" />
+          <Property Name="AccessFailedCount" Type="int" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="FirstName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="LastName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Photo" Type="varbinary(max)" />
+        </EntityType>
+        <EntityType Name="UsersInRoles">
+          <Key>
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="RoleId" />
+          </Key>
+          <Property Name="UserId" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="RoleId" Type="nvarchar" MaxLength="128" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_CertificateCommunity_Residents">
+          <End Role="Residents" Type="Self.Residents" Multiplicity="1" />
+          <End Role="CertificateCommunity" Type="Self.CertificateCommunity" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Residents">
+              <PropertyRef Name="ResidentId" />
+            </Principal>
+            <Dependent Role="CertificateCommunity">
+              <PropertyRef Name="ResidentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Certificates_LetterTemplates">
+          <End Role="LetterTemplates" Type="Self.LetterTemplates" Multiplicity="1" />
+          <End Role="Certificates" Type="Self.Certificates" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LetterTemplates">
+              <PropertyRef Name="TemplateId" />
+            </Principal>
+            <Dependent Role="Certificates">
+              <PropertyRef Name="TemplateId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Certificates_Residents">
+          <End Role="Residents" Type="Self.Residents" Multiplicity="1" />
+          <End Role="Certificates" Type="Self.Certificates" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Residents">
+              <PropertyRef Name="ResidentId" />
+            </Principal>
+            <Dependent Role="Certificates">
+              <PropertyRef Name="ResidentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ClearancePurposes_Clearances">
+          <End Role="Clearances" Type="Self.Clearances" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="ClearancePurposes" Type="Self.ClearancePurposes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Clearances">
+              <PropertyRef Name="ClearanceId" />
+            </Principal>
+            <Dependent Role="ClearancePurposes">
+              <PropertyRef Name="ClearanceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ClearancePurposes_MaintenanceTables">
+          <End Role="MaintenanceTables" Type="Self.MaintenanceTables" Multiplicity="1" />
+          <End Role="ClearancePurposes" Type="Self.ClearancePurposes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MaintenanceTables">
+              <PropertyRef Name="MaintenanceId" />
+            </Principal>
+            <Dependent Role="ClearancePurposes">
+              <PropertyRef Name="MaintenanceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Clearances_Residents">
+          <End Role="Residents" Type="Self.Residents" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Clearances" Type="Self.Clearances" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Residents">
+              <PropertyRef Name="ResidentId" />
+            </Principal>
+            <Dependent Role="Clearances">
+              <PropertyRef Name="ResidentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ComplaintComplainants_Complaints">
+          <End Role="Complaints" Type="Self.Complaints" Multiplicity="1" />
+          <End Role="ComplaintComplainants" Type="Self.ComplaintComplainants" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Complaints">
+              <PropertyRef Name="ComplaintId" />
+            </Principal>
+            <Dependent Role="ComplaintComplainants">
+              <PropertyRef Name="ComplaintId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ComplaintComplainants_Residents">
+          <End Role="Residents" Type="Self.Residents" Multiplicity="1" />
+          <End Role="ComplaintComplainants" Type="Self.ComplaintComplainants" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Residents">
+              <PropertyRef Name="ResidentId" />
+            </Principal>
+            <Dependent Role="ComplaintComplainants">
+              <PropertyRef Name="ResidentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ComplaintRespondents_Complaints">
+          <End Role="Complaints" Type="Self.Complaints" Multiplicity="1" />
+          <End Role="ComplaintRespondents" Type="Self.ComplaintRespondents" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Complaints">
+              <PropertyRef Name="ComplaintId" />
+            </Principal>
+            <Dependent Role="ComplaintRespondents">
+              <PropertyRef Name="ComplaintId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ComplaintRespondents_Residents">
+          <End Role="Residents" Type="Self.Residents" Multiplicity="1" />
+          <End Role="ComplaintRespondents" Type="Self.ComplaintRespondents" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Residents">
+              <PropertyRef Name="ResidentId" />
+            </Principal>
+            <Dependent Role="ComplaintRespondents">
+              <PropertyRef Name="ResidentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Complaints_MaintenanceTables">
+          <End Role="MaintenanceTables" Type="Self.MaintenanceTables" Multiplicity="1" />
+          <End Role="Complaints" Type="Self.Complaints" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MaintenanceTables">
+              <PropertyRef Name="MaintenanceId" />
+            </Principal>
+            <Dependent Role="Complaints">
+              <PropertyRef Name="DisputeNature" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Complaints_MaintenanceTables1">
+          <End Role="MaintenanceTables" Type="Self.MaintenanceTables" Multiplicity="1" />
+          <End Role="Complaints" Type="Self.Complaints" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MaintenanceTables">
+              <PropertyRef Name="MaintenanceId" />
+            </Principal>
+            <Dependent Role="Complaints">
+              <PropertyRef Name="ComplaintStatus" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Complaints_MaintenanceTables2">
+          <End Role="MaintenanceTables" Type="Self.MaintenanceTables" Multiplicity="1" />
+          <End Role="Complaints" Type="Self.Complaints" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MaintenanceTables">
+              <PropertyRef Name="MaintenanceId" />
+            </Principal>
+            <Dependent Role="Complaints">
+              <PropertyRef Name="ModeOfSettlement" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ComplaintVictims_Complaints">
+          <End Role="Complaints" Type="Self.Complaints" Multiplicity="1" />
+          <End Role="ComplaintVictims" Type="Self.ComplaintVictims" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Complaints">
+              <PropertyRef Name="ComplaintId" />
+            </Principal>
+            <Dependent Role="ComplaintVictims">
+              <PropertyRef Name="ComplaintId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ComplaintVictims_Residents">
+          <End Role="Residents" Type="Self.Residents" Multiplicity="1" />
+          <End Role="ComplaintVictims" Type="Self.ComplaintVictims" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Residents">
+              <PropertyRef Name="ResidentId" />
+            </Principal>
+            <Dependent Role="ComplaintVictims">
+              <PropertyRef Name="ResidentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DisasterRelocationSites_Disasters">
+          <End Role="Disasters" Type="Self.Disasters" Multiplicity="1" />
+          <End Role="DisasterRelocationSites" Type="Self.DisasterRelocationSites" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Disasters">
+              <PropertyRef Name="DisasterId" />
+            </Principal>
+            <Dependent Role="DisasterRelocationSites">
+              <PropertyRef Name="DisasterId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DisasterStatuses_Disasters">
+          <End Role="Disasters" Type="Self.Disasters" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="DisasterStatuses" Type="Self.DisasterStatuses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Disasters">
+              <PropertyRef Name="DisasterId" />
+            </Principal>
+            <Dependent Role="DisasterStatuses">
+              <PropertyRef Name="DisasterId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EstablishmentLogs_Establishments">
+          <End Role="Establishments" Type="Self.Establishments" Multiplicity="0..1" />
+          <End Role="EstablishmentLogs" Type="Self.EstablishmentLogs" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Establishments">
+              <PropertyRef Name="EstablishmentId" />
+            </Principal>
+            <Dependent Role="EstablishmentLogs">
+              <PropertyRef Name="EstablishmentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_HouseholdProductions_MaintenanceTables">
+          <End Role="MaintenanceTables" Type="Self.MaintenanceTables" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="HouseholdPropertyProductions" Type="Self.HouseholdPropertyProductions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MaintenanceTables">
+              <PropertyRef Name="MaintenanceId" />
+            </Principal>
+            <Dependent Role="HouseholdPropertyProductions">
+              <PropertyRef Name="MaintenanceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_HouseholdPropertyProductions_Households">
+          <End Role="Households" Type="Self.Households" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="HouseholdPropertyProductions" Type="Self.HouseholdPropertyProductions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Households">
+              <PropertyRef Name="HouseholdId" />
+            </Principal>
+            <Dependent Role="HouseholdPropertyProductions">
+              <PropertyRef Name="HouseholdId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Residents_Households">
+          <End Role="Households" Type="Self.Households" Multiplicity="1" />
+          <End Role="Residents" Type="Self.Residents" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Households">
+              <PropertyRef Name="HouseholdId" />
+            </Principal>
+            <Dependent Role="Residents">
+              <PropertyRef Name="HouseHoldId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Settlements_Complaints">
+          <End Role="Complaints" Type="Self.Complaints" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Settlements" Type="Self.Settlements" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Complaints">
+              <PropertyRef Name="ComplaintId" />
+            </Principal>
+            <Dependent Role="Settlements">
+              <PropertyRef Name="ComplaintId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserClaims_Users">
+          <End Role="Users" Type="Self.Users" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="UserClaims" Type="Self.UserClaims" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UserClaims">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserLogins_Users">
+          <End Role="Users" Type="Self.Users" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="UserLogins" Type="Self.UserLogins" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UserLogins">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UsersInRoles_UserRoles">
+          <End Role="UserRoles" Type="Self.UserRoles" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="UsersInRoles" Type="Self.UsersInRoles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserRoles">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UsersInRoles">
+              <PropertyRef Name="RoleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UsersInRoles_Users">
+          <End Role="Users" Type="Self.Users" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="UsersInRoles" Type="Self.UsersInRoles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UsersInRoles">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="BrgyMgmtWebModelsStoreContainer">
+          <EntitySet Name="ApplicationSettings" EntityType="Self.ApplicationSettings" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CertificateCommunity" EntityType="Self.CertificateCommunity" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Certificates" EntityType="Self.Certificates" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ClearancePurposes" EntityType="Self.ClearancePurposes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Clearances" EntityType="Self.Clearances" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ComplaintComplainants" EntityType="Self.ComplaintComplainants" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ComplaintRespondents" EntityType="Self.ComplaintRespondents" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Complaints" EntityType="Self.Complaints" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ComplaintVictims" EntityType="Self.ComplaintVictims" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ConfigData" EntityType="Self.ConfigData" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CustomLogs" EntityType="Self.CustomLogs" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DisasterRelocationSites" EntityType="Self.DisasterRelocationSites" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Disasters" EntityType="Self.Disasters" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DisasterStatuses" EntityType="Self.DisasterStatuses" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Employees" EntityType="Self.Employees" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EstablishmentLogs" EntityType="Self.EstablishmentLogs" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Establishments" EntityType="Self.Establishments" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="HouseholdPropertyProductions" EntityType="Self.HouseholdPropertyProductions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Households" EntityType="Self.Households" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="LetterTemplates" EntityType="Self.LetterTemplates" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MaintenanceTables" EntityType="Self.MaintenanceTables" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Residents" EntityType="Self.Residents" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Settlements" EntityType="Self.Settlements" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserClaims" EntityType="Self.UserClaims" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserLogins" EntityType="Self.UserLogins" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserRoles" EntityType="Self.UserRoles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UsersInRoles" EntityType="Self.UsersInRoles" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_CertificateCommunity_Residents" Association="Self.FK_CertificateCommunity_Residents">
+            <End Role="Residents" EntitySet="Residents" />
+            <End Role="CertificateCommunity" EntitySet="CertificateCommunity" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Certificates_LetterTemplates" Association="Self.FK_Certificates_LetterTemplates">
+            <End Role="LetterTemplates" EntitySet="LetterTemplates" />
+            <End Role="Certificates" EntitySet="Certificates" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Certificates_Residents" Association="Self.FK_Certificates_Residents">
+            <End Role="Residents" EntitySet="Residents" />
+            <End Role="Certificates" EntitySet="Certificates" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ClearancePurposes_Clearances" Association="Self.FK_ClearancePurposes_Clearances">
+            <End Role="Clearances" EntitySet="Clearances" />
+            <End Role="ClearancePurposes" EntitySet="ClearancePurposes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ClearancePurposes_MaintenanceTables" Association="Self.FK_ClearancePurposes_MaintenanceTables">
+            <End Role="MaintenanceTables" EntitySet="MaintenanceTables" />
+            <End Role="ClearancePurposes" EntitySet="ClearancePurposes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Clearances_Residents" Association="Self.FK_Clearances_Residents">
+            <End Role="Residents" EntitySet="Residents" />
+            <End Role="Clearances" EntitySet="Clearances" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ComplaintComplainants_Complaints" Association="Self.FK_ComplaintComplainants_Complaints">
+            <End Role="Complaints" EntitySet="Complaints" />
+            <End Role="ComplaintComplainants" EntitySet="ComplaintComplainants" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ComplaintComplainants_Residents" Association="Self.FK_ComplaintComplainants_Residents">
+            <End Role="Residents" EntitySet="Residents" />
+            <End Role="ComplaintComplainants" EntitySet="ComplaintComplainants" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ComplaintRespondents_Complaints" Association="Self.FK_ComplaintRespondents_Complaints">
+            <End Role="Complaints" EntitySet="Complaints" />
+            <End Role="ComplaintRespondents" EntitySet="ComplaintRespondents" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ComplaintRespondents_Residents" Association="Self.FK_ComplaintRespondents_Residents">
+            <End Role="Residents" EntitySet="Residents" />
+            <End Role="ComplaintRespondents" EntitySet="ComplaintRespondents" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Complaints_MaintenanceTables" Association="Self.FK_Complaints_MaintenanceTables">
+            <End Role="MaintenanceTables" EntitySet="MaintenanceTables" />
+            <End Role="Complaints" EntitySet="Complaints" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Complaints_MaintenanceTables1" Association="Self.FK_Complaints_MaintenanceTables1">
+            <End Role="MaintenanceTables" EntitySet="MaintenanceTables" />
+            <End Role="Complaints" EntitySet="Complaints" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Complaints_MaintenanceTables2" Association="Self.FK_Complaints_MaintenanceTables2">
+            <End Role="MaintenanceTables" EntitySet="MaintenanceTables" />
+            <End Role="Complaints" EntitySet="Complaints" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ComplaintVictims_Complaints" Association="Self.FK_ComplaintVictims_Complaints">
+            <End Role="Complaints" EntitySet="Complaints" />
+            <End Role="ComplaintVictims" EntitySet="ComplaintVictims" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ComplaintVictims_Residents" Association="Self.FK_ComplaintVictims_Residents">
+            <End Role="Residents" EntitySet="Residents" />
+            <End Role="ComplaintVictims" EntitySet="ComplaintVictims" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DisasterRelocationSites_Disasters" Association="Self.FK_DisasterRelocationSites_Disasters">
+            <End Role="Disasters" EntitySet="Disasters" />
+            <End Role="DisasterRelocationSites" EntitySet="DisasterRelocationSites" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DisasterStatuses_Disasters" Association="Self.FK_DisasterStatuses_Disasters">
+            <End Role="Disasters" EntitySet="Disasters" />
+            <End Role="DisasterStatuses" EntitySet="DisasterStatuses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EstablishmentLogs_Establishments" Association="Self.FK_EstablishmentLogs_Establishments">
+            <End Role="Establishments" EntitySet="Establishments" />
+            <End Role="EstablishmentLogs" EntitySet="EstablishmentLogs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_HouseholdProductions_MaintenanceTables" Association="Self.FK_HouseholdProductions_MaintenanceTables">
+            <End Role="MaintenanceTables" EntitySet="MaintenanceTables" />
+            <End Role="HouseholdPropertyProductions" EntitySet="HouseholdPropertyProductions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_HouseholdPropertyProductions_Households" Association="Self.FK_HouseholdPropertyProductions_Households">
+            <End Role="Households" EntitySet="Households" />
+            <End Role="HouseholdPropertyProductions" EntitySet="HouseholdPropertyProductions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Residents_Households" Association="Self.FK_Residents_Households">
+            <End Role="Households" EntitySet="Households" />
+            <End Role="Residents" EntitySet="Residents" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Settlements_Complaints" Association="Self.FK_Settlements_Complaints">
+            <End Role="Complaints" EntitySet="Complaints" />
+            <End Role="Settlements" EntitySet="Settlements" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserClaims_Users" Association="Self.FK_UserClaims_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="UserClaims" EntitySet="UserClaims" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserLogins_Users" Association="Self.FK_UserLogins_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="UserLogins" EntitySet="UserLogins" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UsersInRoles_UserRoles" Association="Self.FK_UsersInRoles_UserRoles">
+            <End Role="UserRoles" EntitySet="UserRoles" />
+            <End Role="UsersInRoles" EntitySet="UsersInRoles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UsersInRoles_Users" Association="Self.FK_UsersInRoles_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="UsersInRoles" EntitySet="UsersInRoles" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="BrgyMgmt.Web.Models" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="UserClaim">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ClaimType" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ClaimValue" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="User" Relationship="Self.FK_UserClaims_Users" FromRole="UserClaims" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="UserLogin">
+          <Key>
+            <PropertyRef Name="LoginProvider" />
+            <PropertyRef Name="ProviderKey" />
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="LoginProvider" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ProviderKey" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="UserId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="User" Relationship="Self.FK_UserLogins_Users" FromRole="UserLogins" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="UserRole">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Users" Relationship="Self.UsersInRoles" FromRole="UserRoles" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Email" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="EmailConfirmed" Type="Boolean" Nullable="false" />
+          <Property Name="PasswordHash" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="SecurityStamp" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PhoneNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="PhoneNumberConfirmed" Type="Boolean" Nullable="false" />
+          <Property Name="TwoFactorEnabled" Type="Boolean" Nullable="false" />
+          <Property Name="LockoutEndDateUtc" Type="DateTime" Precision="3" />
+          <Property Name="LockoutEnabled" Type="Boolean" Nullable="false" />
+          <Property Name="AccessFailedCount" Type="Int32" Nullable="false" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="UserName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="FirstName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="LastName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Photo" Type="Binary" MaxLength="Max" FixedLength="false" />
+          <NavigationProperty Name="UserClaims" Relationship="Self.FK_UserClaims_Users" FromRole="Users" ToRole="UserClaims" />
+          <NavigationProperty Name="UserLogins" Relationship="Self.FK_UserLogins_Users" FromRole="Users" ToRole="UserLogins" />
+          <NavigationProperty Name="UserRoles" Relationship="Self.UsersInRoles" FromRole="Users" ToRole="UserRoles" />
+        </EntityType>
+        <Association Name="FK_UserClaims_Users">
+          <End Role="Users" Type="Self.User" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="UserClaims" Type="Self.UserClaim" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UserClaims">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserLogins_Users">
+          <End Role="Users" Type="Self.User" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="UserLogins" Type="Self.UserLogin" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UserLogins">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="UsersInRoles">
+          <End Role="UserRoles" Type="Self.UserRole" Multiplicity="*" />
+          <End Role="Users" Type="Self.User" Multiplicity="*" />
+        </Association>
+        <EntityContainer Name="BrgyMgmtEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="UserClaims" EntityType="Self.UserClaim" />
+          <EntitySet Name="UserLogins" EntityType="Self.UserLogin" />
+          <EntitySet Name="UserRoles" EntityType="Self.UserRole" />
+          <EntitySet Name="Users" EntityType="Self.User" />
+          <AssociationSet Name="FK_UserClaims_Users" Association="Self.FK_UserClaims_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="UserClaims" EntitySet="UserClaims" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserLogins_Users" Association="Self.FK_UserLogins_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="UserLogins" EntitySet="UserLogins" />
+          </AssociationSet>
+          <AssociationSet Name="UsersInRoles" Association="Self.UsersInRoles">
+            <End Role="UserRoles" EntitySet="UserRoles" />
+            <End Role="Users" EntitySet="Users" />
+          </AssociationSet>
+          <EntitySet Name="Complaints" EntityType="BrgyMgmt.Web.Models.Complaint" />
+          <EntitySet Name="Residents" EntityType="BrgyMgmt.Web.Models.Resident" />
+          <AssociationSet Name="ComplaintRespondents" Association="BrgyMgmt.Web.Models.ComplaintRespondents">
+            <End Role="Complaint" EntitySet="Complaints" />
+            <End Role="Resident" EntitySet="Residents" />
+          </AssociationSet>
+          <AssociationSet Name="ComplaintComplainants" Association="BrgyMgmt.Web.Models.ComplaintComplainants">
+            <End Role="Complaint" EntitySet="Complaints" />
+            <End Role="Resident" EntitySet="Residents" />
+          </AssociationSet>
+          <AssociationSet Name="ComplaintVictims" Association="BrgyMgmt.Web.Models.ComplaintVictims">
+            <End Role="Complaint" EntitySet="Complaints" />
+            <End Role="Resident" EntitySet="Residents" />
+          </AssociationSet>
+          <EntitySet Name="CertificateCommunities" EntityType="BrgyMgmt.Web.Models.CertificateCommunity" />
+          <EntitySet Name="Settlements" EntityType="BrgyMgmt.Web.Models.Settlement" />
+          <AssociationSet Name="FK_CertificateCommunity_Residents" Association="BrgyMgmt.Web.Models.FK_CertificateCommunity_Residents">
+            <End Role="Resident" EntitySet="Residents" />
+            <End Role="CertificateCommunity" EntitySet="CertificateCommunities" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Settlements_Complaints" Association="BrgyMgmt.Web.Models.FK_Settlements_Complaints">
+            <End Role="Complaint" EntitySet="Complaints" />
+            <End Role="Settlement" EntitySet="Settlements" />
+          </AssociationSet>
+          <EntitySet Name="MaintenanceTables" EntityType="BrgyMgmt.Web.Models.MaintenanceTable" />
+          <AssociationSet Name="FK_Complaints_MaintenanceTables" Association="BrgyMgmt.Web.Models.FK_Complaints_MaintenanceTables">
+            <End Role="MaintenanceTable" EntitySet="MaintenanceTables" />
+            <End Role="Complaint" EntitySet="Complaints" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Complaints_MaintenanceTables1" Association="BrgyMgmt.Web.Models.FK_Complaints_MaintenanceTables1">
+            <End Role="MaintenanceTable" EntitySet="MaintenanceTables" />
+            <End Role="Complaint" EntitySet="Complaints" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Complaints_MaintenanceTables2" Association="BrgyMgmt.Web.Models.FK_Complaints_MaintenanceTables2">
+            <End Role="MaintenanceTable" EntitySet="MaintenanceTables" />
+            <End Role="Complaint" EntitySet="Complaints" />
+          </AssociationSet>
+          <EntitySet Name="HouseholdPropertyProductions" EntityType="BrgyMgmt.Web.Models.HouseholdPropertyProduction" />
+          <EntitySet Name="Households" EntityType="BrgyMgmt.Web.Models.Household" />
+          <AssociationSet Name="FK_HouseholdProductions_MaintenanceTables" Association="BrgyMgmt.Web.Models.FK_HouseholdProductions_MaintenanceTables">
+            <End Role="MaintenanceTable" EntitySet="MaintenanceTables" />
+            <End Role="HouseholdPropertyProduction" EntitySet="HouseholdPropertyProductions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_HouseholdPropertyProductions_Households" Association="BrgyMgmt.Web.Models.FK_HouseholdPropertyProductions_Households">
+            <End Role="Household" EntitySet="Households" />
+            <End Role="HouseholdPropertyProduction" EntitySet="HouseholdPropertyProductions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Residents_Households" Association="BrgyMgmt.Web.Models.FK_Residents_Households">
+            <End Role="Household" EntitySet="Households" />
+            <End Role="Resident" EntitySet="Residents" />
+          </AssociationSet>
+          <EntitySet Name="LetterTemplates" EntityType="BrgyMgmt.Web.Models.LetterTemplate" />
+          <EntitySet Name="Certificates" EntityType="BrgyMgmt.Web.Models.Certificate" />
+          <AssociationSet Name="FK_Certificates_LetterTemplates" Association="BrgyMgmt.Web.Models.FK_Certificates_LetterTemplates">
+            <End Role="LetterTemplate" EntitySet="LetterTemplates" />
+            <End Role="Certificate" EntitySet="Certificates" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Certificates_Residents" Association="BrgyMgmt.Web.Models.FK_Certificates_Residents">
+            <End Role="Resident" EntitySet="Residents" />
+            <End Role="Certificate" EntitySet="Certificates" />
+          </AssociationSet>
+          <EntitySet Name="Clearances" EntityType="BrgyMgmt.Web.Models.Clearance" />
+          <EntitySet Name="CustomLogs" EntityType="BrgyMgmt.Web.Models.CustomLog" />
+          <EntitySet Name="Employees" EntityType="BrgyMgmt.Web.Models.Employee" />
+          <AssociationSet Name="FK_Clearances_Residents" Association="BrgyMgmt.Web.Models.FK_Clearances_Residents">
+            <End Role="Resident" EntitySet="Residents" />
+            <End Role="Clearance" EntitySet="Clearances" />
+          </AssociationSet>
+          <AssociationSet Name="ClearancePurposes" Association="BrgyMgmt.Web.Models.ClearancePurposes">
+            <End Role="Clearance" EntitySet="Clearances" />
+            <End Role="MaintenanceTable" EntitySet="MaintenanceTables" />
+          </AssociationSet>
+          <EntitySet Name="ApplicationSettings" EntityType="BrgyMgmt.Web.Models.ApplicationSetting" />
+          <EntitySet Name="ConfigDatas" EntityType="BrgyMgmt.Web.Models.ConfigData" />
+          <EntitySet Name="DisasterRelocationSites" EntityType="BrgyMgmt.Web.Models.DisasterRelocationSite" />
+          <EntitySet Name="Disasters" EntityType="BrgyMgmt.Web.Models.Disaster" />
+          <AssociationSet Name="FK_DisasterRelocationSites_Disasters" Association="BrgyMgmt.Web.Models.FK_DisasterRelocationSites_Disasters">
+            <End Role="Disaster" EntitySet="Disasters" />
+            <End Role="DisasterRelocationSite" EntitySet="DisasterRelocationSites" />
+          </AssociationSet>
+          <EntitySet Name="DisasterStatuses" EntityType="BrgyMgmt.Web.Models.DisasterStatus" />
+          <AssociationSet Name="FK_DisasterStatuses_Disasters" Association="BrgyMgmt.Web.Models.FK_DisasterStatuses_Disasters">
+            <End Role="Disaster" EntitySet="Disasters" />
+            <End Role="DisasterStatus" EntitySet="DisasterStatuses" />
+          </AssociationSet>
+          <EntitySet Name="EstablishmentLogs" EntityType="BrgyMgmt.Web.Models.EstablishmentLog" />
+          <EntitySet Name="Establishments" EntityType="BrgyMgmt.Web.Models.Establishment" />
+          <AssociationSet Name="FK_EstablishmentLogs_Establishments" Association="BrgyMgmt.Web.Models.FK_EstablishmentLogs_Establishments">
+            <End Role="Establishment" EntitySet="Establishments" />
+            <End Role="EstablishmentLog" EntitySet="EstablishmentLogs" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Complaint">
+          <Key>
+            <PropertyRef Name="ComplaintId" />
+          </Key>
+          <Property Name="ComplaintId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ComplaintTitle" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="NonResidentComplainants" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="NonResidentRespondents" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="NonResidentVictims" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="IncidentLocation" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="DisputeNature" Type="Int32" Nullable="false" />
+          <Property Name="IncidentDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="DateTimeRecorded" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="ComplainantNarrative" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedBy" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="LastUpdatedBy" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="ModeOfSettlement" Type="Int32" Nullable="false" />
+          <Property Name="ComplaintStatus" Type="Int32" Nullable="false" />
+          <Property Name="GovernmentSavings" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="Remarks" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="ResidentRespondents" Relationship="BrgyMgmt.Web.Models.ComplaintRespondents" FromRole="Complaint" ToRole="Resident" />
+          <NavigationProperty Name="ResidentComplainants" Relationship="BrgyMgmt.Web.Models.ComplaintComplainants" FromRole="Complaint" ToRole="Resident" />
+          <NavigationProperty Name="ResidentVictims" Relationship="BrgyMgmt.Web.Models.ComplaintVictims" FromRole="Complaint" ToRole="Resident" />
+          <NavigationProperty Name="Settlements" Relationship="BrgyMgmt.Web.Models.FK_Settlements_Complaints" FromRole="Complaint" ToRole="Settlement" />
+          <NavigationProperty Name="Dispute" Relationship="BrgyMgmt.Web.Models.FK_Complaints_MaintenanceTables" FromRole="Complaint" ToRole="MaintenanceTable" />
+          <NavigationProperty Name="Status" Relationship="BrgyMgmt.Web.Models.FK_Complaints_MaintenanceTables1" FromRole="Complaint" ToRole="MaintenanceTable" />
+          <NavigationProperty Name="SettlementMode" Relationship="BrgyMgmt.Web.Models.FK_Complaints_MaintenanceTables2" FromRole="Complaint" ToRole="MaintenanceTable" />
+        </EntityType>
+        <EntityType Name="Resident">
+          <Key>
+            <PropertyRef Name="ResidentId" />
+          </Key>
+          <Property Name="ResidentId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FirstName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="LastName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="MiddleName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Alias" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Cellular" Type="String" MaxLength="25" FixedLength="false" Unicode="true" />
+          <Property Name="PhoneNumber" Type="String" MaxLength="25" FixedLength="false" Unicode="true" />
+          <Property Name="Email" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Photo" Type="Binary" MaxLength="Max" FixedLength="false" />
+          <Property Name="HouseHoldId" Type="Int32" Nullable="false" />
+          <Property Name="BiometricCapture" Type="Binary" MaxLength="Max" FixedLength="false" />
+          <Property Name="FullName" Type="String" Nullable="false" MaxLength="204" FixedLength="false" Unicode="true" annotation:StoreGeneratedPattern="Computed" />
+          <Property Name="HouseholdHead" Type="Boolean" Nullable="false" />
+          <Property Name="RelToHouseholdHead" Type="Int32" />
+          <Property Name="Disability" Type="Boolean" Nullable="false" />
+          <Property Name="DisabilityKind" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="HasDisabilityCard" Type="Boolean" />
+          <Property Name="PPPP" Type="Boolean" Nullable="false" />
+          <Property Name="PPPPYear" Type="Int32" />
+          <Property Name="isVoter" Type="Boolean" Nullable="false" />
+          <Property Name="VoteRegistrationLoc" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="ResidenceYears" Type="Int32" />
+          <Property Name="BirthDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Gender" Type="String" Nullable="false" MaxLength="6" FixedLength="false" Unicode="false" />
+          <Property Name="CivilStatus" Type="String" Nullable="false" MaxLength="9" FixedLength="false" Unicode="false" />
+          <Property Name="EthnicityId" Type="Int32" Nullable="false" />
+          <Property Name="ReligionId" Type="Int32" Nullable="false" />
+          <Property Name="EducationalAttainmentId" Type="Int32" Nullable="false" />
+          <Property Name="EducationStatus" Type="Int32" Nullable="false" />
+          <Property Name="FamilyMemberSpecialNeeds" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="Occupation" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="ComplaintRespondents" Relationship="BrgyMgmt.Web.Models.ComplaintRespondents" FromRole="Resident" ToRole="Complaint" />
+          <NavigationProperty Name="ComplaintComplainants" Relationship="BrgyMgmt.Web.Models.ComplaintComplainants" FromRole="Resident" ToRole="Complaint" />
+          <NavigationProperty Name="ComplaintVictims" Relationship="BrgyMgmt.Web.Models.ComplaintVictims" FromRole="Resident" ToRole="Complaint" />
+          <NavigationProperty Name="CertificateCommunities" Relationship="BrgyMgmt.Web.Models.FK_CertificateCommunity_Residents" FromRole="Resident" ToRole="CertificateCommunity" />
+          <NavigationProperty Name="Household" Relationship="BrgyMgmt.Web.Models.FK_Residents_Households" FromRole="Resident" ToRole="Household" />
+          <NavigationProperty Name="Certificates" Relationship="BrgyMgmt.Web.Models.FK_Certificates_Residents" FromRole="Resident" ToRole="Certificate" />
+          <NavigationProperty Name="Clearances" Relationship="BrgyMgmt.Web.Models.FK_Clearances_Residents" FromRole="Resident" ToRole="Clearance" />
+        </EntityType>
+        <Association Name="ComplaintRespondents">
+          <End Type="BrgyMgmt.Web.Models.Complaint" Role="Complaint" Multiplicity="*" />
+          <End Type="BrgyMgmt.Web.Models.Resident" Role="Resident" Multiplicity="*" />
+        </Association>
+        <Association Name="ComplaintComplainants">
+          <End Type="BrgyMgmt.Web.Models.Complaint" Role="Complaint" Multiplicity="*" />
+          <End Type="BrgyMgmt.Web.Models.Resident" Role="Resident" Multiplicity="*" />
+        </Association>
+        <Association Name="ComplaintVictims">
+          <End Type="BrgyMgmt.Web.Models.Complaint" Role="Complaint" Multiplicity="*" />
+          <End Type="BrgyMgmt.Web.Models.Resident" Role="Resident" Multiplicity="*" />
+        </Association>
+        <EntityType Name="CertificateCommunity">
+          <Key>
+            <PropertyRef Name="TaxCertificateId" />
+          </Key>
+          <Property Name="TaxCertificateId" Type="Int32" Nullable="false" />
+          <Property Name="CCI" Type="Int32" Nullable="false" />
+          <Property Name="Year" Type="Int32" Nullable="false" />
+          <Property Name="PlaceIssued" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="DateIssued" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="ResidentId" Type="Int32" Nullable="false" />
+          <Property Name="Height" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="Weight" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="BasicCommunityTax" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="BusinessEarningsTax" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="ProfessionalEarningsTax" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="PropertyEarningsTax" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="Interest" Type="Int32" />
+          <Property Name="AmountPaid" Type="Decimal" Precision="19" Scale="4" />
+          <NavigationProperty Name="Resident" Relationship="BrgyMgmt.Web.Models.FK_CertificateCommunity_Residents" FromRole="CertificateCommunity" ToRole="Resident" />
+        </EntityType>
+        <EntityType Name="Settlement">
+          <Key>
+            <PropertyRef Name="SettlementId" />
+          </Key>
+          <Property Name="SettlementId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ComplaintId" Type="Int32" Nullable="false" />
+          <Property Name="SettlementDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Location" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="PresidingStaff" Type="Int32" Nullable="false" />
+          <Property Name="LetterDelivered" Type="Boolean" />
+          <Property Name="LetterAcknowledged" Type="Boolean" />
+          <Property Name="LetterTemplate" Type="Int32" />
+          <Property Name="CaseClosed" Type="Boolean" />
+          <Property Name="LetterContent" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Decision" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedBy" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="LastUpdatedBy" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Complaint" Relationship="BrgyMgmt.Web.Models.FK_Settlements_Complaints" FromRole="Settlement" ToRole="Complaint" />
+        </EntityType>
+        <Association Name="FK_CertificateCommunity_Residents">
+          <End Type="BrgyMgmt.Web.Models.Resident" Role="Resident" Multiplicity="1" />
+          <End Type="BrgyMgmt.Web.Models.CertificateCommunity" Role="CertificateCommunity" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Resident">
+              <PropertyRef Name="ResidentId" />
+            </Principal>
+            <Dependent Role="CertificateCommunity">
+              <PropertyRef Name="ResidentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Settlements_Complaints">
+          <End Type="BrgyMgmt.Web.Models.Complaint" Role="Complaint" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="BrgyMgmt.Web.Models.Settlement" Role="Settlement" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Complaint">
+              <PropertyRef Name="ComplaintId" />
+            </Principal>
+            <Dependent Role="Settlement">
+              <PropertyRef Name="ComplaintId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="MaintenanceTable">
+          <Key>
+            <PropertyRef Name="MaintenanceId" />
+          </Key>
+          <Property Name="MaintenanceId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="MaintenanceEntryName" Type="String" Nullable="false" MaxLength="70" FixedLength="false" Unicode="true" />
+          <Property Name="MaintenanceTableType" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="SortOrder" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Complaints" Relationship="BrgyMgmt.Web.Models.FK_Complaints_MaintenanceTables" FromRole="MaintenanceTable" ToRole="Complaint" />
+          <NavigationProperty Name="Complaints1" Relationship="BrgyMgmt.Web.Models.FK_Complaints_MaintenanceTables1" FromRole="MaintenanceTable" ToRole="Complaint" />
+          <NavigationProperty Name="Complaints2" Relationship="BrgyMgmt.Web.Models.FK_Complaints_MaintenanceTables2" FromRole="MaintenanceTable" ToRole="Complaint" />
+          <NavigationProperty Name="HouseholdPropertyProductions" Relationship="BrgyMgmt.Web.Models.FK_HouseholdProductions_MaintenanceTables" FromRole="MaintenanceTable" ToRole="HouseholdPropertyProduction" />
+          <NavigationProperty Name="Clearances" Relationship="BrgyMgmt.Web.Models.ClearancePurposes" FromRole="MaintenanceTable" ToRole="Clearance" />
+        </EntityType>
+        <Association Name="FK_Complaints_MaintenanceTables">
+          <End Type="BrgyMgmt.Web.Models.MaintenanceTable" Role="MaintenanceTable" Multiplicity="1" />
+          <End Type="BrgyMgmt.Web.Models.Complaint" Role="Complaint" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MaintenanceTable">
+              <PropertyRef Name="MaintenanceId" />
+            </Principal>
+            <Dependent Role="Complaint">
+              <PropertyRef Name="DisputeNature" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Complaints_MaintenanceTables1">
+          <End Type="BrgyMgmt.Web.Models.MaintenanceTable" Role="MaintenanceTable" Multiplicity="1" />
+          <End Type="BrgyMgmt.Web.Models.Complaint" Role="Complaint" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MaintenanceTable">
+              <PropertyRef Name="MaintenanceId" />
+            </Principal>
+            <Dependent Role="Complaint">
+              <PropertyRef Name="ComplaintStatus" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Complaints_MaintenanceTables2">
+          <End Type="BrgyMgmt.Web.Models.MaintenanceTable" Role="MaintenanceTable" Multiplicity="1" />
+          <End Type="BrgyMgmt.Web.Models.Complaint" Role="Complaint" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MaintenanceTable">
+              <PropertyRef Name="MaintenanceId" />
+            </Principal>
+            <Dependent Role="Complaint">
+              <PropertyRef Name="ModeOfSettlement" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="HouseholdPropertyProduction">
+          <Key>
+            <PropertyRef Name="HouseholdProductionId" />
+          </Key>
+          <Property Name="HouseholdProductionId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="MaintenanceId" Type="Int32" Nullable="false" />
+          <Property Name="Quantity" Type="Int32" Nullable="false" />
+          <Property Name="HouseholdId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="MaintenanceTable" Relationship="BrgyMgmt.Web.Models.FK_HouseholdProductions_MaintenanceTables" FromRole="HouseholdPropertyProduction" ToRole="MaintenanceTable" />
+          <NavigationProperty Name="Household" Relationship="BrgyMgmt.Web.Models.FK_HouseholdPropertyProductions_Households" FromRole="HouseholdPropertyProduction" ToRole="Household" />
+        </EntityType>
+        <EntityType Name="Household">
+          <Key>
+            <PropertyRef Name="HouseholdId" />
+          </Key>
+          <Property Name="HouseholdId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FriendlyName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="RoomNumber" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="FloorNumber" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="BuildingNumber" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="StreetName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="SitioId" Type="Int32" />
+          <Property Name="HomeTenure" Type="Int32" />
+          <Property Name="ConstructionType" Type="Int32" />
+          <Property Name="FamilyCount" Type="Int32" />
+          <Property Name="FamilyWithSameKitchen" Type="Int32" />
+          <Property Name="FamilyWithSeparateKitchen" Type="Int32" />
+          <Property Name="LandTenure" Type="Int32" />
+          <Property Name="AverageMonthlyIncome" Type="Int32" />
+          <Property Name="PotableWaterSupplySource" Type="Int32" />
+          <Property Name="ToiletFacility" Type="Int32" />
+          <Property Name="PowerSupply" Type="Int32" />
+          <Property Name="SanitationPractices" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="CompostHeap" Type="Boolean" />
+          <Property Name="TrashSegregation" Type="Boolean" />
+          <Property Name="MemberOfLivelihood" Type="Boolean" Nullable="false" />
+          <Property Name="ProgramName" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="VegetableGardens" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="HasFishPond" Type="Boolean" />
+          <Property Name="NeedsFirst" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="NeedsSecond" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="NeedsThird" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="FamilyPlanning" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="HavePregnantMothers" Type="Boolean" />
+          <Property Name="PregnantMonths" Type="Int32" />
+          <Property Name="IsPregnantTeen" Type="Boolean" />
+          <Property Name="BreastFeeding" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="OtherNutrition" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="HealthCard" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="OtherInformation" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="HouseholdPropertyProductions" Relationship="BrgyMgmt.Web.Models.FK_HouseholdPropertyProductions_Households" FromRole="Household" ToRole="HouseholdPropertyProduction" />
+          <NavigationProperty Name="Residents" Relationship="BrgyMgmt.Web.Models.FK_Residents_Households" FromRole="Household" ToRole="Resident" />
+        </EntityType>
+        <Association Name="FK_HouseholdProductions_MaintenanceTables">
+          <End Type="BrgyMgmt.Web.Models.MaintenanceTable" Role="MaintenanceTable" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="BrgyMgmt.Web.Models.HouseholdPropertyProduction" Role="HouseholdPropertyProduction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MaintenanceTable">
+              <PropertyRef Name="MaintenanceId" />
+            </Principal>
+            <Dependent Role="HouseholdPropertyProduction">
+              <PropertyRef Name="MaintenanceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_HouseholdPropertyProductions_Households">
+          <End Type="BrgyMgmt.Web.Models.Household" Role="Household" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="BrgyMgmt.Web.Models.HouseholdPropertyProduction" Role="HouseholdPropertyProduction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Household">
+              <PropertyRef Name="HouseholdId" />
+            </Principal>
+            <Dependent Role="HouseholdPropertyProduction">
+              <PropertyRef Name="HouseholdId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Residents_Households">
+          <End Type="BrgyMgmt.Web.Models.Household" Role="Household" Multiplicity="1" />
+          <End Type="BrgyMgmt.Web.Models.Resident" Role="Resident" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Household">
+              <PropertyRef Name="HouseholdId" />
+            </Principal>
+            <Dependent Role="Resident">
+              <PropertyRef Name="HouseHoldId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="LetterTemplate">
+          <Key>
+            <PropertyRef Name="TemplateId" />
+          </Key>
+          <Property Name="TemplateId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TemplateName" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="TemplateType" Type="Int32" Nullable="false" />
+          <Property Name="TemplateBody" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="CreatedBy" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="SortOrder" Type="Int16" Nullable="false" />
+          <NavigationProperty Name="Certificates" Relationship="BrgyMgmt.Web.Models.FK_Certificates_LetterTemplates" FromRole="LetterTemplate" ToRole="Certificate" />
+        </EntityType>
+        <EntityType Name="Certificate">
+          <Key>
+            <PropertyRef Name="CertificateId" />
+          </Key>
+          <Property Name="CertificateId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TemplateId" Type="Int32" Nullable="false" />
+          <Property Name="ResidentId" Type="Int32" Nullable="false" />
+          <Property Name="DateIssued" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CertificateContent" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="OfficialReceiptNum" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="TaxCertificateNum" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Amount" Type="Decimal" Precision="19" Scale="4" />
+          <NavigationProperty Name="LetterTemplate" Relationship="BrgyMgmt.Web.Models.FK_Certificates_LetterTemplates" FromRole="Certificate" ToRole="LetterTemplate" />
+          <NavigationProperty Name="Resident" Relationship="BrgyMgmt.Web.Models.FK_Certificates_Residents" FromRole="Certificate" ToRole="Resident" />
+        </EntityType>
+        <Association Name="FK_Certificates_LetterTemplates">
+          <End Type="BrgyMgmt.Web.Models.LetterTemplate" Role="LetterTemplate" Multiplicity="1" />
+          <End Type="BrgyMgmt.Web.Models.Certificate" Role="Certificate" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LetterTemplate">
+              <PropertyRef Name="TemplateId" />
+            </Principal>
+            <Dependent Role="Certificate">
+              <PropertyRef Name="TemplateId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Certificates_Residents">
+          <End Type="BrgyMgmt.Web.Models.Resident" Role="Resident" Multiplicity="1" />
+          <End Type="BrgyMgmt.Web.Models.Certificate" Role="Certificate" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Resident">
+              <PropertyRef Name="ResidentId" />
+            </Principal>
+            <Dependent Role="Certificate">
+              <PropertyRef Name="ResidentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Clearance">
+          <Key>
+            <PropertyRef Name="ClearanceId" />
+          </Key>
+          <Property Name="ClearanceId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ResidentId" Type="Int32" Nullable="false" />
+          <Property Name="IssuedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CTC" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="CTCDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CTCPlaceIssued" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="ORNumber" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="YearsOfStay" Type="Int32" />
+          <Property Name="Comelec" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="Amount" Type="Decimal" Precision="19" Scale="4" />
+          <NavigationProperty Name="Resident" Relationship="BrgyMgmt.Web.Models.FK_Clearances_Residents" FromRole="Clearance" ToRole="Resident" />
+          <NavigationProperty Name="MaintenanceTables" Relationship="BrgyMgmt.Web.Models.ClearancePurposes" FromRole="Clearance" ToRole="MaintenanceTable" />
+        </EntityType>
+        <EntityType Name="CustomLog">
+          <Key>
+            <PropertyRef Name="EventId" />
+          </Key>
+          <Property Name="EventId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="JsonData" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="LastUpdatedDate" Type="DateTime" Precision="3" />
+          <Property Name="EventType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ByUser" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="Employee">
+          <Key>
+            <PropertyRef Name="EmployeeId" />
+          </Key>
+          <Property Name="EmployeeId" Type="Int32" Nullable="false" />
+          <Property Name="EmployeeName" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="Designation" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="StartDate" Type="DateTime" Precision="0" />
+          <Property Name="EndDate" Type="DateTime" Precision="0" />
+          <Property Name="Committees" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="EmployeeType" Type="Int16" />
+          <Property Name="IsElected" Type="Boolean" Nullable="false" />
+          <Property Name="SortOrder" Type="Int16" />
+        </EntityType>
+        <Association Name="FK_Clearances_Residents">
+          <End Type="BrgyMgmt.Web.Models.Resident" Role="Resident" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="BrgyMgmt.Web.Models.Clearance" Role="Clearance" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Resident">
+              <PropertyRef Name="ResidentId" />
+            </Principal>
+            <Dependent Role="Clearance">
+              <PropertyRef Name="ResidentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="ClearancePurposes">
+          <End Type="BrgyMgmt.Web.Models.Clearance" Role="Clearance" Multiplicity="*" />
+          <End Type="BrgyMgmt.Web.Models.MaintenanceTable" Role="MaintenanceTable" Multiplicity="*" />
+        </Association>
+        <EntityType Name="ApplicationSetting">
+          <Key>
+            <PropertyRef Name="ApplicationSettingsId" />
+          </Key>
+          <Property Name="ApplicationSettingsId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ApplicationSettingsName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ApplicationSettingsValue" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="ApplicationSettingsCategory" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ApplicationSettingsSortOrder" Type="Int16" />
+        </EntityType>
+        <EntityType Name="ConfigData">
+          <Key>
+            <PropertyRef Name="ConfigId" />
+          </Key>
+          <Property Name="ConfigId" Type="Int32" Nullable="false" />
+          <Property Name="ConfigName" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="ConfigValue" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ConfigCategory" Type="Int16" Nullable="false" />
+          <Property Name="SortOrder" Type="Int16" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DisasterRelocationSite">
+          <Key>
+            <PropertyRef Name="DisasterRelocationSiteId" />
+          </Key>
+          <Property Name="DisasterRelocationSiteId" Type="Int32" Nullable="false" />
+          <Property Name="DisasterId" Type="Int32" Nullable="false" />
+          <Property Name="DisasterRelocationSiteName" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="DisasterRelocationSiteDesc" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="DisasterRelocationSiteAddress" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="DisasterRelocationSiteCapacity" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="DisasterRelocationSiteContactPerson" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="DisasterRelocationSiteContactNumber" Type="String" Nullable="false" MaxLength="25" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Disaster" Relationship="BrgyMgmt.Web.Models.FK_DisasterRelocationSites_Disasters" FromRole="DisasterRelocationSite" ToRole="Disaster" />
+        </EntityType>
+        <EntityType Name="Disaster">
+          <Key>
+            <PropertyRef Name="DisasterId" />
+          </Key>
+          <Property Name="DisasterId" Type="Int32" Nullable="false" />
+          <Property Name="DisasterName" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="DisasterType" Type="Int16" Nullable="false" />
+          <NavigationProperty Name="DisasterRelocationSites" Relationship="BrgyMgmt.Web.Models.FK_DisasterRelocationSites_Disasters" FromRole="Disaster" ToRole="DisasterRelocationSite" />
+          <NavigationProperty Name="DisasterStatuses" Relationship="BrgyMgmt.Web.Models.FK_DisasterStatuses_Disasters" FromRole="Disaster" ToRole="DisasterStatus" />
+        </EntityType>
+        <Association Name="FK_DisasterRelocationSites_Disasters">
+          <End Type="BrgyMgmt.Web.Models.Disaster" Role="Disaster" Multiplicity="1" />
+          <End Type="BrgyMgmt.Web.Models.DisasterRelocationSite" Role="DisasterRelocationSite" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Disaster">
+              <PropertyRef Name="DisasterId" />
+            </Principal>
+            <Dependent Role="DisasterRelocationSite">
+              <PropertyRef Name="DisasterId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="DisasterStatus">
+          <Key>
+            <PropertyRef Name="DisasterStatusId" />
+          </Key>
+          <Property Name="DisasterStatusId" Type="Int32" Nullable="false" />
+          <Property Name="DisasterId" Type="Int32" Nullable="false" />
+          <Property Name="DisasterStatusDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="DisasterLevel" Type="Int32" Nullable="false" />
+          <Property Name="DisasterStatusDesc" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="SmsMessage" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Disaster" Relationship="BrgyMgmt.Web.Models.FK_DisasterStatuses_Disasters" FromRole="DisasterStatus" ToRole="Disaster" />
+        </EntityType>
+        <Association Name="FK_DisasterStatuses_Disasters">
+          <End Type="BrgyMgmt.Web.Models.Disaster" Role="Disaster" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="BrgyMgmt.Web.Models.DisasterStatus" Role="DisasterStatus" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Disaster">
+              <PropertyRef Name="DisasterId" />
+            </Principal>
+            <Dependent Role="DisasterStatus">
+              <PropertyRef Name="DisasterId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="EstablishmentLog">
+          <Key>
+            <PropertyRef Name="EstablishmentLogId" />
+          </Key>
+          <Property Name="EstablishmentLogId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ResidentId" Type="Int32" />
+          <Property Name="FirstName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="LastName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="BarangayName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="BarangayId" Type="Int32" />
+          <Property Name="BarangayTownCity" Type="Int32" />
+          <Property Name="Temperature" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+          <Property Name="LogDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Phone" Type="String" MaxLength="25" FixedLength="false" Unicode="true" />
+          <Property Name="EstablishmentId" Type="Int32" />
+          <NavigationProperty Name="Establishment" Relationship="BrgyMgmt.Web.Models.FK_EstablishmentLogs_Establishments" FromRole="EstablishmentLog" ToRole="Establishment" />
+        </EntityType>
+        <EntityType Name="Establishment">
+          <Key>
+            <PropertyRef Name="EstablishmentId" />
+          </Key>
+          <Property Name="EstablishmentId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EstablishmentName" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="EstablishmentAddress" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="EstablishmentLogs" Relationship="BrgyMgmt.Web.Models.FK_EstablishmentLogs_Establishments" FromRole="Establishment" ToRole="EstablishmentLog" />
+        </EntityType>
+        <Association Name="FK_EstablishmentLogs_Establishments">
+          <End Type="BrgyMgmt.Web.Models.Establishment" Role="Establishment" Multiplicity="0..1" />
+          <End Type="BrgyMgmt.Web.Models.EstablishmentLog" Role="EstablishmentLog" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Establishment">
+              <PropertyRef Name="EstablishmentId" />
+            </Principal>
+            <Dependent Role="EstablishmentLog">
+              <PropertyRef Name="EstablishmentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="BrgyMgmtWebModelsStoreContainer" CdmEntityContainer="BrgyMgmtEntities">
+          <EntitySetMapping Name="UserClaims">
+            <EntityTypeMapping TypeName="BrgyMgmt.Web.Models.UserClaim">
+              <MappingFragment StoreEntitySet="UserClaims">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="ClaimType" ColumnName="ClaimType" />
+                <ScalarProperty Name="ClaimValue" ColumnName="ClaimValue" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserLogins">
+            <EntityTypeMapping TypeName="BrgyMgmt.Web.Models.UserLogin">
+              <MappingFragment StoreEntitySet="UserLogins">
+                <ScalarProperty Name="LoginProvider" ColumnName="LoginProvider" />
+                <ScalarProperty Name="ProviderKey" ColumnName="ProviderKey" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserRoles">
+            <EntityTypeMapping TypeName="BrgyMgmt.Web.Models.UserRole">
+              <MappingFragment StoreEntitySet="UserRoles">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Users">
+            <EntityTypeMapping TypeName="BrgyMgmt.Web.Models.User">
+              <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="EmailConfirmed" ColumnName="EmailConfirmed" />
+                <ScalarProperty Name="PasswordHash" ColumnName="PasswordHash" />
+                <ScalarProperty Name="SecurityStamp" ColumnName="SecurityStamp" />
+                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
+                <ScalarProperty Name="PhoneNumberConfirmed" ColumnName="PhoneNumberConfirmed" />
+                <ScalarProperty Name="TwoFactorEnabled" ColumnName="TwoFactorEnabled" />
+                <ScalarProperty Name="LockoutEndDateUtc" ColumnName="LockoutEndDateUtc" />
+                <ScalarProperty Name="LockoutEnabled" ColumnName="LockoutEnabled" />
+                <ScalarProperty Name="AccessFailedCount" ColumnName="AccessFailedCount" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="Photo" ColumnName="Photo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="UsersInRoles" TypeName="BrgyMgmt.Web.Models.UsersInRoles" StoreEntitySet="UsersInRoles">
+            <EndProperty Name="UserRoles">
+              <ScalarProperty Name="Id" ColumnName="RoleId" />
+            </EndProperty>
+            <EndProperty Name="Users">
+              <ScalarProperty Name="Id" ColumnName="UserId" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <EntitySetMapping Name="Complaints">
+            <EntityTypeMapping TypeName="BrgyMgmt.Web.Models.Complaint">
+              <MappingFragment StoreEntitySet="Complaints">
+                <ScalarProperty Name="Remarks" ColumnName="Remarks" />
+                <ScalarProperty Name="GovernmentSavings" ColumnName="GovernmentSavings" />
+                <ScalarProperty Name="ComplaintStatus" ColumnName="ComplaintStatus" />
+                <ScalarProperty Name="ModeOfSettlement" ColumnName="ModeOfSettlement" />
+                <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="ComplainantNarrative" ColumnName="ComplainantNarrative" />
+                <ScalarProperty Name="DateTimeRecorded" ColumnName="DateTimeRecorded" />
+                <ScalarProperty Name="IncidentDateTime" ColumnName="IncidentDateTime" />
+                <ScalarProperty Name="DisputeNature" ColumnName="DisputeNature" />
+                <ScalarProperty Name="IncidentLocation" ColumnName="IncidentLocation" />
+                <ScalarProperty Name="NonResidentVictims" ColumnName="NonResidentVictims" />
+                <ScalarProperty Name="NonResidentRespondents" ColumnName="NonResidentRespondents" />
+                <ScalarProperty Name="NonResidentComplainants" ColumnName="NonResidentComplainants" />
+                <ScalarProperty Name="ComplaintTitle" ColumnName="ComplaintTitle" />
+                <ScalarProperty Name="ComplaintId" ColumnName="ComplaintId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Residents">
+            <EntityTypeMapping TypeName="BrgyMgmt.Web.Models.Resident">
+              <MappingFragment StoreEntitySet="Residents">
+                <ScalarProperty Name="Occupation" ColumnName="Occupation" />
+                <ScalarProperty Name="FamilyMemberSpecialNeeds" ColumnName="FamilyMemberSpecialNeeds" />
+                <ScalarProperty Name="EducationStatus" ColumnName="EducationStatus" />
+                <ScalarProperty Name="EducationalAttainmentId" ColumnName="EducationalAttainmentId" />
+                <ScalarProperty Name="ReligionId" ColumnName="ReligionId" />
+                <ScalarProperty Name="EthnicityId" ColumnName="EthnicityId" />
+                <ScalarProperty Name="CivilStatus" ColumnName="CivilStatus" />
+                <ScalarProperty Name="Gender" ColumnName="Gender" />
+                <ScalarProperty Name="BirthDate" ColumnName="BirthDate" />
+                <ScalarProperty Name="ResidenceYears" ColumnName="ResidenceYears" />
+                <ScalarProperty Name="VoteRegistrationLoc" ColumnName="VoteRegistrationLoc" />
+                <ScalarProperty Name="isVoter" ColumnName="isVoter" />
+                <ScalarProperty Name="PPPPYear" ColumnName="PPPPYear" />
+                <ScalarProperty Name="PPPP" ColumnName="PPPP" />
+                <ScalarProperty Name="HasDisabilityCard" ColumnName="HasDisabilityCard" />
+                <ScalarProperty Name="DisabilityKind" ColumnName="DisabilityKind" />
+                <ScalarProperty Name="Disability" ColumnName="Disability" />
+                <ScalarProperty Name="RelToHouseholdHead" ColumnName="RelToHouseholdHead" />
+                <ScalarProperty Name="HouseholdHead" ColumnName="HouseholdHead" />
+                <ScalarProperty Name="FullName" ColumnName="FullName" />
+                <ScalarProperty Name="BiometricCapture" ColumnName="BiometricCapture" />
+                <ScalarProperty Name="HouseHoldId" ColumnName="HouseHoldId" />
+                <ScalarProperty Name="Photo" ColumnName="Photo" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
+                <ScalarProperty Name="Cellular" ColumnName="Cellular" />
+                <ScalarProperty Name="Alias" ColumnName="Alias" />
+                <ScalarProperty Name="MiddleName" ColumnName="MiddleName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="ResidentId" ColumnName="ResidentId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="ComplaintRespondents" TypeName="BrgyMgmt.Web.Models.ComplaintRespondents" StoreEntitySet="ComplaintRespondents">
+            <EndProperty Name="Resident">
+              <ScalarProperty Name="ResidentId" ColumnName="ResidentId" />
+            </EndProperty>
+            <EndProperty Name="Complaint">
+              <ScalarProperty Name="ComplaintId" ColumnName="ComplaintId" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="ComplaintComplainants" TypeName="BrgyMgmt.Web.Models.ComplaintComplainants" StoreEntitySet="ComplaintComplainants">
+            <EndProperty Name="Resident">
+              <ScalarProperty Name="ResidentId" ColumnName="ResidentId" />
+            </EndProperty>
+            <EndProperty Name="Complaint">
+              <ScalarProperty Name="ComplaintId" ColumnName="ComplaintId" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="ComplaintVictims" TypeName="BrgyMgmt.Web.Models.ComplaintVictims" StoreEntitySet="ComplaintVictims">
+            <EndProperty Name="Resident">
+              <ScalarProperty Name="ResidentId" ColumnName="ResidentId" />
+            </EndProperty>
+            <EndProperty Name="Complaint">
+              <ScalarProperty Name="ComplaintId" ColumnName="ComplaintId" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <EntitySetMapping Name="CertificateCommunities">
+            <EntityTypeMapping TypeName="BrgyMgmt.Web.Models.CertificateCommunity">
+              <MappingFragment StoreEntitySet="CertificateCommunity">
+                <ScalarProperty Name="AmountPaid" ColumnName="AmountPaid" />
+                <ScalarProperty Name="Interest" ColumnName="Interest" />
+                <ScalarProperty Name="PropertyEarningsTax" ColumnName="PropertyEarningsTax" />
+                <ScalarProperty Name="ProfessionalEarningsTax" ColumnName="ProfessionalEarningsTax" />
+                <ScalarProperty Name="BusinessEarningsTax" ColumnName="BusinessEarningsTax" />
+                <ScalarProperty Name="BasicCommunityTax" ColumnName="BasicCommunityTax" />
+                <ScalarProperty Name="Weight" ColumnName="Weight" />
+                <ScalarProperty Name="Height" ColumnName="Height" />
+                <ScalarProperty Name="ResidentId" ColumnName="ResidentId" />
+                <ScalarProperty Name="DateIssued" ColumnName="DateIssued" />
+                <ScalarProperty Name="PlaceIssued" ColumnName="PlaceIssued" />
+                <ScalarProperty Name="Year" ColumnName="Year" />
+                <ScalarProperty Name="CCI" ColumnName="CCI" />
+                <ScalarProperty Name="TaxCertificateId" ColumnName="TaxCertificateId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Settlements">
+            <EntityTypeMapping TypeName="BrgyMgmt.Web.Models.Settlement">
+              <MappingFragment StoreEntitySet="Settlements">
+                <ScalarProperty Name="LastUpdatedBy" ColumnName="LastUpdatedBy" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="Decision" ColumnName="Decision" />
+                <ScalarProperty Name="LetterContent" ColumnName="LetterContent" />
+                <ScalarProperty Name="CaseClosed" ColumnName="CaseClosed" />
+                <ScalarProperty Name="LetterTemplate" ColumnName="LetterTemplate" />
+                <ScalarProperty Name="LetterAcknowledged" ColumnName="LetterAcknowledged" />
+                <ScalarProperty Name="LetterDelivered" ColumnName="LetterDelivered" />
+                <ScalarProperty Name="PresidingStaff" ColumnName="PresidingStaff" />
+                <ScalarProperty Name="Location" ColumnName="Location" />
+                <ScalarProperty Name="SettlementDate" ColumnName="SettlementDate" />
+                <ScalarProperty Name="ComplaintId" ColumnName="ComplaintId" />
+                <ScalarProperty Name="SettlementId" ColumnName="SettlementId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MaintenanceTables">
+            <EntityTypeMapping TypeName="BrgyMgmt.Web.Models.MaintenanceTable">
+              <MappingFragment StoreEntitySet="MaintenanceTables">
+                <ScalarProperty Name="SortOrder" ColumnName="SortOrder" />
+                <ScalarProperty Name="MaintenanceTableType" ColumnName="MaintenanceTableType" />
+                <ScalarProperty Name="MaintenanceEntryName" ColumnName="MaintenanceEntryName" />
+                <ScalarProperty Name="MaintenanceId" ColumnName="MaintenanceId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="HouseholdPropertyProductions">
+            <EntityTypeMapping TypeName="BrgyMgmt.Web.Models.HouseholdPropertyProduction">
+              <MappingFragment StoreEntitySet="HouseholdPropertyProductions">
+                <ScalarProperty Name="HouseholdId" ColumnName="HouseholdId" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="MaintenanceId" ColumnName="MaintenanceId" />
+                <ScalarProperty Name="HouseholdProductionId" ColumnName="HouseholdProductionId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Households">
+            <EntityTypeMapping TypeName="BrgyMgmt.Web.Models.Household">
+              <MappingFragment StoreEntitySet="Households">
+                <ScalarProperty Name="OtherInformation" ColumnName="OtherInformation" />
+                <ScalarProperty Name="HealthCard" ColumnName="HealthCard" />
+                <ScalarProperty Name="OtherNutrition" ColumnName="OtherNutrition" />
+                <ScalarProperty Name="BreastFeeding" ColumnName="BreastFeeding" />
+                <ScalarProperty Name="IsPregnantTeen" ColumnName="IsPregnantTeen" />
+                <ScalarProperty Name="PregnantMonths" ColumnName="PregnantMonths" />
+                <ScalarProperty Name="HavePregnantMothers" ColumnName="HavePregnantMothers" />
+                <ScalarProperty Name="FamilyPlanning" ColumnName="FamilyPlanning" />
+                <ScalarProperty Name="NeedsThird" ColumnName="NeedsThird" />
+                <ScalarProperty Name="NeedsSecond" ColumnName="NeedsSecond" />
+                <ScalarProperty Name="NeedsFirst" ColumnName="NeedsFirst" />
+                <ScalarProperty Name="HasFishPond" ColumnName="HasFishPond" />
+                <ScalarProperty Name="VegetableGardens" ColumnName="VegetableGardens" />
+                <ScalarProperty Name="ProgramName" ColumnName="ProgramName" />
+                <ScalarProperty Name="MemberOfLivelihood" ColumnName="MemberOfLivelihood" />
+                <ScalarProperty Name="TrashSegregation" ColumnName="TrashSegregation" />
+                <ScalarProperty Name="CompostHeap" ColumnName="CompostHeap" />
+                <ScalarProperty Name="SanitationPractices" ColumnName="SanitationPractices" />
+                <ScalarProperty Name="PowerSupply" ColumnName="PowerSupply" />
+                <ScalarProperty Name="ToiletFacility" ColumnName="ToiletFacility" />
+                <ScalarProperty Name="PotableWaterSupplySource" ColumnName="PotableWaterSupplySource" />
+                <ScalarProperty Name="AverageMonthlyIncome" ColumnName="AverageMonthlyIncome" />
+                <ScalarProperty Name="LandTenure" ColumnName="LandTenure" />
+                <ScalarProperty Name="FamilyWithSeparateKitchen" ColumnName="FamilyWithSeparateKitchen" />
+                <ScalarProperty Name="FamilyWithSameKitchen" ColumnName="FamilyWithSameKitchen" />
+                <ScalarProperty Name="FamilyCount" ColumnName="FamilyCount" />
+                <ScalarProperty Name="ConstructionType" ColumnName="ConstructionType" />
+                <ScalarProperty Name="HomeTenure" ColumnName="HomeTenure" />
+                <ScalarProperty Name="SitioId" ColumnName="SitioId" />
+                <ScalarProperty Name="StreetName" ColumnName="StreetName" />
+                <ScalarProperty Name="BuildingNumber" ColumnName="BuildingNumber" />
+                <ScalarProperty Name="FloorNumber" ColumnName="FloorNumber" />
+                <ScalarProperty Name="RoomNumber" ColumnName="RoomNumber" />
+                <ScalarProperty Name="FriendlyName" ColumnName="FriendlyName" />
+                <ScalarProperty Name="HouseholdId" ColumnName="HouseholdId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LetterTemplates">
+            <EntityTypeMapping TypeName="BrgyMgmt.Web.Models.LetterTemplate">
+              <MappingFragment StoreEntitySet="LetterTemplates">
+                <ScalarProperty Name="SortOrder" ColumnName="SortOrder" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
+                <ScalarProperty Name="TemplateBody" ColumnName="TemplateBody" />
+                <ScalarProperty Name="TemplateType" ColumnName="TemplateType" />
+                <ScalarProperty Name="TemplateName" ColumnName="TemplateName" />
+                <ScalarProperty Name="TemplateId" ColumnName="TemplateId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Certificates">
+            <EntityTypeMapping TypeName="BrgyMgmt.Web.Models.Certificate">
+              <MappingFragment StoreEntitySet="Certificates">
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="TaxCertificateNum" ColumnName="TaxCertificateNum" />
+                <ScalarProperty Name="OfficialReceiptNum" ColumnName="OfficialReceiptNum" />
+                <ScalarProperty Name="CertificateContent" ColumnName="CertificateContent" />
+                <ScalarProperty Name="DateIssued" ColumnName="DateIssued" />
+                <ScalarProperty Name="ResidentId" ColumnName="ResidentId" />
+                <ScalarProperty Name="TemplateId" ColumnName="TemplateId" />
+                <ScalarProperty Name="CertificateId" ColumnName="CertificateId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Clearances">
+            <EntityTypeMapping TypeName="BrgyMgmt.Web.Models.Clearance">
+              <MappingFragment StoreEntitySet="Clearances">
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="Comelec" ColumnName="Comelec" />
+                <ScalarProperty Name="YearsOfStay" ColumnName="YearsOfStay" />
+                <ScalarProperty Name="ORNumber" ColumnName="ORNumber" />
+                <ScalarProperty Name="CTCPlaceIssued" ColumnName="CTCPlaceIssued" />
+                <ScalarProperty Name="CTCDate" ColumnName="CTCDate" />
+                <ScalarProperty Name="CTC" ColumnName="CTC" />
+                <ScalarProperty Name="IssuedDate" ColumnName="IssuedDate" />
+                <ScalarProperty Name="ResidentId" ColumnName="ResidentId" />
+                <ScalarProperty Name="ClearanceId" ColumnName="ClearanceId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CustomLogs">
+            <EntityTypeMapping TypeName="BrgyMgmt.Web.Models.CustomLog">
+              <MappingFragment StoreEntitySet="CustomLogs">
+                <ScalarProperty Name="ByUser" ColumnName="ByUser" />
+                <ScalarProperty Name="EventType" ColumnName="EventType" />
+                <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+                <ScalarProperty Name="JsonData" ColumnName="JsonData" />
+                <ScalarProperty Name="EventId" ColumnName="EventId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Employees">
+            <EntityTypeMapping TypeName="BrgyMgmt.Web.Models.Employee">
+              <MappingFragment StoreEntitySet="Employees">
+                <ScalarProperty Name="SortOrder" ColumnName="SortOrder" />
+                <ScalarProperty Name="IsElected" ColumnName="IsElected" />
+                <ScalarProperty Name="EmployeeType" ColumnName="EmployeeType" />
+                <ScalarProperty Name="Committees" ColumnName="Committees" />
+                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+                <ScalarProperty Name="Designation" ColumnName="Designation" />
+                <ScalarProperty Name="EmployeeName" ColumnName="EmployeeName" />
+                <ScalarProperty Name="EmployeeId" ColumnName="EmployeeId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="ClearancePurposes" TypeName="BrgyMgmt.Web.Models.ClearancePurposes" StoreEntitySet="ClearancePurposes">
+            <EndProperty Name="MaintenanceTable">
+              <ScalarProperty Name="MaintenanceId" ColumnName="MaintenanceId" />
+            </EndProperty>
+            <EndProperty Name="Clearance">
+              <ScalarProperty Name="ClearanceId" ColumnName="ClearanceId" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <EntitySetMapping Name="ApplicationSettings">
+            <EntityTypeMapping TypeName="BrgyMgmt.Web.Models.ApplicationSetting">
+              <MappingFragment StoreEntitySet="ApplicationSettings">
+                <ScalarProperty Name="ApplicationSettingsSortOrder" ColumnName="ApplicationSettingsSortOrder" />
+                <ScalarProperty Name="ApplicationSettingsCategory" ColumnName="ApplicationSettingsCategory" />
+                <ScalarProperty Name="ApplicationSettingsValue" ColumnName="ApplicationSettingsValue" />
+                <ScalarProperty Name="ApplicationSettingsName" ColumnName="ApplicationSettingsName" />
+                <ScalarProperty Name="ApplicationSettingsId" ColumnName="ApplicationSettingsId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ConfigDatas">
+            <EntityTypeMapping TypeName="BrgyMgmt.Web.Models.ConfigData">
+              <MappingFragment StoreEntitySet="ConfigData">
+                <ScalarProperty Name="SortOrder" ColumnName="SortOrder" />
+                <ScalarProperty Name="ConfigCategory" ColumnName="ConfigCategory" />
+                <ScalarProperty Name="ConfigValue" ColumnName="ConfigValue" />
+                <ScalarProperty Name="ConfigName" ColumnName="ConfigName" />
+                <ScalarProperty Name="ConfigId" ColumnName="ConfigId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DisasterRelocationSites">
+            <EntityTypeMapping TypeName="BrgyMgmt.Web.Models.DisasterRelocationSite">
+              <MappingFragment StoreEntitySet="DisasterRelocationSites">
+                <ScalarProperty Name="DisasterRelocationSiteContactNumber" ColumnName="DisasterRelocationSiteContactNumber" />
+                <ScalarProperty Name="DisasterRelocationSiteContactPerson" ColumnName="DisasterRelocationSiteContactPerson" />
+                <ScalarProperty Name="DisasterRelocationSiteCapacity" ColumnName="DisasterRelocationSiteCapacity" />
+                <ScalarProperty Name="DisasterRelocationSiteAddress" ColumnName="DisasterRelocationSiteAddress" />
+                <ScalarProperty Name="DisasterRelocationSiteDesc" ColumnName="DisasterRelocationSiteDesc" />
+                <ScalarProperty Name="DisasterRelocationSiteName" ColumnName="DisasterRelocationSiteName" />
+                <ScalarProperty Name="DisasterId" ColumnName="DisasterId" />
+                <ScalarProperty Name="DisasterRelocationSiteId" ColumnName="DisasterRelocationSiteId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Disasters">
+            <EntityTypeMapping TypeName="BrgyMgmt.Web.Models.Disaster">
+              <MappingFragment StoreEntitySet="Disasters">
+                <ScalarProperty Name="DisasterType" ColumnName="DisasterType" />
+                <ScalarProperty Name="DisasterName" ColumnName="DisasterName" />
+                <ScalarProperty Name="DisasterId" ColumnName="DisasterId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DisasterStatuses">
+            <EntityTypeMapping TypeName="BrgyMgmt.Web.Models.DisasterStatus">
+              <MappingFragment StoreEntitySet="DisasterStatuses">
+                <ScalarProperty Name="SmsMessage" ColumnName="SmsMessage" />
+                <ScalarProperty Name="DisasterStatusDesc" ColumnName="DisasterStatusDesc" />
+                <ScalarProperty Name="DisasterLevel" ColumnName="DisasterLevel" />
+                <ScalarProperty Name="DisasterStatusDateTime" ColumnName="DisasterStatusDateTime" />
+                <ScalarProperty Name="DisasterId" ColumnName="DisasterId" />
+                <ScalarProperty Name="DisasterStatusId" ColumnName="DisasterStatusId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EstablishmentLogs">
+            <EntityTypeMapping TypeName="BrgyMgmt.Web.Models.EstablishmentLog">
+              <MappingFragment StoreEntitySet="EstablishmentLogs">
+                <ScalarProperty Name="EstablishmentId" ColumnName="EstablishmentId" />
+                <ScalarProperty Name="Phone" ColumnName="Phone" />
+                <ScalarProperty Name="LogDateTime" ColumnName="LogDateTime" />
+                <ScalarProperty Name="Temperature" ColumnName="Temperature" />
+                <ScalarProperty Name="BarangayTownCity" ColumnName="BarangayTownCity" />
+                <ScalarProperty Name="BarangayId" ColumnName="BarangayId" />
+                <ScalarProperty Name="BarangayName" ColumnName="BarangayName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="ResidentId" ColumnName="ResidentId" />
+                <ScalarProperty Name="EstablishmentLogId" ColumnName="EstablishmentLogId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Establishments">
+            <EntityTypeMapping TypeName="BrgyMgmt.Web.Models.Establishment">
+              <MappingFragment StoreEntitySet="Establishments">
+                <ScalarProperty Name="EstablishmentAddress" ColumnName="EstablishmentAddress" />
+                <ScalarProperty Name="EstablishmentName" ColumnName="EstablishmentName" />
+                <ScalarProperty Name="EstablishmentId" ColumnName="EstablishmentId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

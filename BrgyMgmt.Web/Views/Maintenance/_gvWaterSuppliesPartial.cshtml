@@ -1,0 +1,91 @@
+@{
+    var grid = Html.DevExpress().GridView(settings => {
+        settings.Name = "gvWaterSupplies";
+        settings.CallbackRouteValues = new {
+            Controller = "Maintenance", Action = "gvWaterSuppliesPartial" };
+
+        settings.SettingsEditing.AddNewRowRouteValues = new { Controller = "Maintenance", Action = "gvWaterSuppliesPartialAddNew" };
+        settings.SettingsEditing.UpdateRowRouteValues = new { Controller = "Maintenance", Action = "gvWaterSuppliesPartialUpdate" };
+        settings.SettingsEditing.DeleteRowRouteValues = new { Controller = "Maintenance", Action = "gvWaterSuppliesPartialDelete" };
+        settings.SettingsEditing.Mode = GridViewEditingMode.EditFormAndDisplayRow;
+        settings.SettingsBehavior.ConfirmDelete = true;
+
+        settings.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+
+        settings.CommandColumn.ShowClearFilterButton = true;
+        settings.CommandColumn.Visible = true;
+        settings.CommandColumn.ShowDeleteButton = User.IsInRole("Administrator") || User.IsInRole("SA");
+        settings.CommandColumn.ShowEditButton = true;
+        settings.CommandColumn.ShowNewButtonInHeader = true;
+        settings.SettingsPager.PageSize = 10;
+
+        settings.KeyFieldName = "MaintenanceId";
+
+        settings.SettingsPager.Visible = true;
+        settings.Settings.ShowGroupPanel = false;
+        settings.Settings.ShowFilterRow = true;
+        settings.SettingsBehavior.AllowSelectByRowClick = true;
+
+        settings.SettingsAdaptivity.AdaptivityMode = GridViewAdaptivityMode.HideDataCells;
+        settings.SettingsAdaptivity.AdaptiveColumnPosition = GridViewAdaptiveColumnPosition.Right;
+        settings.SettingsAdaptivity.AdaptiveDetailColumnCount = 1;
+        settings.SettingsAdaptivity.AllowOnlyOneAdaptiveDetailExpanded = true;
+        settings.SettingsAdaptivity.HideDataCellsAtWindowInnerWidth = 300;
+
+        settings.Columns.Add("MaintenanceId").Caption = "ID";
+        settings.Columns.Add("MaintenanceEntryName").Caption = "Name"; ;
+        settings.Columns.Add("MaintenanceTableType").Visible = false;
+        settings.Columns.Add("SortOrder");
+
+        settings.SetEditFormTemplateContent(c => {
+            var item = ViewData["item"] != null ? ViewData["item"] : c.DataItem;
+
+            ViewContext.Writer.Write("<div class=\"editform col-md-12\" style='float:left;'>");
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Name"; lbl.AssociatedControlName = "MaintenanceEntryName"; }).GetHtml();
+            Html.DevExpress().TextBox(cfg => {
+                cfg.Name = "MaintenanceEntryName";
+                cfg.ShowModelErrors = true;
+                cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                cfg.Properties.ValidationSettings.RequiredField.IsRequired = true;
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+            }).Bind(DataBinder.Eval(item, "MaintenanceEntryName")).Render();
+            Html.DevExpress().TextBox(cfg => {
+                cfg.Name = "MaintenanceTableType";
+                cfg.ClientVisible = false;
+            }).Bind(DataBinder.Eval(item, "MaintenanceTableType") ?? "WaterSupply").Render();
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Sort Order"; lbl.AssociatedControlName = "SortOrder"; }).GetHtml();
+            Html.DevExpress().SpinEdit(cfg => {
+                cfg.Name = "SortOrder";
+                //cfg.ClientEnabled = Convert.ToBoolean(DataBinder.Eval(item, "PPPP"));
+                cfg.Width = System.Web.UI.WebControls.Unit.Pixel(260);
+                cfg.Properties.SpinButtons.ShowIncrementButtons = false;
+                cfg.Properties.MinValue = 1;
+                cfg.Properties.MaxValue = 100;
+            }).Bind(DataBinder.Eval(item, "SortOrder")).GetHtml();
+            ViewContext.Writer.Write("</div>");
+            ViewContext.Writer.Write("<div class=\"editform col-md-12\" style='float:left; padding-top:20px;'>");
+            Html.DevExpress().Button(btn => {
+                btn.ControlStyle.CssClass = "fl";
+                btn.Name = "btnSave";
+                btn.Text = "Save";
+                btn.Style[HtmlTextWriterStyle.MarginLeft] = "5px";
+                btn.UseSubmitBehavior = false;
+                btn.ClientSideEvents.Click = "function(s, e){ gvWaterSupplies.UpdateEdit(); }";
+            }).Render();
+            Html.DevExpress().Button(btn => {
+                btn.ControlStyle.CssClass = "fl";
+                btn.Name = "btnCancel"; btn.Text = "Cancel";
+                btn.UseSubmitBehavior = false;
+                btn.ClientSideEvents.Click = "function(s, e){ gvWaterSupplies.CancelEdit(); }";
+            }).Render();
+
+            ViewContext.Writer.Write("</div>");
+        });
+
+    });
+    if (ViewData["EditError"] != null) {
+        grid.SetEditErrorText((string)ViewData["EditError"]);
+    }
+}
+@grid.Bind(Model).GetHtml()

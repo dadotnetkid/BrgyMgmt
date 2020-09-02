@@ -1,0 +1,8 @@
+﻿
+@{
+    ViewBag.Title = "ViewInvite";
+}
+@model XtraReport
+
+@Html.DevExpress().WebDocumentViewer(rptool => { rptool.Name = "ReportToolbar"; }).Bind(Model).GetHtml();
+

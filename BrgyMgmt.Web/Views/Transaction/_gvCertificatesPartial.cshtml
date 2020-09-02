@@ -1,0 +1,241 @@
+@{
+    var grid = Html.DevExpress().GridView(settings => {
+        settings.Name = "gvCertificates";
+        settings.CallbackRouteValues = new { Controller = "Transaction", Action = "gvCertificatesPartial" };
+
+        settings.SettingsEditing.AddNewRowRouteValues = new { Controller = "Transaction", Action = "gvCertificatesPartialAddNew" };
+        settings.SettingsEditing.UpdateRowRouteValues = new { Controller = "Transaction", Action = "gvCertificatesPartialUpdate" };
+        settings.SettingsEditing.DeleteRowRouteValues = new { Controller = "Transaction", Action = "gvCertificatesPartialDelete" };
+        settings.SettingsEditing.Mode = GridViewEditingMode.EditFormAndDisplayRow;
+        settings.SettingsBehavior.ConfirmDelete = true;
+        settings.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+
+        settings.CommandColumn.ShowClearFilterButton = true;
+        settings.CommandColumn.Visible = true;
+        settings.CommandColumn.ShowDeleteButton = User.IsInRole("SA") || User.IsInRole("Administrator");
+        settings.CommandColumn.ShowEditButton = true;
+        settings.CommandColumn.ShowNewButtonInHeader = true;
+        settings.CommandColumn.Width = 100;
+
+        settings.SettingsPager.PageSize = 10;
+        settings.SettingsBehavior.ConfirmDelete = true;
+        settings.KeyFieldName = "CertificateId";
+
+        settings.SettingsPager.Visible = true;
+        settings.Settings.ShowGroupPanel = false;
+        settings.Settings.ShowFilterRow = true;
+        settings.SettingsBehavior.AllowSelectByRowClick = true;
+
+        settings.SettingsAdaptivity.AdaptivityMode = GridViewAdaptivityMode.HideDataCells;
+        settings.SettingsAdaptivity.AdaptiveColumnPosition = GridViewAdaptiveColumnPosition.Right;
+        settings.SettingsAdaptivity.AdaptiveDetailColumnCount = 1;
+        settings.SettingsAdaptivity.AllowOnlyOneAdaptiveDetailExpanded = true;
+        settings.SettingsAdaptivity.HideDataCellsAtWindowInnerWidth = 300;
+
+        settings.Columns.Add(col => {
+            col.Width = 100;
+            col.SetDataItemTemplateContent(c => {
+                Html.DevExpress().Button(btn => {
+                    btn.Name = "btn" + c.KeyValue;
+                    btn.Text = "Print";
+                    btn.ClientSideEvents.Click = "function(s, e) { showCertificateReportViewer('" + c.KeyValue + "')}";
+                }).GetHtml();
+            });
+        });
+
+
+        settings.Columns.Add(col => { col.FieldName = "CertificateId"; col.Caption = "ID"; col.Width = 80;  });
+        //settings.Columns.Add("ResidentId");
+        settings.Columns.Add("Resident.FullName").Caption = "Resident";
+
+        //settings.Columns.Add("TemplateId");
+        settings.Columns.Add("LetterTemplate.TemplateName").Caption = "Type | Purpose";
+
+        //settings.Columns.Add(col => { col.FieldName = "DateIssued"; col.Caption = "Date Issued"; col.Width = 80; col.ColumnType = MVCxGridViewColumnType.DateEdit; col.PropertiesEdit.DisplayFormatString = "d/MM/yyyy"; });
+
+        //settings.Columns.Add(column => {
+        //    column.FieldName = "DateIssued"; column.Caption = "Woo";
+        //    column.ColumnType = MVCxGridViewColumnType.DateEdit;
+        //    column.PropertiesEdit.DisplayFormatString = "dd/MM/yyyy";
+        //    var pcol = column.PropertiesEdit as DateEditProperties;
+        //    pcol.UseMaskBehavior = true;
+        //    pcol.EditFormat = EditFormat.Custom;
+        //});
+        //settings.Columns.Add(column => {
+        //    column.FieldName = "DateIssued";
+        //    column.ColumnType = MVCxGridViewColumnType.DateEdit;
+        //    (column.PropertiesEdit as DateEditProperties).DisplayFormatString = "dd/MM/yyyy";
+        //    (column.PropertiesEdit as DateEditProperties).EditFormatString = "dd/MM/yyyy";
+        //    (column.PropertiesEdit as DateEditProperties).DisplayFormatInEditMode = true;
+        //});
+
+
+        settings.Columns.Add("DateIssued");
+        //settings.Columns.Add("CertificateContent");
+        settings.Columns.Add("OfficialReceiptNum").Caption = "OR#";
+        settings.Columns.Add("TaxCertificateNum").Caption = "CTC#";
+
+        settings.SetEditFormTemplateContent(c => {
+            var item = ViewData["item"] != null ? ViewData["item"] : c.DataItem;
+
+            ViewContext.Writer.Write("<div class=\"editform col-md-4\" style='float:left;'>");
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Search | Change"; lbl.AssociatedControlName = "SearchComplainants"; }).GetHtml();
+            //ViewData["Certificate"] = item as BarangayManagement.Web.Models.Certificate;
+            Html.RenderPartial("_cmbResidentSearchPartial");
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Resident"; lbl.AssociatedControlName = "ResidentId"; }).GetHtml();
+            //Html.DevExpress().ComboBox(cfg => {
+            //    cfg.Name = "ResidentName";
+            //    cfg.Properties.IncrementalFilteringMode = IncrementalFilteringMode.None;
+            //    //cmb.Width = System.Web.UI.WebControls.Unit.Pixel(200);
+            //    cfg.ClientEnabled = false;
+            //    cfg.Properties.DropDownButton.Visible = false;
+            //    cfg.Properties.ValueField = "Id";
+            //    cfg.Properties.TextField = "Name";
+            //    cfg.Properties.ValueType = typeof(int);
+            //    cfg.Properties.ValidationSettings.RequiredField.IsRequired = true;
+            //    cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+            //}).BindList(ViewBag.Residents).Bind(DataBinder.Eval(item, "ResidentId")).GetHtml();
+
+            Html.DevExpress().TextBox(cfg => {
+                cfg.Name = "ResidentName";
+                cfg.ClientEnabled = false;
+            }).Bind(DataBinder.Eval(item, "Resident.FullName")).Render();
+            Html.DevExpress().TextBox(cfg => {
+                cfg.Name = "ResidentId";
+                cfg.ClientVisible = false;
+            }).Bind(DataBinder.Eval(item, "ResidentId")).Render();
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Type:"; lbl.AssociatedControlName = "TemplateId"; }).GetHtml();
+            ViewData["TemplateId"] = DataBinder.Eval(item, "TemplateId");
+            Html.RenderPartial("_cmbTemplateTypePartial");
+
+            //Html.DevExpress().ComboBox(cfg => {
+            //    cfg.Name = "TemplateId";
+            //    cfg.CallbackRouteValues = new { Controller = "Transaction", Action = "cmbResidentSearchPartial" };
+            //    //set.Width = System.Web.UI.WebControls.Unit.Pixel(200);
+            //    cfg.Properties.ValueField = "Id";
+            //    cfg.Properties.TextField = "Name";
+            //    cfg.Properties.ValueType = typeof(Int32);
+            //    cfg.Properties.DropDownRows = 4;
+            //    cfg.Properties.DropDownStyle = DropDownStyle.DropDownList;
+
+            //    cfg.Properties.Columns.Add("Name");
+            //    cfg.Properties.TextFormatString = "{0}";
+
+            //    //set.Properties.Columns.Add("Title", "Title", 100);
+            //    cfg.Properties.Columns.Add("Content", "Content", 0);
+            //    cfg.Properties.ClientSideEvents.SelectedIndexChanged = "function (s, e){CertificateContent.SetText(s.GetSelectedItem().GetColumnText('Content'));}";
+            //    cfg.Properties.ValidationSettings.RequiredField.IsRequired = true;
+            //    cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+            //}).BindList(ViewBag.CertificateType).Bind(DataBinder.Eval(item, "TemplateId")).GetHtml();
+
+            Html.DevExpress().TextBox(cfg => {
+                cfg.Name = "TemplateId";
+                cfg.ClientVisible = false;
+            }).Bind(DataBinder.Eval(item, "TemplateId")).Render();
+
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Date Issued:"; lbl.AssociatedControlName = "DateIssued"; }).GetHtml();
+            Html.DevExpress().DateEdit(set => {
+                set.Name = "DateIssued";
+                set.Properties.UseMaskBehavior = true;
+                set.Properties.EditFormat = EditFormat.Custom;
+                set.Properties.EditFormatString = "dd/MM/yyyy hh:mm tt";
+                set.Properties.TimeSectionProperties.Visible = true;
+                set.Properties.TimeSectionProperties.Adaptive = true;
+                set.Properties.TimeSectionProperties.TimeEditProperties.EditFormat = EditFormat.Custom;
+                set.Properties.TimeSectionProperties.TimeEditProperties.EditFormatString = "hh:mm tt";
+                set.Date = DateTime.Now;
+                //set.Width = System.Web.UI.WebControls.Unit.Pixel(200);
+                set.Properties.CalendarProperties.FastNavProperties.DisplayMode = FastNavigationDisplayMode.Inline;
+                set.Properties.ClientSideEvents.Init = "function(s, e){ s.SetValue(new Date())}";
+            }).Bind(DataBinder.Eval(item, "DateIssued")).GetHtml();
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "OR Number:"; lbl.AssociatedControlName = "OfficialReceiptNum"; }).GetHtml();
+            Html.DevExpress().TextBox(cfg => {
+                //cfg.Properties.SpinButtons.ClientVisible = false;
+                cfg.Name = "OfficialReceiptNum";
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+                //cfg.Width = System.Web.UI.WebControls.Unit.Pixel(200);
+                cfg.Properties.ValidationSettings.RequiredField.IsRequired = true;
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+                cfg.Properties.ClientSideEvents.KeyDown = "PreventLetters";
+            }).Bind(DataBinder.Eval(item, "OfficialReceiptNum")).GetHtml();
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "Amount:"; lbl.AssociatedControlName = "Amount"; }).GetHtml();
+            Html.DevExpress().SpinEdit(cfg => {
+                cfg.Properties.SpinButtons.ClientVisible = false;
+                cfg.Name = "Amount";
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+                //cfg.Width = System.Web.UI.WebControls.Unit.Pixel(200);
+                cfg.Properties.ValidationSettings.RequiredField.IsRequired = true;
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+            }).Bind(DataBinder.Eval(item, "Amount")).GetHtml();
+
+            Html.DevExpress().Label(lbl => { lbl.ControlStyle.CssClass = "fl"; lbl.Text = "CTC Number:"; lbl.AssociatedControlName = "TaxCertificateNum"; }).GetHtml();
+            Html.DevExpress().TextBox(cfg => {
+                cfg.Name = "TaxCertificateNum";
+                cfg.Properties.ValidationSettings.RequiredField.IsRequired = true;
+                cfg.Properties.ValidationSettings.Display = Display.Dynamic;
+                cfg.Properties.ClientSideEvents.KeyDown = "PreventLetters";
+            }).Bind(DataBinder.Eval(item, "TaxCertificateNum")).Render();
+
+
+
+            //ViewContext.Writer.Write("</div>");
+            //ViewContext.Writer.Write("<div class=\"editform col-md-12\" style='float:left; padding-top:20px;'>");
+            //Html.DevExpress().Button(btn => {
+            //    btn.ControlStyle.CssClass = "fl";
+            //    btn.Name = "btnSave";
+            //    btn.Text = "Save";
+            //    btn.Style[HtmlTextWriterStyle.MarginLeft] = "5px";
+            //    btn.UseSubmitBehavior = false;
+            //    btn.ClientSideEvents.Click = "function(s, e){ gvPowerSources.UpdateEdit(); }";
+            //}).Render();
+            //Html.DevExpress().Button(btn => {
+            //    btn.ControlStyle.CssClass = "fl";
+            //    btn.Name = "btnCancel"; btn.Text = "Cancel";
+            //    btn.UseSubmitBehavior = false;
+            //    btn.ClientSideEvents.Click = "function(s, e){ gvPowerSources.CancelEdit(); }";
+            //}).Render();
+
+            ViewContext.Writer.Write("</div>");
+            ViewContext.Writer.Write("<div class=\"editform col-md-8\" style='float:left;'>");
+
+
+            //Html.RenderAction("cbpCertificateContentPartial");
+            Html.DevExpress().Memo(cfg => {
+                cfg.Name = "CertificateContent";
+                cfg.Height = System.Web.UI.WebControls.Unit.Pixel(260);
+                cfg.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+            }).Bind(DataBinder.Eval(item, "CertificateContent")).Render();
+
+            ViewContext.Writer.Write("</div>");
+            ViewContext.Writer.Write("<div class=\"editform col-md-12\" style='float:left; padding-top:20px;'>");
+            Html.DevExpress().Button(btn => {
+                btn.ControlStyle.CssClass = "fl";
+                btn.Name = "btnSaveTab";
+                btn.Text = "Save";
+                btn.Style[HtmlTextWriterStyle.MarginLeft] = "5px";
+                btn.UseSubmitBehavior = false;
+                //btn.ClientSideEvents.Click = "function(s, e){ if (ASPxClientEdit.AreEditorsValid()) gvCertificates.UpdateEdit(); }";
+                btn.ClientSideEvents.Click = "SaveCertificate";
+            }).Render();
+            Html.DevExpress().Button(btn => {
+                btn.ControlStyle.CssClass = "fl";
+                btn.Name = "btnCancelTab"; btn.Text = "Cancel";
+                btn.UseSubmitBehavior = false;
+                btn.ClientSideEvents.Click = "function(s, e){ gvCertificates.CancelEdit(); }";
+            }).Render();
+
+            ViewContext.Writer.Write("</div>");
+        });
+
+    });
+    if (ViewData["EditError"] != null){
+        grid.SetEditErrorText((string)ViewData["EditError"]);
+    }
+}
+@grid.Bind(Model).GetHtml()

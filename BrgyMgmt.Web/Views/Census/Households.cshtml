@@ -1,0 +1,146 @@
+﻿@{
+    ViewBag.Title = "HOUSEHOLDS"; ViewBag.Description = "RESIDENT";
+}
+<script>
+    var entity = [];
+    function AddResourceToHousehold(s, e, listBox, resource, quantity, tEntity) {
+        //var lbItem = new ASPxClientListEditItem(){ searchResident.GetText(), searchResident.GetValue(), '' };
+
+        //alert(cmbVehicle.GetSelectedIndex());
+        resource.RemoveItem(resource.GetSelectedIndex())
+
+        listBox.AddItem([resource.GetText(), quantity.GetValue()], resource.GetValue(), '');
+        //listBox.AddItem(cmbVehicle.GetText(), cmbVehicle.GetValue(), '');
+
+        //listBox.RemoveItem(listBox.GetSelectedItem().index);
+
+
+
+        //var res = { MaintenanceTableType: tEntity, MaintenanceEntryId: resource.GetValue(), Quantity: quantity.GetValue() };
+        //entity.push(res)
+        //$('#houseHoldProperties').val(JSON.stringify(entity));
+
+        resource.SetValue(null);
+        quantity.SetValue(null);
+        s.SetEnabled(resource.GetValue() != null);
+
+    }
+    function ShowMe(s, e) {
+        lbCurrentVehicles.SelectAll();
+        //lbCurrentLivestock.SelectAll();
+        //lbResidentVictims.SelectAll();
+        
+
+        //var items = lbCurrentVehicles.GetSelectedItems();
+        //for (var i = items.length - 1; i >= 0; i = i - 1) {
+        //    var res = { MaintenanceEntryId: items[i].value, Quantity: items[i].text.substring(items[i].text.indexOf(";") + 1) };
+        //    entity.push(res)
+        //}
+        //var livestockitems = lbCurrentLivestock.GetSelectedItems();
+        //for (var i = livestockitems.length - 1; i >= 0; i = i - 1) {
+        //    var res2 = { MaintenanceEntryId: livestockitems[i].value, Quantity: livestockitems[i].text.substring(livestockitems[i].text.indexOf(";") + 1) };
+        //    entity.push(res2)
+        //}
+
+        //hide.SetText(JSON.stringify(entity))
+        //entity = [];
+    }
+    function ShowListboxItems(s, e, listBox) {
+        listBox.SelectAll();
+        var items = listBox.GetSelectedItems();
+        for (var i = items.length - 1; i >= 0; i = i - 1) {
+            //alert(items[i].value);
+            //alert(items[i].text.substr(0, items[i].text.indexOf(';')));
+            //alert(items[i].text.substring(items[i].text.indexOf(";") + 1));
+            //combobox.AddItem(items[i].text.substr(0, items[i].text.indexOf(';')), items[i].value);
+            //listBox.RemoveItem(items[i].index);
+
+            var res = { MaintenanceEntryId: items[i].value, Quantity: items[i].text.substring(items[i].text.indexOf(";") + 1) };
+            entity.push(res)
+            //alert(JSON.stringify(entity));
+            $('#houseHoldProperties').val(JSON.stringify(entity));
+        }
+        
+
+        //var count = listBox.GetItemCount();
+    }
+
+
+
+    function CheckAddButtonState(s, e) {
+        switch (s.name) {
+            case 'cmbVehicles':
+            case 'VehicleQuantity':
+                btnAddVehicke.SetEnabled(cmbVehicles.GetValue() != null && VehicleQuantity.GetValue() > 0);
+                break;
+            case 'cmbLivestock':
+            case 'LivestockQuantity':
+                btnAddLivestock.SetEnabled(cmbLivestock.GetValue() != null && LivestockQuantity.GetValue() > 0);
+                break;
+            case 'cmbEquipment':
+            case 'EquipmentQuantity':
+                btnAddEquipment.SetEnabled(cmbEquipment.GetValue() != null && EquipmentQuantity.GetValue() > 0);
+                break;
+            case 'cmbChildren':
+            case 'ChildQuantity':
+                btnAddChild.SetEnabled(cmbChildren.GetValue() != null && ChildQuantity.GetValue() > 0);
+                break;
+           default:
+        }
+    }
+    function lbOnSelectedIndexChanged(s, e, btnRemove) {
+        btnRemove.SetEnabled(s.GetSelectedValues() != null);
+    }
+    function btnRemoveItemsFromListbox(s, e, listBox, combobox) {
+        var items = listBox.GetSelectedItems();
+        for (var i = items.length - 1; i >= 0; i = i - 1) {
+            combobox.AddItem(items[i].text.substr(0, items[i].text.indexOf(';')), items[i].value);
+            listBox.RemoveItem(items[i].index);
+        }
+        s.SetEnabled(listBox.GetSelectedValues() > 0);
+    }
+    
+    function SaveHousehold(s, e) {
+        if (ASPxClientEdit.AreEditorsValid()) {
+            lbCurrentVehicles.SelectAll();
+            lbCurrentLivestock.SelectAll();
+            lbCurrentEquipments.SelectAll();
+            lbCurrentChildren.SelectAll();
+
+            //var listboxes = ["lbCurrentLivestock", "lbCurrentEquipments", "lbCurrentChildren"];
+            //for (index = 0; index < listboxes.length; index++) {
+            //    listboxes[index].SelectAll();
+            //} 
+
+
+
+            var items = lbCurrentVehicles.GetSelectedItems();
+            for (var i = items.length - 1; i >= 0; i = i - 1) {
+                var res = { MaintenanceEntryId: items[i].value, Quantity: items[i].text.substring(items[i].text.indexOf(";") + 1) };
+                entity.push(res)
+            }
+            items = lbCurrentLivestock.GetSelectedItems();
+            for (var i = items.length - 1; i >= 0; i = i - 1) {
+                var res = { MaintenanceEntryId: items[i].value, Quantity: items[i].text.substring(items[i].text.indexOf(";") + 1) };
+                entity.push(res)
+            }
+            items = lbCurrentEquipments.GetSelectedItems();
+            for (var i = items.length - 1; i >= 0; i = i - 1) {
+                var res = { MaintenanceEntryId: items[i].value, Quantity: items[i].text.substring(items[i].text.indexOf(";") + 1) };
+                entity.push(res)
+            }
+            items = lbCurrentChildren.GetSelectedItems();
+            for (var i = items.length - 1; i >= 0; i = i - 1) {
+                var res = { MaintenanceEntryId: items[i].value, Quantity: items[i].text.substring(items[i].text.indexOf(";") + 1) };
+                entity.push(res)
+            }
+            hide.SetText(JSON.stringify(entity))
+            entity = [];
+
+            gvHouseholds.UpdateEdit();
+        }
+    }
+
+</script>
+
+@Html.Action("gvHouseholdsPartial")

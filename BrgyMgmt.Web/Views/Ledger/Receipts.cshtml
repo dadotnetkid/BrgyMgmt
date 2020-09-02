@@ -1,0 +1,40 @@
+﻿@{
+    ViewBag.Title = "LEDGER"; ViewBag.Description = "RECEIPTS";
+}
+@*<script>
+        function BeginRefresh(s, e) {
+            e.customArgs["From"] = fromDE.GetDate().getTime();
+            e.customArgs["To"] = toDE.GetDate().getTime();
+        }
+    </script>
+    <div style="padding-bottom: 10px;">
+        <div style="float: left">
+            <span>From:</span>
+
+            @Html.DevExpress().DateEdit(settings => {
+        settings.Name = "fromDE"; settings.Properties.ClientInstanceName = "fromDE"; settings.Properties.TimeSectionProperties.Visible = true;
+    }).Bind(ViewBag.Start).GetHtml()
+
+        </div>
+        <div style="float: left">
+
+            <span>To:</span>
+    @Html.DevExpress().DateEdit(settings => {
+        settings.Name = "toDE"; settings.Properties.DateRangeSettings.StartDateEditID = "fromDE"; settings.Properties.ClientInstanceName = "toDE";
+    }).Bind(ViewBag.End).GetHtml()
+
+        </div>
+        <div style="padding-top: 20px; padding-left: 10px;">
+
+    @Html.DevExpress().Button(buttonSettings => {
+        buttonSettings.Name = "getCoverageBtn"; buttonSettings.UseSubmitBehavior = false; buttonSettings.Text = "Get Receipts";
+        buttonSettings.ClientSideEvents.Click = "function (s, e) { DocumentViewer.Refresh( {From: fromDE.GetDate().getTime(), To: toDE.GetDate().getTime()} ); }";
+    }).GetHtml()
+
+        </div>
+    </div>*@
+
+@*@Html.Action("ReceiptReportPartial")*@
+@Html.DevExpress().WebDocumentViewer(settings => {
+    settings.Name = "WebDocumentViewer1";
+}).Bind(new DevExpress.XtraReports.Web.CachedReportSourceWeb(new rptServices())).GetHtml()

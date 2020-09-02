@@ -1,0 +1,44 @@
+﻿@{
+    ViewBag.Title = "CRISIS"; ViewBag.Description = "DISASTERS";
+}
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card card-danger">
+            <div class="card-header">
+                <h3 class="card-title">Disasters</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    @Html.Action("gvDisastersPartial")
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card card-info">
+            <div class="card-header">
+                <h3 class="card-title">Relocation Sites</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    @Html.Action("gvRelocationSitesPartial")
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card card-success">
+            <div class="card-header">
+                <h3 class="card-title">Residents</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    @Html.Action("gvResidentRelocationsPartial")
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

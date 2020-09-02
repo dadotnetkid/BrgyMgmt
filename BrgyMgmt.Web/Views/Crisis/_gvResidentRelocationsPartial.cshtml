@@ -1,0 +1,44 @@
+@{
+    var grid = Html.DevExpress().GridView(settings => {
+        settings.Name = "gvResidentRelocations";
+        settings.CallbackRouteValues = new { Controller = "Crisis", Action = "gvResidentRelocationsPartial" };
+
+        settings.SettingsEditing.AddNewRowRouteValues = new { Controller = "Crisis", Action = "gvResidentRelocationsPartialAddNew" };
+        settings.SettingsEditing.UpdateRowRouteValues = new { Controller = "Crisis", Action = "gvResidentRelocationsPartialUpdate" };
+        settings.SettingsEditing.DeleteRowRouteValues = new { Controller = "Crisis", Action = "gvResidentRelocationsPartialDelete" };
+        settings.SettingsEditing.Mode = GridViewEditingMode.PopupEditForm;
+
+        settings.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+
+        settings.CommandColumn.ShowClearFilterButton = true;
+        settings.CommandColumn.Visible = true;
+        settings.CommandColumn.ShowDeleteButton = User.IsInRole("Administrator") || User.IsInRole("SA");
+        settings.CommandColumn.ShowEditButton = true;
+        settings.CommandColumn.ShowNewButtonInHeader = true;
+        settings.SettingsPager.PageSize = 10;
+        settings.SettingsBehavior.ConfirmDelete = true;
+
+        settings.KeyFieldName = "ResidentId";
+
+        settings.SettingsPager.Visible = true;
+        settings.Settings.ShowGroupPanel = false;
+        settings.Settings.ShowFilterRow = true;
+        settings.SettingsBehavior.AllowSelectByRowClick = true;
+
+        settings.SettingsAdaptivity.AdaptivityMode = GridViewAdaptivityMode.Off;
+        settings.SettingsAdaptivity.AdaptiveColumnPosition = GridViewAdaptiveColumnPosition.Right;
+        settings.SettingsAdaptivity.AdaptiveDetailColumnCount = 1;
+        settings.SettingsAdaptivity.AllowOnlyOneAdaptiveDetailExpanded = false;
+        settings.SettingsAdaptivity.HideDataCellsAtWindowInnerWidth = 0;
+
+        settings.Columns.Add("ResidentId");
+        settings.Columns.Add("Cellular");
+        settings.Columns.Add("FullName");
+        settings.Columns.Add("HouseholdHead");
+        settings.Columns.Add("Gender");
+    });
+    if (ViewData["EditError"] != null){
+        grid.SetEditErrorText((string)ViewData["EditError"]);
+    }
+}
+@grid.Bind(Model).GetHtml()

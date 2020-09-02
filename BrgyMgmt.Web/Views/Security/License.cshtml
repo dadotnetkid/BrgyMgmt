@@ -1,0 +1,49 @@
+﻿@using BrgyMgmt.Web.Models
+@model License
+@{
+    ViewBag.Title = "License";
+    Layout = "~/Views/Shared/_Login.cshtml";
+}
+@ViewBag.DeviceId
+<div class="card">
+    <div class="card-body login-card-body">
+        <p class="login-box-msg">LICENSE REQUIRED</p>
+        @using (Html.BeginForm()) {
+            @Html.AntiForgeryToken()
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="has-feedback">
+                @Html.DevExpress().TextBoxFor(m => m.RegisteredEmail,
+                    settings => {
+                        settings.Name = "Email";
+                        settings.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+                        settings.Properties.NullText = "Registered Email";
+                        settings.ControlStyle.CssClass = "form-control";
+                        settings.Properties.ValidationSettings.RequiredField.IsRequired = true; settings.Properties.ValidationSettings.Display = Display.Dynamic;
+                        settings.Properties.ValidationSettings.ErrorImage.Url = "~/content/img/error-icon.png";
+                    }).GetHtml()
+            </div>
+            <div class="has-feedback">
+                @Html.DevExpress().MemoFor(m => m.LicenseKey,
+                    settings => {
+                        settings.Name = "LicenseKey";
+                        settings.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+                        settings.Height = System.Web.UI.WebControls.Unit.Pixel(230);
+                        settings.Properties.NullText = "License Key";
+                        settings.ControlStyle.CssClass = "form-control lkey";
+                        settings.Properties.ValidationSettings.RequiredField.IsRequired = true; settings.Properties.ValidationSettings.Display = Display.Dynamic;
+                        settings.Properties.ValidationSettings.ErrorImage.Url = "~/content/img/error-icon.png";
+                    }).GetHtml()
+
+
+            </div>
+            <br />
+            <button class="btn btn-block btn-info btn-lg">Sign In</button>
+
+
+        }
+
+    </div>
+</div>
+<p><hr /></p>
+<a href="#">Request for Key</a>

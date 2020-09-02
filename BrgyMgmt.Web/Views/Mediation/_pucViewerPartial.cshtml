@@ -1,0 +1,19 @@
+@model XtraReport
+@Html.DevExpress().PopupControl(puc => {
+    puc.Name = "pucViewerReport";
+    puc.CallbackRouteValues = new { Controller = "Mediation", Action = "ReturnViewerPartial" };
+    //puc.ClientSideEvents.BeginCallback = string.Format("function(s, e) {{ DipslayPopupOnBeginCallback('{0}')}}", c.KeyValue);
+    puc.ClientSideEvents.BeginCallback = "DipslayPopupOnBeginCallback";
+    puc.AllowResize = true; puc.Width = System.Web.UI.WebControls.Unit.Pixel(800);
+    puc.PopupHorizontalAlign = PopupHorizontalAlign.WindowCenter; puc.PopupVerticalAlign = PopupVerticalAlign.WindowCenter;
+    puc.ShowHeader = true;
+    puc.AllowDragging = true;
+    puc.CloseAction = CloseAction.CloseButton;
+    puc.CloseOnEscape = true;
+    puc.ShowOnPageLoad = false;
+    puc.HeaderText = "Print | Preview";
+    puc.Modal = true;
+    puc.SetContent(() => {
+        Html.DevExpress().WebDocumentViewer(rptool => { rptool.Name = "ReportToolbar"; }).Bind(Model).GetHtml();
+    });
+}).GetHtml()

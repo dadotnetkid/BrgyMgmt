@@ -1,0 +1,10 @@
+@Html.DevExpress().DocumentViewer(settings => {
+    settings.Name = "DocumentViewer";
+    settings.CallbackRouteValues = new { Controller = "Ledger", Action = "ReceiptReportPartial" };
+    //settings.ExportRouteValues = new { Controller = "Report", Action = "CoverageReportPartialExport" };
+    settings.Report = (XtraReport)Model;
+    settings.ToolbarMode = DocumentViewerToolbarMode.Ribbon;
+    settings.ClientSideEvents.BeginCallback = "BeginRefresh";
+    //settings.StylesSplitter.SidePaneWidth = System.Web.UI.WebControls.Unit.Pixel(250);
+    //settings.StylesSplitter.SidePaneMinWidth = System.Web.UI.WebControls.Unit.Pixel(250);
+}).GetHtml()

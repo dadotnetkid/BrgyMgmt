@@ -1,0 +1,12 @@
+@model BrgyMgmt.Web.Models.BarangayProfileData
+
+@Html.DevExpress().CallbackPanel(cbp => {
+    cbp.Name = "cbpProfile";
+    cbp.CallbackRouteValues = new { Controller = "Maintenance", Action = "cbpProfilePartial" };
+    cbp.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+    cbp.Height = System.Web.UI.WebControls.Unit.Percentage(100);
+
+    cbp.SetContent(() => {
+        Html.RenderPartial("_flBarangayProfilePartial", Model);
+    });
+}).GetHtml()

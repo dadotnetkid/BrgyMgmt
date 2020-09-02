@@ -1,0 +1,11 @@
+@Html.DevExpress().ComboBox(cmb => {
+    cmb.Name = "cmbVehicles"; cmb.ControlStyle.CssClass = "fl";
+    cmb.Properties.IncrementalFilteringMode = IncrementalFilteringMode.StartsWith;
+    cmb.Properties.DropDownStyle = DropDownStyle.DropDown;
+    cmb.CallbackRouteValues = new { Controller = "Resident", Action = "cmbVehiclesPartial" };
+    cmb.Properties.ClientSideEvents.SelectedIndexChanged = "CheckAddButtonState";
+    //cmb.Width = 50;
+    cmb.Properties.TextField = "Name"; cmb.Properties.ValueField = "Id";
+    cmb.Properties.ValueType = typeof(Int32);
+}).BindList(ViewBag.AvailableVehicles).GetHtml()
+
